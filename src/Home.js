@@ -1,23 +1,30 @@
-import * as script from "./script.js"
-
 function Home() {
-  debugger;
-  script.doShit();
+  const handleLoginClick = async () => {
+    try {
+      const response = await fetch('http://localhost:8888/login', {
+        method: 'GET',
+      });
+      if (response.status === 200) {
+        // Redirect to the Spotify authentication URL if the request was successful.
+        const { auth_url } = await response.json();
+        window.location.href = auth_url;
+      } else {
+        console.error('Failed to initiate login:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error initiating login:', error);
+    }
+  };
+
   return (
     <div>
-      <h1>Spotify Skipper</h1>
-      <script src="src/script.js" type="module"></script>
-      <section id="profile">
-        <h2>Logged in as <span id="displayName"></span></h2>
-        <img id="avatar" width="200" src="#" />
-        <ul>
-          <li>User ID: <span id="id"></span></li>
-          <li>Email: <span id="email"></span></li>
-          <li>Spotify URI: <a id="uri" href="#"></a></li>
-          <li>Link: <a id="url" href="#"></a></li>
-          <li>Profile Image: <span id="imgUrl"></span></li>
-        </ul>
-      </section>
+      <head>
+        <title>Spotify Web Playback SDK Quick Start</title>
+      </head>
+      <body>
+        <h1>Spotify Web Playback SDK Quick Start</h1>
+        <button onClick={handleLoginClick}>Login with Spotify</button>
+      </body>
     </div>
   );
   }
