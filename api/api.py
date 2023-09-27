@@ -1,18 +1,18 @@
-from requests import post
 import requests
-from flask import Flask, redirect, request, jsonify, session
 import urllib.parse
-from datetime import datetime, timedelta
+import os
+from flask_cors import CORS
 from flask_session import Session
-
+from flask import Flask, redirect, request, jsonify, session
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
+CORS(app)
 
-
-CLIENT_ID = ''
-CLIENT_SECRET = ''
+CLIENT_ID = os.environ['SPOTIFY_CLIENT_ID']
+CLIENT_SECRET = os.environ['SPOTIFY_CLIENT_SECRET']
 REDIRECT_URI = 'http://localhost:8888/callback'
 
 
@@ -20,10 +20,6 @@ AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 API_BASE_URL = 'https://api.spotify.com/v1/'
 
-
-@app.route('/')
-def index():
-   return "Welcome to my Spotify App <a href='/login'>Login with Spotify</a>"  
 
 
 @app.route('/login')
@@ -39,9 +35,9 @@ def login():
 
 
    auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"
-
-
-   return redirect(auth_url)
+   
+   
+   return jsonify({'auth_url': auth_url})
 
 
 @app.route('/callback')
@@ -112,10 +108,14 @@ def refresh_token():
 
    return redirect('/playlists')
 
+# if __name__ == '__main__':
+#     app.run(debug=True)
 
 if __name__ == '__main__':
-   app.run(host='0.0.0.0', debug=True, port=8888)
+     app.run(debug=True, port=8888)
 
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', debug=True, port=8888)
 
 # token = get_token()
 # print(token)
