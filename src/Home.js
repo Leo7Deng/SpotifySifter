@@ -1,3 +1,5 @@
+import Sdk from "./Sdk";
+
 function Home() {
   const handleLoginClick = async () => {
     try {
@@ -7,6 +9,7 @@ function Home() {
       if (response.status === 200) {
         // Redirect to the Spotify authentication URL if the request was successful.
         const { auth_url } = await response.json();
+        console.log(auth_url)
         window.location.href = auth_url;
       } else {
         console.error('Failed to initiate login:', response.status, response.statusText);
@@ -18,13 +21,8 @@ function Home() {
 
   return (
     <div>
-      <head>
-        <title>Spotify Web Playback SDK Quick Start</title>
-      </head>
-      <body>
-        <h1>Spotify Web Playback SDK Quick Start</h1>
-        <button onClick={handleLoginClick}>Login with Spotify</button>
-      </body>
+      <h1>Spotify</h1>
+      <button onClick={handleLoginClick}>Login with Spotify</button>
     </div>
   );
   }

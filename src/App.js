@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/sdk" element={<Sdk />} />
+        <Route path="/Sdk" element={<Sdk />} />
       </Routes>
     </Router>
   );
