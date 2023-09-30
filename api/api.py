@@ -23,7 +23,7 @@ API_BASE_URL = "https://api.spotify.com/v1/"
 
 @app.route("/login")
 def login():
-    scope = "user-read-private user-read-email streaming"
+    scope = "user-read-private user-read-email streaming user-read-currently-playing"
     
 
     params = {
@@ -58,7 +58,7 @@ def callback():
     #    session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
     response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
-    return redirect(f'http://localhost:3000/Sdk?access_token={token_info["access_token"]}')
+    return redirect(f'http://localhost:3000/GetCurrentTrack?access_token={token_info["access_token"]}')
 
 
 @app.route("/playlists")
