@@ -5,6 +5,8 @@ from flask_cors import CORS
 from flask_session import Session
 from flask import Flask, redirect, request, jsonify, session, url_for
 from datetime import datetime
+from cron import run as cron_run
+import data
 
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
@@ -23,7 +25,7 @@ API_BASE_URL = "https://api.spotify.com/v1/"
 
 @app.route("/login")
 def login():
-    scope = "user-read-private user-read-email streaming user-read-currently-playing"
+    scope = "user-read-private user-read-email user-read-playback-state"
     
 
     params = {
@@ -40,6 +42,7 @@ def login():
 
 
 @app.route("/callback")
+
 def callback():
     if "error" in request.args:
         return jsonify({"error": request.args["error"]})
@@ -58,8 +61,8 @@ def callback():
     #    session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
     response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
+    cron_run(token_info["access_token"])
     return redirect(f'http://localhost:3000/GetCurrentTrack?access_token={token_info["access_token"]}')
-
 
 @app.route("/playlists")
 def get_playlists():
@@ -98,18 +101,5 @@ def refresh_token():
 
     return redirect("/playlists")
 
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
-
 if __name__ == "__main__":
     app.run(debug=True, port=8888)
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', debug=True, port=8888)
-
-# token = get_token()
-# print(token)
-# profile_data = fetch_profile(token)
-# if profile_data:
-#     print(profile_data)

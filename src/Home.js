@@ -1,5 +1,3 @@
-import Sdk from "./Sdk";
-
 function Home() {
   const handleLoginClick = async () => {
     try {
