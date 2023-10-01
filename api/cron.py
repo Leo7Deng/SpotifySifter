@@ -22,7 +22,7 @@ def change_current_queue(access_token):
     # print(queue_data)
     track_names = [track['name'] for track in queue_data['queue']]
     
-    data.current_queue = track_names
+    data.data['current_queue'] = track_names
     return {'added': True}
 
 def run(access_token):

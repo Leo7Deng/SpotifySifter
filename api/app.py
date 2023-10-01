@@ -1,12 +1,13 @@
 import requests
 import urllib.parse
 import os
+import atexit
+import data
 from flask_cors import CORS
 from flask_session import Session
 from flask import Flask, redirect, request, jsonify, session, url_for
 from datetime import datetime
 from cron import run as cron_run
-import data
 
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
@@ -102,4 +103,6 @@ def refresh_token():
     return redirect("/playlists")
 
 if __name__ == "__main__":
+    data.load_data()
     app.run(debug=True, port=8888)
+    atexit.register(data.save_data)
