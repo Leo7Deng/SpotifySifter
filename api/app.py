@@ -26,7 +26,7 @@ API_BASE_URL = "https://api.spotify.com/v1/"
 
 @app.route("/login")
 def login():
-    scope = "user-read-private user-read-email user-read-playback-state"
+    scope = "user-read-recently-played user-read-playback-state"
     
 
     params = {
