@@ -1,54 +1,8 @@
 {
     "prev_queue": [
-        "Sky",
-        "How Can I Forget",
-        "Reflections",
-        "Faith",
-        "Funny Thing",
-        "Payphone",
-        "Meet Me Halfway",
-        "16",
-        "Novacane",
-        "Kilby Girl",
-        "Why Don't We Go There",
-        "Crew Love",
-        "The Thrill",
-        "What Makes You Beautiful",
-        "Creepin' (with The Weeknd & 21 Savage)",
-        "Many Men",
-        "Say It Right",
-        "Everything I Am",
-        "Dua Lipa",
-        "Walking On Air"
     ],
-    "current_queue": [
-        "Reflections",
-        "Faith",
-        "Funny Thing",
-        "Payphone",
-        "Meet Me Halfway",
-        "16",
-        "Novacane",
-        "Kilby Girl",
-        "Why Don't We Go There",
-        "Crew Love",
-        "The Thrill",
-        "What Makes You Beautiful",
-        "Creepin' (with The Weeknd & 21 Savage)",
-        "Many Men",
-        "Say It Right",
-        "Everything I Am",
-        "Dua Lipa",
-        "Walking On Air",
-        "Raindrops (Insane) [with Travis Scott]",
-        "Die For You"
+    "skipped_once": [
     ],
-    "played_tracks_60": [
-        "Sky"
-    ],
-    "recently_played": [],
-    "skipped_tracks_60": [],
-    "not_skipped_tracks_60": [],
-    "skipped_once": [],
-    "skipped_twice": []
+    "skipped_twice": [
+    ]
 }

@@ -26,7 +26,7 @@ def change_current_queue(access_token):
     recently_played_data = recently_played_response.json()
 
     #recently_played is the recently played tracks that were not skipped
-    data.data['recently_played'] = [track['name'] for track in recently_played_data['items']]
+    recently_played = [item['track']['name'] for item in recently_played_data['items']]
 
     #track_names are all the names in the queue data
     track_names = [track['name'] for track in queue_data['queue']]
@@ -34,18 +34,37 @@ def change_current_queue(access_token):
 
     #add the currently playing track to track_names
     track_names.append(currently_playing)
-    data.data['prev_queue'] = data.data['current_queue']
-    data.data['current_queue'] = track_names
 
     #played_tracks_60 is the played tracks in the last 60 seconds
-    data.data['played_tracks_60'] = [track for track in data.data['prev_queue'] if track not in data.data['current_queue']]
-    print('update')
+    played_tracks_60 = [track for track in data.data['prev_queue'] if track not in track_names]
 
     #skipped_tracks_60 are the songs found in played_tracks_60 that are not found in recently_played
-    data.data['skipped_tracks_60'] = [track for track in data.data['played_tracks_60'] if track not in data.data['recently_played']]
+    skipped_tracks_60 = [track for track in played_tracks_60 if track not in recently_played]
+
+    #append songs to skipped_twice if they are found in both skipped_once and skipped_tracks_60
+    data.data['skipped_twice'].extend([track for track in data.data['skipped_once'] if track in skipped_tracks_60])
+
+    #after skipped_twice is checked, then skipped_once is updated
+    data.data['skipped_once'].extend(skipped_tracks_60)
+    
+    #remove duplicates from skipped_once
+    data.data['skipped_once'] = list(set(data.data['skipped_once']))
 
     #not_skipped_tracks_60 are the songs found in played_tracks_60 that are found in recently_played
-    data.data['not_skipped_tracks_60'] = [track for track in data.data['played_tracks_60'] if track in data.data['recently_played']]
+    not_skipped_tracks_60 = [track for track in played_tracks_60 if track in recently_played]
+    
+    #remove songs from skipped_once if they are found in not_skipped_tracks_60
+    data.data['skipped_once'] = [track for track in data.data['skipped_once'] if track not in not_skipped_tracks_60]
+
+    #remove duplicates from skipped_twice
+    data.data['skipped_twice'] = list(set(data.data['skipped_twice']))
+    
+    print("Currently playing: " + str(currently_playing))
+    # print("Played tracks 60: " + str(played_tracks_60))
+    print("Skipped tracks 60: " + str(skipped_tracks_60))
+    print("Skipped once: " + str(data.data['skipped_once']))
+    print("Skipped twice: " + str(data.data['skipped_twice']))
+    data.data['prev_queue'] = track_names
 
     # Assign missing_tracks to played_tracks_60
     return {'added': True}
