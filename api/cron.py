@@ -21,8 +21,11 @@ def change_current_queue(access_token):
     queue_data = response.json()
     # print(queue_data)
     track_names = [track['name'] for track in queue_data['queue']]
-    
+    data.data['prev_queue'] = data.data['current_queue']
     data.data['current_queue'] = track_names
+    data.data['played_tracks_60'] = [track for track in data.data['prev_queue'] if track not in data.data['current_queue']]
+
+    # Assign missing_tracks to played_tracks_60
     return {'added': True}
 
 def run(access_token):
