@@ -3,14 +3,20 @@ import urllib.parse
 import os
 import atexit
 import data
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_session import Session
 from flask import Flask, redirect, request, jsonify, session, url_for
 from datetime import datetime
-from cron import run as cron_run
 
 app = Flask(__name__)
+from cron import run as cron_run
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql://spotify-database.cg7eblrgpcpx.us-east-1.rds.amazonaws.com'
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
 Session(app)
 CORS(app)
 
@@ -23,10 +29,9 @@ AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API_BASE_URL = "https://api.spotify.com/v1/"
 
-
 @app.route("/login")
 def login():
-    scope = "user-read-recently-played user-read-playback-state"
+    scope = "user-read-recently-played user-read-playback-state user-read-email"
     
 
     params = {
