@@ -6,7 +6,7 @@ import data
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_session import Session
-from flask import Flask, redirect, request, jsonify, session, url_for
+from flask import Flask, redirect, request, jsonify, session
 from datetime import datetime
 
 app = Flask(__name__)
@@ -65,26 +65,11 @@ def callback():
     #    session['access_token'] = token_info['access_token']
     #    session['refresh_token'] = token_info['refresh_token']
     #    session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
+    
     response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
     cron_run(token_info["access_token"])
     return redirect(f'http://localhost:3000/GetCurrentTrack?access_token={token_info["access_token"]}')
-
-@app.route("/playlists")
-def get_playlists():
-    if "access_token" not in session:
-        return redirect("/login")
-
-    if session["expires_at"] < datetime.now().timestamp():
-        return redirect("/refresh_token")
-
-    headers = {"Authorization": f"Bearer {session['access_token']}"}
-
-    response = requests.get(API_BASE_URL + "me", headers=headers)
-    playlists = response.json()
-
-    return jsonify(playlists)
-
 
 @app.route("/refresh_token")
 def refresh_token():
