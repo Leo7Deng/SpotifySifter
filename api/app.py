@@ -1,21 +1,30 @@
 import requests
 import urllib.parse
 import os
-import atexit
-import data
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_session import Session
 from flask import Flask, redirect, request, jsonify, session
 from datetime import datetime
 
+db = SQLAlchemy()
+
 app = Flask(__name__)
-from cron import run as cron_run
+app.app_context().push()
+
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql://spotify-database.cg7eblrgpcpx.us-east-1.rds.amazonaws.com'
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
+db.init_app(app)
+
+class UserData(db.Model):
+  user_email = db.Column(db.String(120), primary_key=True)
+  
+  prev_queue = db.Column(db.JSON)
+  skipped_once = db.Column(db.JSON)
+  skipped_twice = db.Column(db.JSON)
+  selected_playlists = db.Column(db.JSON)
 
 Session(app)
 CORS(app)
@@ -46,6 +55,7 @@ def login():
 
     return jsonify({"auth_url": auth_url})
 
+from cron import run as cron_run
 
 @app.route("/callback")
 
@@ -65,7 +75,7 @@ def callback():
     #    session['access_token'] = token_info['access_token']
     #    session['refresh_token'] = token_info['refresh_token']
     #    session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
-    
+
     response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
     cron_run(token_info["access_token"])
@@ -93,6 +103,4 @@ def refresh_token():
     return redirect("/playlists")
 
 if __name__ == "__main__":
-    data.load_data()
     app.run(debug=True, port=8888)
-    atexit.register(data.save_data)
