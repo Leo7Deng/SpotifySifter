@@ -1,17 +1,18 @@
 import requests
 import urllib.parse
 import os
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_session import Session
 from flask import Flask, redirect, request, jsonify, session
+from cron import run as cron_run
 from datetime import datetime
 
 app = Flask(__name__)
 app.app_context().push()
 
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
+# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 Session(app)
@@ -43,10 +44,7 @@ def login():
 
     return jsonify({"auth_url": auth_url})
 
-from cron import run as cron_run
-
 @app.route("/callback")
-
 def callback():
     if "error" in request.args:
         return jsonify({"error": request.args["error"]})

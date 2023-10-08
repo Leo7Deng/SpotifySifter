@@ -97,5 +97,3 @@ def run(access_token):
     # Shut down the scheduler when exiting the app
     
     atexit.register(lambda: scheduler.shutdown())
-
-from app import db, UserData, app

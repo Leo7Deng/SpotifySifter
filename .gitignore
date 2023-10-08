@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 api/flask_session
+
+__pycache__/
+
