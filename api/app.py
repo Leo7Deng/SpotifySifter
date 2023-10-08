@@ -7,24 +7,12 @@ from flask_session import Session
 from flask import Flask, redirect, request, jsonify, session
 from datetime import datetime
 
-db = SQLAlchemy()
-
 app = Flask(__name__)
 app.app_context().push()
 
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db.init_app(app)
-
-class UserData(db.Model):
-  user_email = db.Column(db.String(120), primary_key=True)
-  
-  prev_queue = db.Column(db.JSON)
-  skipped_once = db.Column(db.JSON)
-  skipped_twice = db.Column(db.JSON)
-  selected_playlists = db.Column(db.JSON)
 
 Session(app)
 CORS(app)

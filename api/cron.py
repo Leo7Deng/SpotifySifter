@@ -25,8 +25,7 @@ def get_user_data(access_token, user_email):
     change_current_queue(queue_data, recently_played_data, user_email)
 
 def change_current_queue(queue_data, recently_played_data, user_email):
-    with app.app_context():
-        user_data = UserData.query.filter_by(user_email=user_email).first()
+    user_data = UserData.query.filter_by(user_email=user_email).first()
 
     if not user_data:
   # Create if doesn't exist
