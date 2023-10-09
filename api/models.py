@@ -1,20 +1,12 @@
-from app import app
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-
 db = SQLAlchemy()
-migrate = Migrate(app, db)
+from app import app
 db.init_app(app)
 
-class SkippedOnce(db.Model):
-  __tablename__ = 'skipped_once'
+class Skipped(db.Model):
+  __tablename__ = 'skipped'
   id = db.Column(db.Integer, primary_key=True)
-  track_id = db.Column(db.Integer, db.ForeignKey('track.id'))
-  playlist_id = db.Column(db.String(120), db.ForeignKey('playlist.id'))
-
-class SkippedTwice(db.Model):
-  __tablename__ = 'skipped_twice'
-  id = db.Column(db.Integer, primary_key=True)
+  skipped_count = db.Column(db.Integer)
   track_id = db.Column(db.Integer, db.ForeignKey('track.id'))
   playlist_id = db.Column(db.String(120), db.ForeignKey('playlist.id'))
 

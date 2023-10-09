@@ -4,23 +4,24 @@ import os
 from flask_cors import CORS
 from flask_session import Session
 from flask import Flask, redirect, request, jsonify, session
-from cron import run as cron_run
 from datetime import datetime
-
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.app_context().push()
-
 app.config["SESSION_TYPE"] = "filesystem"
 # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+from models import db
+from cron import run as cron_run
 
 Session(app)
 CORS(app)
 
-from models import migrate
+migrate = Migrate(app, db)
+
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 REDIRECT_URI = "http://localhost:8888/callback"

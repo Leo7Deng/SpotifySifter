@@ -2,6 +2,7 @@ import atexit
 import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
+from models import db, Track, Playlist, Skipped, User
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
@@ -97,3 +98,4 @@ def run(access_token):
     # Shut down the scheduler when exiting the app
     
     atexit.register(lambda: scheduler.shutdown())
+
