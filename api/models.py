@@ -42,6 +42,7 @@ class User(db.Model):
   email = db.Column(db.String(120))
   refresh_token = db.Column(db.String(120))
   access_token = db.Column(db.String(120))
+  currently_listening = db.Column(db.Boolean)
 
 class PrevQueue(db.Model):
   __tablename__ = 'prev_queue'
