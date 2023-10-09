@@ -25,4 +25,5 @@ yarn-error.log*
 api/flask_session
 
 __pycache__/
+todo.md
 
