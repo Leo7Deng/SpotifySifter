@@ -7,6 +7,7 @@ from flask import Flask, redirect, request, jsonify, session
 from cron import run as cron_run
 from datetime import datetime
 
+
 app = Flask(__name__)
 app.app_context().push()
 
@@ -15,9 +16,11 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+
 Session(app)
 CORS(app)
 
+from models import migrate
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 REDIRECT_URI = "http://localhost:8888/callback"

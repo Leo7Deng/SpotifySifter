@@ -1,6 +1,9 @@
 from app import app
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 db = SQLAlchemy()
+migrate = Migrate(app, db)
 db.init_app(app)
 
 class SkippedOnce(db.Model):
