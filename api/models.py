@@ -5,13 +5,15 @@ db.init_app(app)
 
 class SkippedOnce(db.Model):
   __tablename__ = 'skipped_once'
-  track_id = db.Column(db.Integer, db.ForeignKey('track.id'), primary_key=True)
-  playlist_id = db.Column(db.String(120), db.ForeignKey('playlist.id'), primary_key=True)
+  id = db.Column(db.Integer, primary_key=True)
+  track_id = db.Column(db.Integer, db.ForeignKey('track.id'))
+  playlist_id = db.Column(db.String(120), db.ForeignKey('playlist.id'))
 
 class SkippedTwice(db.Model):
   __tablename__ = 'skipped_twice'
-  track_id = db.Column(db.Integer, db.ForeignKey('track.id'), primary_key=True)
-  playlist_id = db.Column(db.String(120), db.ForeignKey('playlist.id'), primary_key=True)
+  id = db.Column(db.Integer, primary_key=True)
+  track_id = db.Column(db.Integer, db.ForeignKey('track.id'))
+  playlist_id = db.Column(db.String(120), db.ForeignKey('playlist.id'))
 
 class Track(db.Model):
   __tablename__ = 'track'
@@ -22,14 +24,20 @@ class Track(db.Model):
 
 class Playlist(db.Model):
   __tablename__ = 'playlist'
-  id = db.Column(db.String(120), primary_key=True)
+  id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(120))
-  skipped_once = db.relationship('Track', secondary='skipped_once', backref=db.backref('playlist_skipped_once', lazy='dynamic'))
-  skipped_twice = db.relationship('Track', secondary='skipped_twice', backref=db.backref('playlist_skipped_twice', lazy='dynamic'))
-  user_email = db.Column(db.Integer, db.ForeignKey('user.email'))
+  # skipped_once = db.relationship('Track', secondary='skipped_once', backref=db.backref('playlist_skipped_once', lazy='dynamic'))
+  # skipped_twice = db.relationship('Track', secondary='skipped_twice', backref=db.backref('playlist_skipped_twice', lazy='dynamic'))
+  user_email = db.Column(db.String, db.ForeignKey('user.email'))
 
 class User(db.Model):
   __tablename__ = 'user'
-  email = db.Column(db.String(120), primary_key=True)
-  selected_playlists = db.relationship('Playlist')
-  prev_queue = db.relationship('Track', backref='user')
+  id = db.Column(db.Integer, primary_key=True)
+  email = db.Column(db.String(120))
+
+class PrevQueue(db.Model):
+  __tablename__ = 'prev_queue'
+  id = db.Column(db.Integer, primary_key=True)
+  track_id = db.Column(db.String(120), db.ForeignKey('track.id'))
+  queue_index = db.Column(db.Integer)
+  user_email = db.Column(db.String(120), db.ForeignKey('user.email'))
