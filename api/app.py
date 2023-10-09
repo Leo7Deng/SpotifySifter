@@ -17,9 +17,11 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 from models import db
 from cron import run as cron_run
 
+
 Session(app)
 CORS(app)
 
+# migrate.init_app(app, db, render_as_batch=True)
 migrate = Migrate(app, db)
 
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]

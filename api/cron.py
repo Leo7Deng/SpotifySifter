@@ -2,7 +2,7 @@ import atexit
 import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from models import db, Track, Playlist, Skipped, User
+from models import db, User
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
@@ -23,9 +23,10 @@ def get_user_data(access_token, user_email):
     queue_data = queue_response.json()
     recently_played_data = recently_played_response.json()
 
-    change_current_queue(queue_data, recently_played_data, user_email)
+    skip_logic(queue_data, recently_played_data, user_email)
 
-def change_current_queue(queue_data, recently_played_data, user_email):
+def skip_logic(queue_data, recently_played_data, user_email):
+    
     user_data = UserData.query.filter_by(user_email=user_email).first()
 
     if not user_data:
@@ -92,9 +93,14 @@ def run(access_token):
     user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
     user_email = user_info.json()['email']
     scheduler = BackgroundScheduler()
+    current_user = User.query.filter_by(email=user_email).first()
+    if not user:
+        user = User(email=user_email)
+        db.session.add(user)
     scheduler.add_job(func=get_user_data, args=(access_token, user_email), trigger="interval", seconds=5)
     scheduler.start()
-    db.session.commit()
+    # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
+    # db.session.commit()
     # Shut down the scheduler when exiting the app
     
     atexit.register(lambda: scheduler.shutdown())
