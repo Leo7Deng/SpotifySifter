@@ -75,19 +75,33 @@ def callback():
     user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
     user_email = user_info.json()['email']
     current_user = User.query.filter_by(email=user_email).first()
+    from models import db
     if not current_user:
-        from models import db
         current_user = User(email=user_email)
         db.session.add(current_user)
     
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
+    
+    if current_user:
+        oauth = OAuth.query.filter_by(user_id=current_user.id).first()
 
-    current_user_id = current_user.id
-    OAuth.set_tokens(user_id=current_user_id, access_token=access_token, refresh_token=refresh_token)
+        if oauth:
+            # Update existing OAuth entry
+            oauth.access_token = access_token
+            oauth.refresh_token = refresh_token
+            # oauth.expires_at = expires_at
+        else:
+            # Create a new OAuth entry
+            oauth = OAuth(
+                user_id=current_user.id,
+                access_token=access_token,
+                refresh_token=refresh_token,
+                # expires_at=expires_at
+            )
+            db.session.add(oauth)
 
-    db.session.add(current_user)
-    db.session.commit()
+        db.session.commit()
     
     # cron_run()
     return redirect(f'http://localhost:3000/GetCurrentTrack?access_token={token_info["access_token"]}')
