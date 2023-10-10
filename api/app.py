@@ -3,26 +3,20 @@ import urllib.parse
 import os
 from flask_cors import CORS
 from flask_session import Session
-from flask import Flask, redirect, request, jsonify, session
 from datetime import datetime
-from flask_migrate import Migrate
+from flask import Flask, redirect, request, jsonify, session
+from __init__ import app
+# app = Flask(__name__)
 
-app = Flask(__name__)
-app.app_context().push()
-app.config["SESSION_TYPE"] = "filesystem"
+# app.app_context().push()
 # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-from models import db
-from cron import run as cron_run
-
+# app.config["SESSION_TYPE"] = "filesystem"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 Session(app)
 CORS(app)
-
-# migrate.init_app(app, db, render_as_batch=True)
-migrate = Migrate(app, db)
 
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
@@ -32,6 +26,8 @@ REDIRECT_URI = "http://localhost:8888/callback"
 AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API_BASE_URL = "https://api.spotify.com/v1/"
+
+EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
 @app.route("/login")
 def login():
@@ -70,7 +66,30 @@ def callback():
 
     response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
-    cron_run(token_info["access_token"])
+
+    if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
+        return
+    headers = {
+        'Authorization': f'Bearer {token_info["access_token"]}'
+    }
+    user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
+    user_email = user_info.json()['email']
+    current_user = User.query.filter_by(email=user_email).first()
+    if not current_user:
+        from models import db
+        current_user = User(email=user_email)
+        db.session.add(current_user)
+    
+    access_token = token_info["access_token"]
+    refresh_token = token_info["refresh_token"]
+
+    current_user.access_token = access_token
+    current_user.refresh_token = refresh_token
+
+    db.session.add(current_user)
+    db.session.commit()
+    
+    # cron_run()
     return redirect(f'http://localhost:3000/GetCurrentTrack?access_token={token_info["access_token"]}')
 
 @app.route("/refresh_token")
@@ -95,4 +114,7 @@ def refresh_token():
     return redirect("/playlists")
 
 if __name__ == "__main__":
+    from models import User
+    from cron import run as cron_run
     app.run(debug=True, port=8888)
+

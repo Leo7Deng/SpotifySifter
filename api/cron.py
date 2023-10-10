@@ -27,11 +27,11 @@ def get_user_data(access_token, user_email):
 
 def skip_logic(queue_data, recently_played_data, user_email):
     
-    user_data = UserData.query.filter_by(user_email=user_email).first()
+    user_data = User.query.filter_by(user_email=user_email).first()
 
     if not user_data:
   # Create if doesn't exist
-        user_data = UserData(user_email=user_email)
+        user_data = User(user_email=user_email)
         db.session.add(user_data)
 
     user_data.prev_queue = track_names
@@ -84,20 +84,9 @@ def skip_logic(queue_data, recently_played_data, user_email):
     # Assign missing_tracks to played_tracks_60
     return {'added': True}
 
-def run(access_token):
-    if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
-        return
-    headers = {
-        'Authorization': f'Bearer {access_token}'
-    }
-    user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
-    user_email = user_info.json()['email']
+def run():
     scheduler = BackgroundScheduler()
-    current_user = User.query.filter_by(email=user_email).first()
-    if not user:
-        user = User(email=user_email)
-        db.session.add(user)
-    scheduler.add_job(func=get_user_data, args=(access_token, user_email), trigger="interval", seconds=5)
+    scheduler.add_job(func=get_user_data, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
     # db.session.commit()
