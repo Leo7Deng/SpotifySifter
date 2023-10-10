@@ -12,14 +12,15 @@ convention = {
 }
 metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
-migrate = Migrate()
 
 # def create_app():
 
 app = Flask(__name__)
+app.app_context().push()
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize Database Plugin
 db.init_app(app)
+migrate = Migrate(app, db)

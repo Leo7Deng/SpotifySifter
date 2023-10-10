@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from __init__ import db
+from app_init import db
 # from app import app
 # db = SQLAlchemy(app, metadata=metadata)
 # # db.init_app(app)
@@ -31,8 +31,6 @@ class User(db.Model):
   __tablename__ = 'user'
   id = db.Column(db.Integer, primary_key=True)
   email = db.Column(db.String(120))
-  refresh_token = db.Column(db.String(120))
-  access_token = db.Column(db.String(120))
   currently_listening = db.Column(db.Boolean)
 
 class PrevQueue(db.Model):
@@ -49,3 +47,15 @@ class OAuth(db.Model):
   access_token = db.Column(db.String(120))
   refresh_token = db.Column(db.String(120))
   expires_at = db.Column(db.Integer)
+  user = db.relationship('User', backref='oauth_tokens')
+
+# def set_tokens(cls, user_id, access_token, refresh_token):
+#         oauth_token = cls.query.filter_by(user_id=user_id).first()
+#         if oauth_token:
+#             oauth_token.access_token = access_token
+#             oauth_token.refresh_token = refresh_token
+#             db.session.commit()
+#         else:
+#             new_token = cls(user_id=user_id, access_token=access_token, refresh_token=refresh_token)
+#             db.session.add(new_token)
+#             db.session.commit()

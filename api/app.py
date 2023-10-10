@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_session import Session
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, session
-from __init__ import app
+from app_init import app
 # app = Flask(__name__)
 
 # app.app_context().push()
@@ -83,8 +83,8 @@ def callback():
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
 
-    current_user.access_token = access_token
-    current_user.refresh_token = refresh_token
+    current_user_id = current_user.id
+    OAuth.set_tokens(user_id=current_user_id, access_token=access_token, refresh_token=refresh_token)
 
     db.session.add(current_user)
     db.session.commit()
@@ -114,7 +114,7 @@ def refresh_token():
     return redirect("/playlists")
 
 if __name__ == "__main__":
-    from models import User
+    from models import User, OAuth
     from cron import run as cron_run
     app.run(debug=True, port=8888)
 
