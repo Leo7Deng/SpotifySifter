@@ -31,7 +31,7 @@ EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
 @app.route("/login")
 def login():
-    scope = "user-read-recently-played user-read-playback-state user-read-email"
+    scope = "user-read-recently-played user-read-playback-state user-read-email user-library-read"
     
 
     params = {
@@ -103,8 +103,9 @@ def callback():
 
         db.session.commit()
     
-    # cron_run()
+    cron_run()
     return redirect(f'http://localhost:3000/GetCurrentTrack?access_token={token_info["access_token"]}')
+
 
 @app.route("/refresh_token")
 def refresh_token():

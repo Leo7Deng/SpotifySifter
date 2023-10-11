@@ -2,7 +2,7 @@ import atexit
 import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from models import db, User
+from models import db, User, OAuth
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
@@ -23,20 +23,28 @@ def get_response(access_token, endpoint):
 
 def update_currently_playing():
     for user in User.query.all():
-        access_token = user.oauth.access_token
-        response = get_response(access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT)
-        if response['is_playing']:
-            user.currently_listening = True
+        user_id = OAuth.query.filter_by(user_id=user.id).first()
+        if user_id:
+            access_token = user_id.access_token
+            print(f"User {user.email} has access token: {access_token}")
         else:
-            user.currently_listening = False
-        db.session.commit()
+            print(f"No OAuth record found for user {user.email}")
+        
+        response = get_response(access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT)
+        uri = response["context"]["uri"]
+        print(uri)
+
+            
+        #     user.currently_listening = True
+        # else:
+        #     user.currently_listening = False
+        # db.session.commit()
 
 def run():
-    scheduler = BackgroundScheduler()
     update_currently_playing()
+    scheduler = BackgroundScheduler()
     scheduler.add_job(func=update_currently_playing, args=(), trigger="interval", minutes=5)
-    
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
+    # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
     # db.session.commit()
