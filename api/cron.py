@@ -9,22 +9,16 @@ RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played
 CURRENTLY_PLAYING_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing"
 EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
-def get_user_data(access_token, user_email):
+def response(access_token, endpoint):
     headers = {
         'Authorization': f'Bearer {access_token}'
     }
-    queue_response = requests.get(QUEUE_ENDPOINT, headers=headers)
-    recently_played_response = requests.get(RECENTLY_PLAYED_ENDPOINT, headers=headers)
+    response = requests.get(endpoint, headers=headers)
 
-    if not queue_response.ok:
-        raise Exception(f'HTTP error! status: {queue_response.status_code}')
-    if not recently_played_response.ok:
-        raise Exception(f'HTTP error! status: {recently_played_response.status_code}')
+    if not response.ok:
+        raise Exception(f'HTTP error! status: {response.status_code}')
     
-    queue_data = queue_response.json()
-    recently_played_data = recently_played_response.json()
-
-    skip_logic(queue_data, recently_played_data, user_email)
+    return response.json()
 
 def header(endpoint):
     headers = {
@@ -99,17 +93,17 @@ def skip_logic(queue_data, recently_played_data, user_email):
 def update_currently_playing():
     for user in User.query.all():
         access_token = user.oauth.access_token
-        user_data = User.query.filter_by(user_email=user_email).first()
-        if not user_data:
-            user_data = User(user_email=user_email)
-            db.session.add(user_data)
-        user_data.currently_listening = False
+        response = response(access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT)
+        if response['is_playing']:
+            user.currently_listening = True
+        else:
+            user.currently_listening = False
         db.session.commit()
 
 def run():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.add_job(func=update_currently_playing, args=(), trigger="interval", minutes=5)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
     # db.session.commit()
