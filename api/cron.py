@@ -6,6 +6,7 @@ from models import db, User
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
+CURRENTLY_PLAYING_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing"
 EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
 def get_user_data(access_token, user_email):
@@ -25,9 +26,20 @@ def get_user_data(access_token, user_email):
 
     skip_logic(queue_data, recently_played_data, user_email)
 
+def header(endpoint):
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    queue_response = requests.get(endpoint, headers=headers)
+
 def skip_logic(queue_data, recently_played_data, user_email):
-    
+    for user in User.query.all():
+        
+
     user_data = User.query.filter_by(user_email=user_email).first()
+
+
+    queue_data = header(access_token, QUEUE_ENDPOINT)
 
     if not user_data:
   # Create if doesn't exist
@@ -84,9 +96,20 @@ def skip_logic(queue_data, recently_played_data, user_email):
     # Assign missing_tracks to played_tracks_60
     return {'added': True}
 
+def update_currently_playing():
+    for user in User.query.all():
+        access_token = user.oauth.access_token
+        user_data = User.query.filter_by(user_email=user_email).first()
+        if not user_data:
+            user_data = User(user_email=user_email)
+            db.session.add(user_data)
+        user_data.currently_listening = False
+        db.session.commit()
+
 def run():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=get_user_data, args=(), trigger="interval", seconds=5)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
+    scheduler.add_job(func=update_currently_playing, args=(), trigger="interval", minutes=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
     # db.session.commit()
