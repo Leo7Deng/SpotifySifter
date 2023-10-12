@@ -104,7 +104,7 @@ def callback():
         db.session.commit()
     
     cron_run()
-    return redirect(f'http://localhost:3000/GetCurrentTrack?access_token={token_info["access_token"]}')
+    return redirect(f'http://localhost:3000/PlaylistSelect?current_user={current_user}')
 
 
 @app.route("/refresh_token")

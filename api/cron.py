@@ -2,7 +2,7 @@ import atexit
 import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from models import db, User, OAuth
+from models import db, User, OAuth, Playlist
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
@@ -20,8 +20,25 @@ def get_response(access_token, endpoint):
     
     return response.json()
 
+def set_currently_playing(user_id, playlist_uri):
+    user = User.query.get(user_id)
 
-def update_currently_playing():
+    if user is None:
+        return "User not found"
+
+    playlists = Playlist.query.filter_by(user_id=user.id).all()
+
+    for playlist in playlists:
+        if playlist.playlist_id == playlist_uri:
+            playlist.currently_playing = True
+        else:
+            playlist.currently_playing = False
+
+    db.session.commit()
+
+    return "Currently playing updated successfully"
+
+def get_currently_playing_playlist():
     for user in User.query.all():
         user_id = OAuth.query.filter_by(user_id=user.id).first()
         if user_id:
@@ -32,18 +49,30 @@ def update_currently_playing():
         
         response = get_response(access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT)
         uri = response["context"]["uri"]
-        print(uri)
+        set_currently_playing(user_id=user.id, playlist_uri=uri)
+        
 
-            
+
+        
         #     user.currently_listening = True
         # else:
         #     user.currently_listening = False
         # db.session.commit()
 
 def run():
-    update_currently_playing()
+    new_playlist = Playlist(
+    name="New", 
+    playlist_id="spotify:playlist:0S5MFXu9cG5TKLnLuECDBH",  
+    user_id=1,  
+    currently_playing=False  
+)
+    db.session.add(new_playlist)
+    db.session.commit()
+
+    
+    get_currently_playing_playlist()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=update_currently_playing, args=(), trigger="interval", minutes=5)
+    scheduler.add_job(func=get_currently_playing_playlist, args=(), trigger="interval", minutes=5)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
