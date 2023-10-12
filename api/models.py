@@ -12,8 +12,9 @@ class Skipped(db.Model):
     __tablename__ = "skipped"
     id = db.Column(db.Integer, primary_key=True)
     skipped_count = db.Column(db.Integer)
-    track_id = db.Column(db.Integer, db.ForeignKey("track.id"))
+    track_id = db.Column(db.String(120), db.ForeignKey("track.id"))
     playlist_id = db.Column(db.Integer, db.ForeignKey("playlist.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
 class Track(db.Model):
@@ -54,4 +55,4 @@ class OAuth(db.Model):
     access_token = db.Column(db.String(120))
     refresh_token = db.Column(db.String(120))
     expires_at = db.Column(db.Integer)
-    user = db.relationship("User", backref="oauth")
+    user = db.relationship("User", backref=db.backref("oauth", uselist=False))

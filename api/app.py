@@ -5,7 +5,10 @@ from flask_cors import CORS
 from flask_session import Session
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, session
-from app_init import app
+from app_init import app, db
+from models import User, OAuth
+from cron import run as cron_run
+
 # app = Flask(__name__)
 
 # app.app_context().push()
@@ -51,6 +54,7 @@ def callback():
     if "error" in request.args:
         return jsonify({"error": request.args["error"]})
 
+    req_body = {}
     if "code" in request.args:
         req_body = {
             "code": request.args["code"],
@@ -59,10 +63,6 @@ def callback():
             "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
         }
-
-    #    session['access_token'] = token_info['access_token']
-    #    session['refresh_token'] = token_info['refresh_token']
-    #    session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
 
     response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
@@ -73,17 +73,21 @@ def callback():
         'Authorization': f'Bearer {token_info["access_token"]}'
     }
     user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
+
     user_email = user_info.json()['email']
     current_user = User.query.filter_by(email=user_email).first()
-    from models import db
+
     if not current_user:
-        current_user = User(email=user_email)
+        current_user = User()
+        current_user.email = user_email
         db.session.add(current_user)
-    
+        db.session.commit()
+
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
     
     if current_user:
+        from models import db, OAuth
         oauth = OAuth.query.filter_by(user_id=current_user.id).first()
 
         if oauth:
@@ -111,7 +115,7 @@ def callback():
 def refresh_token():
     if "refresh_token" not in session:
         return redirect("/login")
-
+    req_body = {}
     if session["expires_at"] < datetime.now().timestamp():
         req_body = {
             "grant_type": "refresh_token",
@@ -120,7 +124,7 @@ def refresh_token():
             "client_secret": CLIENT_SECRET,
         }
 
-    response = request.post(TOKEN_URL, data=req_body)
+    response = requests.post(TOKEN_URL, data=req_body)
     new_token_info = response.json()
 
     session["access_token"] = new_token_info["access_token"]
@@ -129,7 +133,5 @@ def refresh_token():
     return redirect("/playlists")
 
 if __name__ == "__main__":
-    from models import User, OAuth
-    from cron import run as cron_run
     app.run(debug=True, port=8888)
 

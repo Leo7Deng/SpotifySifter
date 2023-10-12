@@ -3,7 +3,7 @@ import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from app_init import db
-from models import User, OAuth, Playlist, PrevQueue
+from models import User, OAuth, Playlist, PrevQueue, Skipped, Track, Playlist
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
@@ -41,7 +41,7 @@ def set_currently_playing(user_id, playlist_uri):
 
 def update_currently_playing_playlist():
     for user in User.query.all():
-        oauth = OAuth.query.filter_by(user_id=user.id).first()
+        oauth = OAuth.query.get(user.id)
         access_token = oauth.access_token # pyright: ignore[reportOptionalMemberAccess]
         print(f"User {user.email} has access token: {access_token}")
         response = get_response(
@@ -73,6 +73,33 @@ def set_prev_queue(user_id, prev_queue):
 def skip_logic():
     for user in User.query.all():
         current_queue = get_current_queue(user_id=user.id)
+        playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
+        prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
+        played_tracks_60 = [track for track in prev_queue if track not in current_queue]
+        recently_played_data = get_response(
+            access_token=user.oauth.access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
+        )
+        recently_played = [item['track']['uri'] for item in recently_played_data['items']]
+        skipped_tracks_60 = [track for track in played_tracks_60 if track not in recently_played]
+        skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
+        skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
+        skipped_tracks_list = [track.track_id for track in skipped_tracks]
+        for prev_queue in skipped_tracks_60_list:
+            breakpoint()
+            if prev_queue in skipped_tracks_list:
+                t = Skipped.query.filter_by(track_id=prev_queue).first()
+                t.skipped_count += 1
+            else:
+                # breakpoint()
+                new_skipped = Skipped(
+                    playlist_id = playlist.playlist_id, 
+                    track_id = prev_queue, 
+                    user_id = user.id, 
+                    skipped_count = 1)
+                db.session.add(new_skipped
+                )
+
+        db.session.commit()
         set_prev_queue(user_id=user.id, prev_queue=current_queue)
 
         #     user.currently_listening = True
@@ -101,7 +128,7 @@ def run():
 
 # new_playlist = Playlist(
 #     name="New",
-#     playlist_id="spotify:playlist:0S5MFXu9cG5TKLnLuECDBH",
+#     playlist_id="spotify:playlist:0qjV67kI6SAZPqE3UscTY0",
 #     user_id=1,
 #     currently_playing=False
 # )
