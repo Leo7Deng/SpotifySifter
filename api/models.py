@@ -32,12 +32,13 @@ class Playlist(db.Model):
     playlist_id = db.Column(db.String(120))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     currently_playing = db.Column(db.Boolean)
-
+    delete_playlist = db.Column(db.String(120))
 
 class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120))
+    user_id = db.Column(db.String(120))
 
 
 class PrevQueue(db.Model):

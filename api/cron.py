@@ -1,6 +1,7 @@
 import atexit
 import os
 import requests
+import json
 from apscheduler.schedulers.background import BackgroundScheduler
 from app_init import db, app
 from models import User, OAuth, Playlist, PrevQueue, Skipped, Track, Playlist
@@ -10,6 +11,26 @@ RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played
 CURRENTLY_PLAYING_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing"
 EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
+def create_playlist(access_token, playlist, t, user_id):
+    CREATE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/users/{user_id}/playlists"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    playlist_data = json.dumps({
+        "name": f"{playlist.name} - Deleted Songs",
+        "description": f"Deleted songs from {playlist.name}",
+        "public": "false"
+    })
+    response = requests.post(CREATE_PLAYLIST_ENDPOINT,
+                             headers=headers,
+                             data=playlist_data).text
+    playlist_uri = json.loads(response)['id']
+    tracks_data = json.dumps({
+        "uris": [t.track_id],
+    })
+    
+    ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+    response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
+    playlist.delete_playlist = playlist_uri
+    db.session.commit()
 
 def get_response(access_token, endpoint):
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -111,8 +132,9 @@ def skip_logic():
                 if prev_queue:
                     played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
                     played_tracks_60_list = [track for track in played_tracks_60]
+                    access_token=user.oauth.access_token
                     recently_played_data = get_response(
-                        access_token=user.oauth.access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
+                        access_token=access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
                     )
                     recently_played = [item['track']['uri'] for item in recently_played_data['items']]
                     # breakpoint()
@@ -127,6 +149,18 @@ def skip_logic():
                         if prev_queue in skipped_tracks_list:
                             t = Skipped.query.filter_by(track_id=prev_queue).first()
                             t.skipped_count += 1
+                            if t.skipped_count == 2:
+                                if playlist.delete_playlist:
+                                    playlist_uri = playlist.delete_playlist
+                                    ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+                                    tracks_data = json.dumps({
+                                        "uris": t.track_id,
+                                    })
+                                    headers = {"Authorization": f"Bearer {access_token}"}
+                                    response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
+                                else:
+                                    create_playlist(access_token=access_token, playlist=playlist, t=t, user_id=user.user_id)
+
                         else:
                             # breakpoint()
                             new_skipped = Skipped(
