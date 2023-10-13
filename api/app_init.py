@@ -13,7 +13,7 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 
-# def create_app():
+# def create_app(): 
 
 app = Flask(__name__)
 app.app_context().push()
