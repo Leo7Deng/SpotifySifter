@@ -75,17 +75,20 @@ def skip_logic():
         current_queue = get_current_queue(user_id=user.id)
         playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
         prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
-        played_tracks_60 = [track for track in prev_queue if track not in current_queue]
+        played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
+        played_tracks_60_list = [track for track in played_tracks_60]
         recently_played_data = get_response(
             access_token=user.oauth.access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
         )
         recently_played = [item['track']['uri'] for item in recently_played_data['items']]
-        skipped_tracks_60 = [track for track in played_tracks_60 if track not in recently_played]
-        skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
+        # breakpoint()
+        skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
+        # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
         skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
         skipped_tracks_list = [track.track_id for track in skipped_tracks]
+        breakpoint()
         for prev_queue in skipped_tracks_60_list:
-            breakpoint()
+            
             if prev_queue in skipped_tracks_list:
                 t = Skipped.query.filter_by(track_id=prev_queue).first()
                 t.skipped_count += 1
@@ -116,7 +119,7 @@ def run():
     scheduler.add_job(
         func=update_currently_playing_playlist, args=(), trigger="interval", minutes=1
     )
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
