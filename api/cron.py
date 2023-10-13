@@ -104,6 +104,9 @@ def skip_logic():
             if is_playing:
                 current_queue = get_current_queue(user_id=user.id)
                 playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
+                if playlist is None:
+                    print("Playing in a playlist that doesn't exist")
+                    continue
                 prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
                 if prev_queue:
                     played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
