@@ -32,6 +32,8 @@ def set_currently_playing(user_id, playlist_uri):
 
     for playlist in playlists:
         if playlist.playlist_id == playlist_uri:
+            if playlist.currently_playing == False:
+                PrevQueue.query.filter_by(user_id=user_id).delete()
             playlist.currently_playing = True
         else:
             playlist.currently_playing = False
@@ -103,36 +105,38 @@ def skip_logic():
                 current_queue = get_current_queue(user_id=user.id)
                 playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
                 prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
-                played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
-                played_tracks_60_list = [track for track in played_tracks_60]
-                recently_played_data = get_response(
-                    access_token=user.oauth.access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
-                )
-                recently_played = [item['track']['uri'] for item in recently_played_data['items']]
-                # breakpoint()
-                skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
-                # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
-                skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
-                skipped_tracks_list = [track.track_id for track in skipped_tracks]
-                print(skipped_tracks_60_list)
-                # breakpoint()
-                for prev_queue in skipped_tracks_60_list:
-                    
-                    if prev_queue in skipped_tracks_list:
-                        t = Skipped.query.filter_by(track_id=prev_queue).first()
-                        t.skipped_count += 1
-                    else:
-                        # breakpoint()
-                        new_skipped = Skipped(
-                            playlist_id = playlist.playlist_id, 
-                            track_id = prev_queue, 
-                            user_id = user.id, 
-                            skipped_count = 1)
-                        db.session.add(new_skipped
-                        )
-                db.session.commit()
-                set_prev_queue(user_id=user.id, current_queue=current_queue)
-
+                if prev_queue:
+                    played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
+                    played_tracks_60_list = [track for track in played_tracks_60]
+                    recently_played_data = get_response(
+                        access_token=user.oauth.access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
+                    )
+                    recently_played = [item['track']['uri'] for item in recently_played_data['items']]
+                    # breakpoint()
+                    skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
+                    # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
+                    skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
+                    skipped_tracks_list = [track.track_id for track in skipped_tracks]
+                    print("Skipped: ", skipped_tracks_60_list)
+                    # breakpoint()
+                    for prev_queue in skipped_tracks_60_list:
+                        
+                        if prev_queue in skipped_tracks_list:
+                            t = Skipped.query.filter_by(track_id=prev_queue).first()
+                            t.skipped_count += 1
+                        else:
+                            # breakpoint()
+                            new_skipped = Skipped(
+                                playlist_id = playlist.playlist_id, 
+                                track_id = prev_queue, 
+                                user_id = user.id, 
+                                skipped_count = 1)
+                            db.session.add(new_skipped
+                            )
+                    db.session.commit()
+                    set_prev_queue(user_id=user.id, current_queue=current_queue)
+                else:
+                    set_prev_queue(user_id=user.id, current_queue=current_queue)
                 #     user.currently_listening = True
                 # else:
                 #     user.currently_listening = False
