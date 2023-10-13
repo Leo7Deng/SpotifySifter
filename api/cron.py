@@ -56,6 +56,10 @@ def get_current_queue(user_id):
     access_token = oauth.access_token # pyright: ignore[reportOptionalMemberAccess]
     response = get_response(access_token=access_token, endpoint=QUEUE_ENDPOINT)
     queue = [track["uri"] for track in response["queue"]]
+    queue = [response["currently_playing"]["uri"]] + queue
+    queue_name = [track["name"] for track in response["queue"]]
+    queue_name = [response["currently_playing"]["name"]] + queue_name
+    print(f"Queue: {queue_name}")
     # print(f"Queue: {queue}")
     return queue
 
