@@ -14,10 +14,11 @@ EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 def get_response(access_token, endpoint):
     headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.get(endpoint, headers=headers)
-
+    # breakpoint()
     if not response.ok:
         raise Exception(f"HTTP error! status: {response.status_code}")
-
+    if response.status_code == 204:
+        return None
     return response.json()
 
 
@@ -38,35 +39,50 @@ def set_currently_playing(user_id, playlist_uri):
     db.session.commit()
     return "Currently playing updated successfully"
 
+def get_currently_playing(user):
+    oauth = OAuth.query.get(user.id)
+    access_token = oauth.access_token # pyright: ignore[reportOptionalMemberAccess]
+    response = get_response(
+        access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT
+    )
+    return response
 
-def update_currently_playing_playlist():
-    for user in User.query.all():
-        oauth = OAuth.query.get(user.id)
-        access_token = oauth.access_token # pyright: ignore[reportOptionalMemberAccess]
-        print(f"User {user.email} has access token: {access_token}")
-        response = get_response(
-            access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT
-        )
+def update_currently_playing_playlist(user, response):
+    is_playing = False
+    if response:
         uri = response["context"]["uri"]
         set_currently_playing(user_id=user.id, playlist_uri=uri)
+        is_playing = True
+    else:
+        if user is None:
+            return "User not found"
+        playlists = Playlist.query.filter_by(user_id=user.id).all()
+        for playlist in playlists:
+            playlist.currently_playing = False
+        print ("Not currently playing")
+    db.session.commit()
+    return is_playing
+
 
 
 def get_current_queue(user_id):
     oauth = OAuth.query.get(user_id)
     access_token = oauth.access_token # pyright: ignore[reportOptionalMemberAccess]
     response = get_response(access_token=access_token, endpoint=QUEUE_ENDPOINT)
-    queue = [track["uri"] for track in response["queue"]]
-    queue = [response["currently_playing"]["uri"]] + queue
-    queue_name = [track["name"] for track in response["queue"]]
-    queue_name = [response["currently_playing"]["name"]] + queue_name
-    print(f"Queue: {queue_name}")
-    # print(f"Queue: {queue}")
+    if response:
+        queue = [track["uri"] for track in response["queue"]]
+        queue = [response["currently_playing"]["uri"]] + queue
+        queue_name = [track["name"] for track in response["queue"]]
+        queue_name = [response["currently_playing"]["name"]] + queue_name
+        print(f"Queue: {queue_name}")
+        # print(f"Queue: {queue}")
+    else:
+        queue = []
     return queue
 
 
 def set_prev_queue(user_id, current_queue):
     prev_queue = PrevQueue.query.filter_by(user_id=user_id).all()
-    # breakpoint()
     if prev_queue:
         for i, uri in enumerate(current_queue):
             prev_queue[i].track_id = uri
@@ -81,54 +97,51 @@ def set_prev_queue(user_id, current_queue):
 def skip_logic():
     with app.app_context():
         for user in User.query.all():
-            current_queue = get_current_queue(user_id=user.id)
-            playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
-            prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
-            played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
-            played_tracks_60_list = [track for track in played_tracks_60]
-            recently_played_data = get_response(
-                access_token=user.oauth.access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
-            )
-            recently_played = [item['track']['uri'] for item in recently_played_data['items']]
-            # breakpoint()
-            skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
-            # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
-            skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
-            skipped_tracks_list = [track.track_id for track in skipped_tracks]
-            print(skipped_tracks_60_list)
-            # breakpoint()
-            for prev_queue in skipped_tracks_60_list:
-                
-                if prev_queue in skipped_tracks_list:
-                    t = Skipped.query.filter_by(track_id=prev_queue).first()
-                    t.skipped_count += 1
-                else:
-                    # breakpoint()
-                    new_skipped = Skipped(
-                        playlist_id = playlist.playlist_id, 
-                        track_id = prev_queue, 
-                        user_id = user.id, 
-                        skipped_count = 1)
-                    db.session.add(new_skipped
-                    )
+            currently_playing_response = get_currently_playing(user)
+            is_playing = update_currently_playing_playlist(user, currently_playing_response)
+            if is_playing:
+                current_queue = get_current_queue(user_id=user.id)
+                playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
+                prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
+                played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
+                played_tracks_60_list = [track for track in played_tracks_60]
+                recently_played_data = get_response(
+                    access_token=user.oauth.access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
+                )
+                recently_played = [item['track']['uri'] for item in recently_played_data['items']]
+                # breakpoint()
+                skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
+                # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
+                skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
+                skipped_tracks_list = [track.track_id for track in skipped_tracks]
+                print(skipped_tracks_60_list)
+                # breakpoint()
+                for prev_queue in skipped_tracks_60_list:
+                    
+                    if prev_queue in skipped_tracks_list:
+                        t = Skipped.query.filter_by(track_id=prev_queue).first()
+                        t.skipped_count += 1
+                    else:
+                        # breakpoint()
+                        new_skipped = Skipped(
+                            playlist_id = playlist.playlist_id, 
+                            track_id = prev_queue, 
+                            user_id = user.id, 
+                            skipped_count = 1)
+                        db.session.add(new_skipped
+                        )
+                db.session.commit()
+                set_prev_queue(user_id=user.id, current_queue=current_queue)
 
-            db.session.commit()
-            set_prev_queue(user_id=user.id, current_queue=current_queue)
-
-            #     user.currently_listening = True
-            # else:
-            #     user.currently_listening = False
-            # db.session.commit()
+                #     user.currently_listening = True
+                # else:
+                #     user.currently_listening = False
+                # db.session.commit()
 
 
 def run():
-    update_currently_playing_playlist()
     skip_logic()
-
     scheduler = BackgroundScheduler()
-    scheduler.add_job(
-        func=update_currently_playing_playlist, args=(), trigger="interval", minutes=1
-    )
     scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
