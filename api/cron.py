@@ -17,7 +17,7 @@ def create_playlist(access_token, playlist, t, user_id):
     playlist_data = json.dumps({
         "name": f"{playlist.name} - Deleted Songs",
         "description": f"Deleted songs from {playlist.name}",
-        "public": "false"
+        "public": False
     })
     response = requests.post(CREATE_PLAYLIST_ENDPOINT,
                              headers=headers,
@@ -116,6 +116,16 @@ def set_prev_queue(user_id, current_queue):
     db.session.commit()
     print("Prev queue updated successfully")
 
+def delete_tracks_from_playlist(access_token, playlist, change_tracks, user_id):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    playlist_uri = playlist.playlist_id
+    tracks_data = json.dumps({
+        "uris": change_tracks,
+    })
+    
+    ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+    response = requests.delete(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
+
 
 def skip_logic():
     with app.app_context():
@@ -144,23 +154,25 @@ def skip_logic():
                     skipped_tracks_list = [track.track_id for track in skipped_tracks]
                     print("Skipped: ", skipped_tracks_60_list)
                     # breakpoint()
+                    change_tracks = []
                     for prev_queue in skipped_tracks_60_list:
                         
                         if prev_queue in skipped_tracks_list:
                             t = Skipped.query.filter_by(track_id=prev_queue).first()
                             t.skipped_count += 1
                             if t.skipped_count == 2:
+                                change_tracks.append(t.track_id)
                                 if playlist.delete_playlist:
                                     playlist_uri = playlist.delete_playlist
                                     ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
                                     tracks_data = json.dumps({
-                                        "uris": t.track_id,
+                                        "uris": [t.track_id],
                                     })
                                     headers = {"Authorization": f"Bearer {access_token}"}
                                     response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
                                 else:
                                     create_playlist(access_token=access_token, playlist=playlist, t=t, user_id=user.user_id)
-
+                                
                         else:
                             # breakpoint()
                             new_skipped = Skipped(
@@ -170,6 +182,7 @@ def skip_logic():
                                 skipped_count = 1)
                             db.session.add(new_skipped
                             )
+                        delete_tracks_from_playlist(access_token=access_token, playlist=playlist, change_tracks=change_tracks, user_id=user.user_id)
                     db.session.commit()
                     set_prev_queue(user_id=user.id, current_queue=current_queue)
                 else:
@@ -194,8 +207,8 @@ def run():
 
 
 # new_playlist = Playlist(
-#     name="New",
-#     playlist_id="spotify:playlist:0qjV67kI6SAZPqE3UscTY0",
+#     name="Test",
+#     playlist_id="spotify:playlist:7fip5CI3k2LGT5FAnRy52f",
 #     user_id=1,
 #     currently_playing=False
 # )
