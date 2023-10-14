@@ -139,14 +139,23 @@ def skip_logic():
                     continue
                 prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
                 if prev_queue:
+                    # breakpoint()
                     played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
                     played_tracks_60_list = [track for track in played_tracks_60]
+                    if current_queue[20] == prev_queue[20-len(played_tracks_60)].track_id and len(played_tracks_60) > 0:
+                        print("Skipped to previous")
+                        set_prev_queue(user_id=user.id, current_queue=current_queue)
+                        continue
+                    #code to see if queue shuffled
+                    elif current_queue[20-len(played_tracks_60)] != prev_queue[20].track_id and current_queue[10-len(played_tracks_60)] != prev_queue[19].track_id and len(played_tracks_60) > 0:
+                        print("Shuffled playlist")
+                        set_prev_queue(user_id=user.id, current_queue=current_queue)
+                        continue
                     access_token=user.oauth.access_token
                     recently_played_data = get_response(
                         access_token=access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
                     )
                     recently_played = [item['track']['uri'] for item in recently_played_data['items']]
-                    
                     skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
                     # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
                     skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
