@@ -86,6 +86,7 @@ def callback():
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
     
+    expires_at = datetime.now().timestamp() + token_info["expires_in"]
     if current_user:
         from models import db, OAuth
         oauth = OAuth.query.filter_by(user_id=current_user.id).first()
@@ -94,14 +95,14 @@ def callback():
             # Update existing OAuth entry
             oauth.access_token = access_token
             oauth.refresh_token = refresh_token
-            # oauth.expires_at = expires_at
+            oauth.expires_at = expires_at
         else:
             # Create a new OAuth entry
             oauth = OAuth(
                 user_id=current_user.id,
                 access_token=access_token,
                 refresh_token=refresh_token,
-                # expires_at=expires_at
+                expires_at=expires_at
             )
             db.session.add(oauth)
 
@@ -109,28 +110,6 @@ def callback():
     
     cron_run()
     return redirect(f'http://localhost:3000/PlaylistSelect?current_user={current_user}')
-
-
-@app.route("/refresh_token")
-def refresh_token():
-    if "refresh_token" not in session:
-        return redirect("/login")
-    req_body = {}
-    if session["expires_at"] < datetime.now().timestamp():
-        req_body = {
-            "grant_type": "refresh_token",
-            "refresh_token": session["refresh_token"],
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-        }
-
-    response = requests.post(TOKEN_URL, data=req_body)
-    new_token_info = response.json()
-
-    session["access_token"] = new_token_info["access_token"]
-    session["expires_at"] = datetime.now().timestamp() + new_token_info["expires_in"]
-
-    return redirect("/playlists")
 
 if __name__ == "__main__":
     app.run(debug=True, port=8888)

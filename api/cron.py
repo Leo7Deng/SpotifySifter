@@ -2,6 +2,7 @@ import atexit
 import os
 import requests
 import json
+from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from app_init import db, app
 from models import User, OAuth, Playlist, PrevQueue, Skipped, Track, Playlist
@@ -10,6 +11,7 @@ QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
 CURRENTLY_PLAYING_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing"
 EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
+TOKEN_URL = "https://accounts.spotify.com/api/token"
 
 def create_playlist(access_token, playlist, t, user_id):
     CREATE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/users/{user_id}/playlists"
@@ -125,10 +127,24 @@ def delete_tracks_from_playlist(access_token, playlist, change_tracks, user_id):
     ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
     response = requests.delete(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
 
-
+def updateRefreshToken(user):
+    if user.oauth.expires_at < datetime.now().timestamp():
+        req_body = {
+            "grant_type": "refresh_token",
+            "refresh_token": user.oauth.refresh_token,
+            "client_id": os.environ.get("CLIENT_ID"),
+            "client_secret": os.environ.get("CLIENT_SECRET"),
+        }
+        response = requests.post(TOKEN_URL, data=req_body)
+        new_token_info = response.json()
+        user.oauth.access_token = new_token_info["access_token"]
+        user.oauth.expires_at = datetime.now().timestamp() + new_token_info["expires_in"]
+        db.session.commit()
+        print("Refreshed token")
 def skip_logic():
     with app.app_context():
         for user in User.query.all():
+            updateRefreshToken(user)
             currently_playing_response = get_currently_playing(user)
             is_playing = update_currently_playing_playlist(user, currently_playing_response)
             if is_playing:
@@ -206,7 +222,7 @@ def skip_logic():
 def run():
     skip_logic()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
