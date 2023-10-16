@@ -40,14 +40,12 @@ class User(db.Model):
     email = db.Column(db.String(120))
     user_id = db.Column(db.String(120))
 
-
 class PrevQueue(db.Model):
     __tablename__ = "prev_queue"
     id = db.Column(db.Integer, primary_key=True)
     track_id = db.Column(db.Integer, db.ForeignKey("track.id"))
     queue_index = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
 
 class OAuth(db.Model):
     __tablename__ = "oauth"

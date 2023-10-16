@@ -12,6 +12,14 @@ RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played
 CURRENTLY_PLAYING_ENDPOINT = "https://api.spotify.com/v1/me/player/currently-playing"
 EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
+REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
+
+def setRepeat(access_token):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    repeat_data = {
+        "state": "context"
+    }
+    response = requests.put(REPEAT_URL, headers=headers, params=repeat_data)
 
 def create_playlist(access_token, playlist, t, user_id):
     CREATE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/users/{user_id}/playlists"
@@ -141,6 +149,7 @@ def updateRefreshToken(user):
         user.oauth.expires_at = datetime.now().timestamp() + new_token_info["expires_in"]
         db.session.commit()
         print("Refreshed token")
+
 def skip_logic():
     with app.app_context():
         for user in User.query.all():
@@ -148,7 +157,14 @@ def skip_logic():
             currently_playing_response = get_currently_playing(user)
             is_playing = update_currently_playing_playlist(user, currently_playing_response)
             if is_playing:
+                access_token=user.oauth.access_token
                 current_queue = get_current_queue(user_id=user.id)
+                if len(current_queue) < 21:
+                    setRepeat(access_token=access_token)
+                    current_queue = get_current_queue(user_id=user.id)
+                    if len(current_queue) < 21:
+                        print("Not enough songs in queue")
+                        continue
                 playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
                 if playlist is None:
                     print("Playing in a playlist that doesn't exist")
@@ -162,11 +178,10 @@ def skip_logic():
                         set_prev_queue(user_id=user.id, current_queue=current_queue)
                         continue
                     #code to see if queue shuffled
-                    elif current_queue[20-len(played_tracks_60)] != prev_queue[20].track_id and current_queue[10-len(played_tracks_60)] != prev_queue[19].track_id and len(played_tracks_60) > 0:
+                    elif current_queue[20-len(played_tracks_60)] != prev_queue[20].track_id and current_queue[19-len(played_tracks_60)] != prev_queue[19].track_id and len(played_tracks_60) > 0:
                         print("Shuffled playlist")
                         set_prev_queue(user_id=user.id, current_queue=current_queue)
                         continue
-                    access_token=user.oauth.access_token
                     recently_played_data = get_response(
                         access_token=access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
                     )
@@ -226,7 +241,7 @@ def skip_logic():
 def run():
     skip_logic()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
