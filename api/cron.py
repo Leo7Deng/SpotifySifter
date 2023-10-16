@@ -105,6 +105,7 @@ def get_current_queue(user_id):
         queue = [response["currently_playing"]["uri"]] + queue
         queue_name = [track["name"] for track in response["queue"]]
         queue_name = [response["currently_playing"]["name"]] + queue_name
+        queue_name = queue_name[:-1]
         print(f"Queue: {queue_name}")
         # print(f"Queue: {queue}")
     else:
@@ -159,10 +160,10 @@ def skip_logic():
             if is_playing:
                 access_token=user.oauth.access_token
                 current_queue = get_current_queue(user_id=user.id)
-                if len(current_queue) < 21:
+                if len(current_queue) < 20:
                     setRepeat(access_token=access_token)
                     current_queue = get_current_queue(user_id=user.id)
-                    if len(current_queue) < 21:
+                    if len(current_queue) < 20:
                         print("Not enough songs in queue")
                         continue
                 playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
@@ -173,12 +174,12 @@ def skip_logic():
                 if prev_queue:
                     played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
                     played_tracks_60_list = [track for track in played_tracks_60]
-                    if current_queue[20] == prev_queue[20-len(played_tracks_60)].track_id and len(played_tracks_60) > 0:
+                    if current_queue[19] == prev_queue[19-len(played_tracks_60)].track_id and len(played_tracks_60) > 0:
                         print("Skipped to previous")
                         set_prev_queue(user_id=user.id, current_queue=current_queue)
                         continue
                     #code to see if queue shuffled
-                    elif current_queue[20-len(played_tracks_60)] != prev_queue[20].track_id and current_queue[19-len(played_tracks_60)] != prev_queue[19].track_id and len(played_tracks_60) > 0:
+                    elif current_queue[19-len(played_tracks_60)] != prev_queue[19].track_id and current_queue[18-len(played_tracks_60)] != prev_queue[18].track_id and len(played_tracks_60) > 0:
                         print("Shuffled playlist")
                         set_prev_queue(user_id=user.id, current_queue=current_queue)
                         continue
