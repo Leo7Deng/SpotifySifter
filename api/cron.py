@@ -155,7 +155,6 @@ def skip_logic():
                     continue
                 prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
                 if prev_queue:
-                    # breakpoint()
                     played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
                     played_tracks_60_list = [track for track in played_tracks_60]
                     if current_queue[20] == prev_queue[20-len(played_tracks_60)].track_id and len(played_tracks_60) > 0:
@@ -175,6 +174,11 @@ def skip_logic():
                     skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
                     # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
                     skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
+                    skipped_tracks_now_played = [track.track_id for track in skipped_tracks if track.track_id in recently_played]
+                    for track in skipped_tracks_now_played:
+                        t = Skipped.query.filter_by(track_id=track).first()
+                        if t.skipped_count < 2:
+                            db.session.delete(t)
                     skipped_tracks_list = [track.track_id for track in skipped_tracks]
                     print("Skipped: ", skipped_tracks_60_list)
 
