@@ -14,6 +14,8 @@ EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
 
+
+
 def setRepeat(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
     repeat_data = {
@@ -63,6 +65,14 @@ def set_currently_playing(user_id, playlist_uri):
         if playlist.playlist_id == playlist_uri:
             if playlist.currently_playing == False:
                 PrevQueue.query.filter_by(user_id=user_id).delete()
+            playlist_id = playlist_uri.split(':')[-1]
+            PLAYLIST_URL = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+            playlist_data = get_response(access_token=user.oauth.access_token, endpoint=PLAYLIST_URL)
+            playlist_data = playlist_data['total']
+            if playlist_data < 20:
+                playlist.currently_playing = False
+                print("Not enough songs in playlist")
+                continue
             playlist.currently_playing = True
         else:
             playlist.currently_playing = False
@@ -78,12 +88,36 @@ def get_currently_playing(user):
     )
     return response
 
-def update_currently_playing_playlist(user, response):
+def update_currently_playing_playlist(user):
+    response = get_currently_playing(user)
     is_playing = False
+    playlist_exists = False
     if response:
         uri = response["context"]["uri"]
-        set_currently_playing(user_id=user.id, playlist_uri=uri)
-        is_playing = True
+        playlists = Playlist.query.filter_by(user_id=user.id).all()
+        for playlist in playlists:
+            if playlist.playlist_id == uri:
+                playlist_exists = True
+                if playlist.currently_playing == False:
+                    PrevQueue.query.filter_by(user_id=user.id).delete()
+                playlist_id = uri.split(':')[-1]
+                PLAYLIST_URL = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+                playlist_data = get_response(access_token=user.oauth.access_token, endpoint=PLAYLIST_URL)
+                playlist_data = playlist_data['total']
+                if playlist_data < 20:
+                    playlist.currently_playing = False
+                    print("Not enough songs in playlist")
+                else: 
+                    playlist.currently_playing = True
+                    print("Playing in playlist " + playlist.name)
+                    is_playing = True
+            else:
+                playlist.currently_playing = False
+        if not playlist_exists:
+            print("Not playing in a registered playlist")
+        db.session.commit()
+        return is_playing
+        
     else:
         if user is None:
             return "User not found"
@@ -155,8 +189,7 @@ def skip_logic():
     with app.app_context():
         for user in User.query.all():
             updateRefreshToken(user)
-            currently_playing_response = get_currently_playing(user)
-            is_playing = update_currently_playing_playlist(user, currently_playing_response)
+            is_playing = update_currently_playing_playlist(user)
             if is_playing:
                 access_token=user.oauth.access_token
                 current_queue = get_current_queue(user_id=user.id)
@@ -167,9 +200,6 @@ def skip_logic():
                         print("Not enough songs in queue")
                         continue
                 playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
-                if playlist is None:
-                    print("Playing in a playlist that doesn't exist")
-                    continue
                 prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
                 if prev_queue:
                     played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
