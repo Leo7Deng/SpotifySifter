@@ -15,17 +15,14 @@ TOKEN_URL = "https://accounts.spotify.com/api/token"
 REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
 
 
-
-def setRepeat(access_token):
-    headers = {"Authorization": f"Bearer {access_token}"}
+def setRepeat(access_token, headers):
     repeat_data = {
         "state": "context"
     }
     response = requests.put(REPEAT_URL, headers=headers, params=repeat_data)
 
-def create_playlist(access_token, playlist, t, user_id):
+def create_playlist(access_token, playlist, t, user_id, headers):
     CREATE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/users/{user_id}/playlists"
-    headers = {"Authorization": f"Bearer {access_token}"}
     playlist_data = json.dumps({
         "name": f"{playlist.name} - Deleted Songs",
         "description": f"Deleted songs from {playlist.name}",
@@ -159,8 +156,7 @@ def set_prev_queue(user_id, current_queue):
     db.session.commit()
     print("Prev queue updated successfully")
 
-def delete_tracks_from_playlist(access_token, playlist, change_tracks, user_id):
-    headers = {"Authorization": f"Bearer {access_token}"}
+def delete_tracks_from_playlist(playlist, change_tracks, headers):
     playlist_uri = playlist.playlist_id
     playlist_uri = playlist_uri.split(':')[-1]
     tracks_data = json.dumps({
@@ -170,7 +166,7 @@ def delete_tracks_from_playlist(access_token, playlist, change_tracks, user_id):
     ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
     response = requests.delete(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
 
-def updateRefreshToken(user):
+def refreshToken(user):
     if user.oauth.expires_at < datetime.now().timestamp():
         req_body = {
             "grant_type": "refresh_token",
@@ -188,13 +184,14 @@ def updateRefreshToken(user):
 def skip_logic():
     with app.app_context():
         for user in User.query.all():
-            updateRefreshToken(user)
-            is_playing = update_currently_playing_playlist(user)
+            refreshToken(user)
+            access_token=user.oauth.access_token
+            headers = {"Authorization": f"Bearer {access_token}"}
+            is_playing = update_currently_playing_playlist(user=user)
             if is_playing:
-                access_token=user.oauth.access_token
                 current_queue = get_current_queue(user_id=user.id)
                 if len(current_queue) < 20:
-                    setRepeat(access_token=access_token)
+                    setRepeat(access_token=access_token, headers=headers)
                     current_queue = get_current_queue(user_id=user.id)
                     if len(current_queue) < 20:
                         print("Not enough songs in queue")
@@ -245,10 +242,9 @@ def skip_logic():
                                     tracks_data = json.dumps({
                                         "uris": [t.track_id],
                                     })
-                                    headers = {"Authorization": f"Bearer {access_token}"}
                                     response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
                                 else:
-                                    create_playlist(access_token=access_token, playlist=playlist, t=t, user_id=user.user_id)
+                                    create_playlist(access_token=access_token, playlist=playlist, t=t, user_id=user.user_id, headers=headers)
                                 
                         else:
                             new_skipped = Skipped(
@@ -259,7 +255,7 @@ def skip_logic():
                             db.session.add(new_skipped
                             )
                         if change:
-                            delete_tracks_from_playlist(access_token=access_token, playlist=playlist, change_tracks=change_tracks, user_id=user.user_id)
+                            delete_tracks_from_playlist(playlist=playlist, change_tracks=change_tracks, headers=headers)
                     db.session.commit()
                     set_prev_queue(user_id=user.id, current_queue=current_queue)
                 else:
@@ -281,84 +277,3 @@ def run():
     # Shut down the scheduler when exiting the app
 
     atexit.register(lambda: scheduler.shutdown())
-
-
-# new_playlist = Playlist(
-#     name="Test",
-#     playlist_id="spotify:playlist:7fip5CI3k2LGT5FAnRy52f",
-#     user_id=1,
-#     currently_playing=False
-# )
-#     db.session.add(new_playlist)
-#     db.session.commit()
-
-
-# def header(endpoint):
-#     headers = {
-#         'Authorization': f'Bearer {access_token}'
-#     }
-#     queue_response = requests.get(endpoint, headers=headers)
-
-# def skip_logic(queue_data, recently_played_data, user_email):
-#     for user in User.query.all():
-
-
-#     user_data = User.query.filter_by(user_email=user_email).first()
-
-
-#     queue_data = header(access_token, QUEUE_ENDPOINT)
-
-#     if not user_data:
-#   # Create if doesn't exist
-#         user_data = User(user_email=user_email)
-#         db.session.add(user_data)
-
-#     user_data.prev_queue = track_names
-#     user_data.skipped_once = list(set(skipped_tracks_60))
-#     user_data.skipped_twice = list(set([track for track in user_data.skipped_once if track in skipped_tracks_60]))
-
-#     #recently_played is the recently played tracks that were not skipped
-#     recently_played = [item['track']['name'] for item in recently_played_data['items']]
-
-#     #track_names are all the names in the queue data
-#     track_names = [track['name'] for track in queue_data['queue']]
-#     currently_playing = queue_data['currently_playing']['name']
-
-#     #add the currently playing track to track_names
-#     track_names.append(currently_playing)
-
-#     #played_tracks_60 is the played tracks in the last 60 seconds
-#     played_tracks_60 = [track for track in user_data.prev_queue if track not in track_names]
-
-#     #skipped_tracks_60 are the songs found in played_tracks_60 that are not found in recently_played
-#     skipped_tracks_60 = [track for track in played_tracks_60 if track not in recently_played]
-
-#     #append songs to skipped_twice if they are found in both skipped_once and skipped_tracks_60
-#     user_data.skipped_twice.extend([track for track in user_data.skipped_once if track in skipped_tracks_60])
-
-#     #after skipped_twice is checked, then skipped_once is updated
-#     user_data.skipped_once.extend(skipped_tracks_60)
-
-#     #remove duplicates from skipped_once
-#     skipped_once = user_data.skipped_once
-#     user_data.skipped_once = list(set(skipped_once))
-
-#     #not_skipped_tracks_60 are the songs found in played_tracks_60 that are found in recently_played
-#     not_skipped_tracks_60 = [track for track in played_tracks_60 if track in recently_played]
-
-#     #remove songs from skipped_once if they are found in not_skipped_tracks_60
-#     user_data.skipped_once = [track for track in user_data.skipped_once if track not in not_skipped_tracks_60]
-
-#     #remove duplicates from skipped_twice
-#     skipped_twice = user_data.skipped_twice
-#     user_data.skipped_twice = list(set(skipped_twice))
-
-#     print("Currently playing: " + str(currently_playing))
-#     # print("Played tracks 60: " + str(played_tracks_60))
-#     print("Skipped tracks 60: " + str(skipped_tracks_60))
-#     print("Skipped once: " + str(user_data.skipped_once))
-#     print("Skipped twice: " + str(user_data.skipped_twice))
-#     user_data.prev_queue = track_names
-
-#     # Assign missing_tracks to played_tracks_60
-#     return {'added': True}
