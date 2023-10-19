@@ -49,34 +49,6 @@ def get_response(access_token, endpoint):
         return None
     return response.json()
 
-
-def set_currently_playing(user_id, playlist_uri):
-    user = User.query.get(user_id)
-
-    if user is None:
-        return "User not found"
-
-    playlists = Playlist.query.filter_by(user_id=user.id).all()
-
-    for playlist in playlists:
-        if playlist.playlist_id == playlist_uri:
-            if playlist.currently_playing == False:
-                PrevQueue.query.filter_by(user_id=user_id).delete()
-            playlist_id = playlist_uri.split(':')[-1]
-            PLAYLIST_URL = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-            playlist_data = get_response(access_token=user.oauth.access_token, endpoint=PLAYLIST_URL)
-            playlist_data = playlist_data['total']
-            if playlist_data < 20:
-                playlist.currently_playing = False
-                print("Not enough songs in playlist")
-                continue
-            playlist.currently_playing = True
-        else:
-            playlist.currently_playing = False
-
-    db.session.commit()
-    return "Currently playing updated successfully"
-
 def get_currently_playing(user):
     oauth = OAuth.query.get(user.id)
     access_token = oauth.access_token # pyright: ignore[reportOptionalMemberAccess]
@@ -103,15 +75,15 @@ def update_currently_playing_playlist(user):
                 playlist_data = playlist_data['total']
                 if playlist_data < 20:
                     playlist.currently_playing = False
-                    print("Not enough songs in playlist")
+                    print("Playlist has less than 20 songs")
                 else: 
                     playlist.currently_playing = True
-                    print("Playing in playlist " + playlist.name)
+                    print(playlist.name + " is playing")
                     is_playing = True
             else:
                 playlist.currently_playing = False
         if not playlist_exists:
-            print("Not playing in a registered playlist")
+            print("Playing in an unregistered playlist")
         db.session.commit()
         return is_playing
         
@@ -154,7 +126,6 @@ def set_prev_queue(user_id, current_queue):
             prev_queue_item = PrevQueue(track_id=uri, queue_index=i, user_id=user_id) # type: ignore
             db.session.add(prev_queue_item)
     db.session.commit()
-    print("Prev queue updated successfully")
 
 def delete_tracks_from_playlist(playlist, change_tracks, headers):
     playlist_uri = playlist.playlist_id
@@ -194,7 +165,7 @@ def skip_logic():
                     setRepeat(access_token=access_token, headers=headers)
                     current_queue = get_current_queue(user_id=user.id)
                     if len(current_queue) < 20:
-                        print("Not enough songs in queue")
+                        print("Queue has less than 20 songs")
                         continue
                 playlist = Playlist.query.filter_by(user_id=user.id, currently_playing=True).first()
                 prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
@@ -216,7 +187,6 @@ def skip_logic():
                     )
                     recently_played = [item['track']['uri'] for item in recently_played_data['items']]
                     skipped_tracks_60_list = [track for track in played_tracks_60_list if track not in recently_played]
-                    # skipped_tracks_60_list = [track.track_id for track in skipped_tracks_60]
                     skipped_tracks = Skipped.query.filter_by(playlist_id=playlist.playlist_id, user_id=user.id).all()
                     skipped_tracks_now_played = [track.track_id for track in skipped_tracks if track.track_id in recently_played]
                     for track in skipped_tracks_now_played:
@@ -224,7 +194,8 @@ def skip_logic():
                         if t.skipped_count < 2:
                             db.session.delete(t)
                     skipped_tracks_list = [track.track_id for track in skipped_tracks]
-                    print("Skipped: ", skipped_tracks_60_list)
+                    # print("Skipped: ", skipped_tracks_60_list)
+                    print(len(skipped_tracks_60_list), " songs skipped")
 
                     change_tracks = []
                     change = False
