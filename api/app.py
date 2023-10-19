@@ -113,6 +113,8 @@ def callback():
     cron_run()
     return redirect(f'http://localhost:3000/PlaylistSelect?current_user={current_user}')
 
+def get_playlist
+
 if __name__ == "__main__":
     app.run(debug=True, port=8888)
 
