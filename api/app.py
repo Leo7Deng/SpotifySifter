@@ -80,6 +80,8 @@ def callback():
     if not current_user:
         current_user = User()
         current_user.email = user_email
+        current_user.user_id = user_info.json()['id']
+        current_user.total_played = 0
         db.session.add(current_user)
         db.session.commit()
 

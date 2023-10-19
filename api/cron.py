@@ -204,6 +204,7 @@ def skip_logic():
                 if prev_queue:
                     played_tracks_60 = [track.track_id for track in prev_queue if track.track_id not in current_queue]
                     played_tracks_60_list = [track for track in played_tracks_60]
+                    user.total_played += len(played_tracks_60)
                     if current_queue[19] == prev_queue[19-len(played_tracks_60)].track_id and len(played_tracks_60) > 0:
                         print("Skipped to previous")
                         set_prev_queue(user_id=user.id, current_queue=current_queue)

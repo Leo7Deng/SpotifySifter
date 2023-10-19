@@ -39,6 +39,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120))
     user_id = db.Column(db.String(120))
+    total_played = db.Column(db.Integer)
 
 class PrevQueue(db.Model):
     __tablename__ = "prev_queue"
