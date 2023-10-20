@@ -1,4 +1,6 @@
 function PlaylistSelect() {
+    playlists = request.args.get('playlists')
+    
     return (
         <>
         test

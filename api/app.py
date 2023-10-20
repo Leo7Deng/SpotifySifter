@@ -111,27 +111,39 @@ def callback():
         db.session.commit()
     
     cron_run()
-    return redirect(f'/get_playlists?current_user={current_user.id}')
+    return redirect(f'/get_playlists?current_user_id={current_user.id}')
 
+
+from models import db, User, Playlist
 
 @app.route("/get_playlists")
 def get_playlists():
-    current_user = User.query.filter_by(id=request.args.get('current_user')).first()
+    current_user = User.query.filter_by(id=request.args.get('current_user_id')).first()
     access_token = current_user.oauth.access_token
     headers = {
         'Authorization': f'Bearer {access_token}'
     }
     PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
-    response = requests.get(PLAYLISTS_URL, headers=headers)
+    response = requests.get(PLAYLISTS_URL, headers=headers, params={"limit": 50})
     playlists = []
+ 
+    deleted_songs_playlists = Playlist.query.filter(Playlist.delete_playlist != None).all()
+    deleted_songs_playlists = [playlist.delete_playlist for playlist in deleted_songs_playlists]
+
     for item in response.json()["items"]:
         playlist = {
             "name": item["name"],
             "id": item["id"],
             "owner_id": item["owner"]["id"],
+            "image": item["images"][0]["url"],
         }
-        playlists.append(playlist)
-    print (playlists)
+
+        if playlist["owner_id"] == current_user.user_id and playlist["id"] not in deleted_songs_playlists:
+            playlists.append(playlist)
+
+    for playlist in playlists:
+        print(playlist["name"])
+
 
     return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
 
