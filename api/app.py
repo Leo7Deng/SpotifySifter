@@ -111,9 +111,30 @@ def callback():
         db.session.commit()
     
     cron_run()
-    return redirect(f'http://localhost:3000/PlaylistSelect?current_user={current_user}')
+    return redirect(f'/get_playlists?current_user={current_user.id}')
 
-def get_playlist
+
+@app.route("/get_playlists")
+def get_playlists():
+    current_user = User.query.filter_by(id=request.args.get('current_user')).first()
+    access_token = current_user.oauth.access_token
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
+    response = requests.get(PLAYLISTS_URL, headers=headers)
+    playlists = []
+    for item in response.json()["items"]:
+        playlist = {
+            "name": item["name"],
+            "id": item["id"],
+            "owner_id": item["owner"]["id"],
+        }
+        playlists.append(playlist)
+    print (playlists)
+
+    return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8888)

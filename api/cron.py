@@ -64,7 +64,7 @@ def get_response(access_token, endpoint):
     if not response.ok:
         raise Exception(f"HTTP error! status: {response.status_code}")
     if response.status_code == 204:
-        raise Exception("No content")
+        return None
     return response.json()
 
 
@@ -74,15 +74,29 @@ def get_currently_playing(user):
     response = get_response(
         access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT
     )
+    if response is None:
+        return False
     return response
 
 
 def update_currently_playing_playlist(user):
     response = get_currently_playing(user)
+    if response is None:
+        return False
     is_playing = False
     playlist_exists = False
-    if response:
+    try:
         uri = response["context"]["uri"]
+    except KeyError:
+        if user is None:
+            print ("User not found")
+        else:
+            playlists = Playlist.query.filter_by(user_id=user.id).all()
+            for playlist in playlists:
+                playlist.currently_playing = False
+            print("Not currently playing")
+        pass
+    else:
         playlists = Playlist.query.filter_by(user_id=user.id).all()
         for playlist in playlists:
             if playlist.playlist_id == uri:
@@ -108,16 +122,6 @@ def update_currently_playing_playlist(user):
                 playlist.currently_playing = False
         if not playlist_exists:
             print("Playing in an unregistered playlist")
-        db.session.commit()
-        return is_playing
-
-    else:
-        if user is None:
-            return "User not found"
-        playlists = Playlist.query.filter_by(user_id=user.id).all()
-        for playlist in playlists:
-            playlist.currently_playing = False
-        print("Not currently playing")
     db.session.commit()
     return is_playing
 
@@ -270,7 +274,7 @@ def skip_logic_user(user):
                 track_id=skipped_uri,
                 user_id=user.id,
                 skipped_count=1,
-            )``
+            )
             db.session.add(new_skipped)
             continue
 
