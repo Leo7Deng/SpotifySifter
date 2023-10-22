@@ -212,21 +212,21 @@ def skip_logic_user(user):
     if current_playlist is None:
         raise Exception("No playlist currently playing")
 
-    skipped_uri = PrevQueue.query.filter_by(user_id=user.id).all()
-    if skipped_uri:
+    prev_queue = PrevQueue.query.filter_by(user_id=user.id).all()
+    if not prev_queue:
         set_prev_queue(user_id=user.id, current_queue_uris=current_queue_uris)
         return
 
     played_tracks_60_uris = [
         track.track_id
-        for track in skipped_uri
+        for track in prev_queue
         if track.track_id not in current_queue_uris
     ]
 
     user.total_played += len(played_tracks_60_uris)
     if (
         # code to see if skipped to previous
-        current_queue_uris[19] == skipped_uri[19 - len(played_tracks_60_uris)].track_id
+        current_queue_uris[19] == prev_queue[19 - len(played_tracks_60_uris)].track_id
         and
         len(played_tracks_60_uris) > 0
     ):
@@ -235,9 +235,9 @@ def skip_logic_user(user):
         return
     elif (
         # code to see if queue shuffled
-        current_queue_uris[19 - len(played_tracks_60_uris)] != skipped_uri[19].track_id
+        current_queue_uris[19 - len(played_tracks_60_uris)] != prev_queue[19].track_id
         and current_queue_uris[18 - len(played_tracks_60_uris)]
-        != skipped_uri[18].track_id
+        != prev_queue[18].track_id
         and len(played_tracks_60_uris) > 0
     ):
         print("Shuffled playlist")
