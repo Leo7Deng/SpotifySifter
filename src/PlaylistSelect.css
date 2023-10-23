@@ -7,3 +7,7 @@ h2 {
 ul {
     color: white;
 }
+label {
+    display: flex;
+    align-items: center;
+}
