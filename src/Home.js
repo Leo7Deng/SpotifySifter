@@ -23,7 +23,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <div className='home'>
       <h1>Spotify Sifter</h1>
       <button onClick={handleLoginClick}>Login with Spotify</button>
       {isLoading && <div className="loader"></div>}

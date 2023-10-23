@@ -2,7 +2,7 @@ body {
     background-color: rgb(9, 9, 9);
 }
 
-div {
+.home {
     display: flex;
     flex-direction: column;
     align-items: center;

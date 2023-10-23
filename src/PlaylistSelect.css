@@ -3,11 +3,25 @@ p {
 }
 h2 {
     color: white;
+    text-align: center;
 }
 ul {
     color: white;
 }
 label {
-    display: flex;
-    align-items: center;
+    display: grid;
+}
+.playlist-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 3fr 1fr;
+    column-gap: 10px;
+    row-gap: 10px;
+}
+.embed {
+    grid-column: 3 / 4;
+    width: auto;
+
+}
+.playlist-checkbox {
+    grid-column: 2 / 3;
 }
