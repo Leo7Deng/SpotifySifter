@@ -74,8 +74,6 @@ def get_currently_playing(user):
     response = get_response(
         access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT
     )
-    if response is None:
-        return False
     return response
 
 
