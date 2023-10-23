@@ -111,14 +111,14 @@ def callback():
         db.session.commit()
     
     cron_run()
-    return redirect(f'/get_playlists?current_user_id={current_user.id}')
-
+    # return redirect(f'/get_playlists?current_user_id={current_user.id}')
+    return redirect(f'http://localhost:3000/PlaylistSelect?current_user_id={current_user.id}')
 
 from models import db, User, Playlist
 
-@app.route("/get_playlists")
-def get_playlists():
-    current_user = User.query.filter_by(id=request.args.get('current_user_id')).first()
+@app.route("/get_playlists<current_user_id>")
+def get_playlists(current_user_id):
+    current_user = User.query.filter_by(id=current_user_id).first()
     access_token = current_user.oauth.access_token
     headers = {
         'Authorization': f'Bearer {access_token}'
@@ -144,8 +144,8 @@ def get_playlists():
     for playlist in playlists:
         print(playlist["name"])
 
-
-    return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
+    return jsonify(playlists)
+    # return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
 
 
 if __name__ == "__main__":

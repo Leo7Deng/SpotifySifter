@@ -194,6 +194,7 @@ def skip_logic_user(user):
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
     if not is_playing:
+        print("Not currently playing")
         return
 
     current_queue_uris = get_current_queue_uris(user_id=user.id)
