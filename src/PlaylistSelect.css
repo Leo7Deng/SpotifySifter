@@ -12,14 +12,27 @@ label {
     display: grid;
 }
 .playlist-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 3fr 1fr;
-    column-gap: 10px;
-    row-gap: 10px;
+    position: absolute;
+    width: 200px;
+    height: calc(100% - 40px);
+    display: flex;
+    flex-direction: column;
 }
 .embed {
-    grid-column: 3 / 4;
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 15%;
+    display: flex;
+    align-content: left;
+    max-height: 15%;
+    margin-bottom: -40px; 
+    transition: transform 0.1s ease-in-out;
 }
-.playlist-checkbox {
+
+.embed:hover {
+    transform: translateX(40px);
+}
+/* .playlist-checkbox {
     grid-column: 2 / 3;
-}
+} */

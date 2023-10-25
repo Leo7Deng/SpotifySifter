@@ -47,19 +47,17 @@ function PlaylistSelect() {
 
     return (
         <div>
-            <h1>Spotify Sifter</h1>
-            <h2>Select a playlist to sift through</h2>
             <div class="playlist-container">
             {Array.isArray(playlists) && playlists.map(playlist => (
                 // <div key={playlist.id}>
                 <>
-                    <input 
+                    {/* <input 
                         class="playlist-checkbox"
                         type="checkbox"
                         key={playlist.id}
                         // checked={selectedPlaylists.includes(playlist.id)}
                         // onChange={() => handleCheckboxChange(playlist.id)}
-                    />
+                    /> */}
                     <iframe style={{ borderRadius: '12px' }} src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} width="100%" height="352" frameBorder="0" allowFullScreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" class = "embed"></iframe>
                 </>
                 // </div>
