@@ -315,7 +315,7 @@ def skip_logic_user(user):
 def run():
     skip_logic()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)

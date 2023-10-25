@@ -7,23 +7,14 @@ function PlaylistSelect() {
     const current_user_id = searchParams.get("current_user_id");
     const [playlists, setPlaylists] = useState([]);
     const [hoveredPlaylist, setHoveredPlaylist] = useState(null);
+    const [clickedPlaylist, setClickedPlaylist] = useState(null);
+
+    const handleCardClick = (playlistId) => {
+        setClickedPlaylist(clickedPlaylist === playlistId ? null : playlistId);
+    }
 
     // Preload iframe contents
-    useEffect(() => {
-        if (Array.isArray(playlists)) {
-            playlists.forEach(playlist => {
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`;
-                iframe.style.display = 'none';
-
-                iframe.onload = () => {
-                    document.body.removeChild(iframe);
-                };
-
-                document.body.appendChild(iframe);
-            });
-        }
-    }, [playlists]);
+    
 
     useEffect(() => {
         fetch(`http://localhost:8888/get_playlists${current_user_id}`)
@@ -38,9 +29,10 @@ function PlaylistSelect() {
                 {Array.isArray(playlists) && playlists.map((playlist) => (
                     <div
                         key={playlist.id}
-                        className="embed"
+                        className={`embed ${clickedPlaylist === playlist.id ? 'clicked' : ''}`}
                         onMouseEnter={() => setHoveredPlaylist(playlist.id)}
                         onMouseLeave={() => setHoveredPlaylist(null)}
+                        onClick={() => handleCardClick(playlist.id)}
                     >
                         <iframe
                             style={{ borderRadius: '12px' }}
@@ -49,26 +41,33 @@ function PlaylistSelect() {
                             height="352"
                             frameBorder="0"
                             allowFullScreen=""
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                            loading="lazy"
+                            // allow="autoplay; clipboard-write; fullscreen; picture-in-picture"
+                            className="playlist-iframe"
                         ></iframe>
                     </div>
                 ))}
             </div>
-            {hoveredPlaylist !== null && (
-                <div className="large-card">
-                    <iframe
-                        style={{ borderRadius: '12px' }}
-                        src={`https://open.spotify.com/embed/playlist/${hoveredPlaylist}?utm_source=generator`}
-                        width="100%"
-                        height="352"
-                        frameBorder="0"
-                        allowFullScreen=""
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy"
-                    ></iframe>
-                </div>
-            )}
+            <div className="large-card-background"></div>
+            <div className="large-card">
+                {Array.isArray(playlists) && playlists.map((playlist) => (
+                    <div
+                        key={playlist.id}
+                        className="large-card-embed"
+                        style={{ display: hoveredPlaylist === playlist.id ? 'block' : 'none' }}
+                    >
+                        <div className="overlay" style={{ display: hoveredPlaylist === playlist.id ? 'none' : 'block' }}></div>
+                        <iframe
+                            style={{ borderRadius: '12px' }}
+                            src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`}
+                            width="100%"
+                            height="352"
+                            frameBorder="0"
+                            allowFullScreen=""
+                            // allow="autoplay; clipboard-write; fullscreen; picture-in-picture"
+                        ></iframe>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

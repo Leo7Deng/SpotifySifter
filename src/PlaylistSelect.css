@@ -42,8 +42,30 @@ label {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 500px;
-    height: 200px;
+    height: 350px;
+}
 
+.large-card-background {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px;
+    height: 370px;
+    background-color: rgb(31, 31, 31);
+    border-radius: 15px;
+}
+
+.playlist-iframe {
+    max-height: -webkit-fill-available;
+}
+
+.overlay {
+    background-color: black;
+}
+
+.embed.clicked {
+    transform: translateX(200px); /* Move the clicked card to the right */
 }
 /* .playlist-checkbox {
     grid-column: 2 / 3;
