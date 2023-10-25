@@ -19,8 +19,6 @@ label {
 }
 .embed {
     grid-column: 3 / 4;
-    width: auto;
-
 }
 .playlist-checkbox {
     grid-column: 2 / 3;
