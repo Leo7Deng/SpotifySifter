@@ -147,6 +147,12 @@ def get_playlists(current_user_id):
     return jsonify(playlists)
     # return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
 
+# @app.route("/manage_playlists<current_user_id>")
+# def manage_playlists(current_user_id):
+#     playlists = Playlist.query.filter_by(user_id=current_user_id).all()
+#     playlists = [playlist.playlist_id for playlist in playlists]
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8888)

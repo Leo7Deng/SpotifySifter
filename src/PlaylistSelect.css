@@ -11,6 +11,7 @@ ul {
 label {
     display: grid;
 }
+
 .playlist-container {
     position: absolute;
     width: 200px;
