@@ -88,3 +88,19 @@ label {
 /* .playlist-checkbox {
     grid-column: 2 / 3;
 } */
+
+.playlist-container-right .embed {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 15%;
+    display: flex;
+    align-content: left;
+    max-height: 15%;
+    margin-bottom: -40px; /* Adjust the margin */
+    transition: transform 0.1s ease-in-out;
+}
+
+.playlist-container-right .embed:hover {
+    transform: translateX(-40px); /* Move the card to the left */
+}
