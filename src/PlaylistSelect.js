@@ -17,6 +17,13 @@ function PlaylistSelect() {
         setLeftPlaylists(prev => prev.filter(playlist => playlist.id !== playlistId));
     }
 
+    const handleRightCardClick = (playlistId) => {
+        console.log('Clicked Playlist ID (Right):', playlistId);
+        const clickedPlaylist = rightPlaylists.find(playlist => playlist.id === playlistId);
+        setLeftPlaylists(prev => [...prev, clickedPlaylist]);
+        setRightPlaylists(prev => prev.filter(playlist => playlist.id !== playlistId));
+    }
+
     useEffect(() => {
         fetch(`http://localhost:8888/get_playlists${current_user_id}`)
             .then(response => response.json())
@@ -24,7 +31,7 @@ function PlaylistSelect() {
             .catch(error => console.error('Error:', error));
     }, [current_user_id]);
 
-    function playlistContainer(playlists) {
+    function playlistContainer(playlists, isLeftContainer) {
         return (
             Array.isArray(playlists) && playlists.map((playlist) => (
                 <div
@@ -33,7 +40,7 @@ function PlaylistSelect() {
                     onMouseEnter={() => setHoveredPlaylist(playlist.id)}
                     onMouseLeave={() => setHoveredPlaylist(null)}
                 >
-                    <div className="iframe-clicker" onClick={() => handleCardClick(playlist.id)}></div>
+                    <div className="iframe-clicker" onClick={isLeftContainer ? () => handleCardClick(playlist.id) : () => handleRightCardClick(playlist.id)}></div>
                     <iframe
                         id={`embed-${playlist.id}`} 
                         style={{ borderRadius: '12px' }}
@@ -44,18 +51,19 @@ function PlaylistSelect() {
                         allowFullScreen=""
                         className="playlist-iframe"
                         loading="lazy"
-                        // allow="allow=autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        key={`embed-${playlist.id}`}
                     ></iframe>
                 </div>
             ))
         );
     }
     
+    
 
     return (
         <div>
             <div className="playlist-container-left">
-                {playlistContainer(leftPlaylists)}
+                {playlistContainer(leftPlaylists, true)}
             </div>
             <div className="large-card-background"></div>
             <div className="large-card">
@@ -81,7 +89,7 @@ function PlaylistSelect() {
                 ))}
             </div>
             <div className="playlist-container-right">
-                {playlistContainer(rightPlaylists)}
+                {playlistContainer(rightPlaylists, false)}
             </div>
         </div>
     );
