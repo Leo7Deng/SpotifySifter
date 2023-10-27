@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import './PlaylistSelect.css';
 
 function PlaylistSelect() {
-    const [playlists, setPlaylists] = useState([]);
+    const [leftPlaylists, setLeftPlaylists] = useState([]);
+    const [rightPlaylists, setRightPlaylists] = useState([]);
     const [clickedPlaylist, setClickedPlaylist] = useState(null);
     const [hoveredPlaylist, setHoveredPlaylist] = useState(null);
     const [searchParams] = useSearchParams();
@@ -11,43 +12,54 @@ function PlaylistSelect() {
 
     const handleCardClick = (playlistId) => {
         console.log('Clicked Playlist ID:', playlistId);
-        setClickedPlaylist(prev => prev === playlistId ? null : playlistId);
+        const clickedPlaylist = leftPlaylists.find(playlist => playlist.id === playlistId);
+        setRightPlaylists(prev => [...prev, clickedPlaylist]);
+        setLeftPlaylists(prev => prev.filter(playlist => playlist.id !== playlistId));
     }
 
     useEffect(() => {
         fetch(`http://localhost:8888/get_playlists${current_user_id}`)
             .then(response => response.json())
-            .then(playlists => setPlaylists(playlists))
+            .then(leftPlaylists => setLeftPlaylists(leftPlaylists)) // Fixed this line
             .catch(error => console.error('Error:', error));
     }, [current_user_id]);
 
+    function playlistContainer(playlists) {
+        return (
+            Array.isArray(playlists) && playlists.map((playlist) => (
+                <div
+                    key={playlist.id}
+                    className={`embed ${clickedPlaylist === playlist.id ? 'clicked' : ''}`}
+                    onMouseEnter={() => setHoveredPlaylist(playlist.id)}
+                    onMouseLeave={() => setHoveredPlaylist(null)}
+                >
+                    <div className="iframe-clicker" onClick={() => handleCardClick(playlist.id)}></div>
+                    <iframe
+                        id={`embed-${playlist.id}`} 
+                        style={{ borderRadius: '12px' }}
+                        src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`}
+                        width="100%"
+                        height="352"
+                        frameBorder="0"
+                        allowFullScreen=""
+                        className="playlist-iframe"
+                        loading="lazy"
+                        // allow="allow=autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    ></iframe>
+                </div>
+            ))
+        );
+    }
+    
+
     return (
         <div>
-            <div className="playlist-container">
-                {Array.isArray(playlists) && playlists.map((playlist) => (
-                    <div
-                        key={playlist.id}
-                        className={`embed ${clickedPlaylist === playlist.id ? 'clicked' : ''}`}
-                        onMouseEnter={() => setHoveredPlaylist(playlist.id)}
-                        onMouseLeave={() => setHoveredPlaylist(null)}
-                    >
-                        <div className="iframe-clicker" onClick={() => handleCardClick(playlist.id)}></div>
-                        <iframe
-                            id={`embed-${playlist.id}`} 
-                            style={{ borderRadius: '12px' }}
-                            src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`}
-                            width="100%"
-                            height="352"
-                            frameBorder="0"
-                            allowFullScreen=""
-                            className="playlist-iframe"
-                        ></iframe>
-                    </div>
-                ))}
+            <div className="playlist-container-left">
+                {playlistContainer(leftPlaylists)}
             </div>
             <div className="large-card-background"></div>
             <div className="large-card">
-                {Array.isArray(playlists) && playlists.map((playlist) => (
+                {Array.isArray(leftPlaylists) && leftPlaylists.map((playlist) => (
                     <div
                         key={playlist.id}
                         className="large-card-embed"
@@ -62,9 +74,14 @@ function PlaylistSelect() {
                             height="352"
                             frameBorder="0"
                             allowFullScreen=""
+                            loading="lazy"
+                            // allow="allow=autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         ></iframe>
                     </div>
                 ))}
+            </div>
+            <div className="playlist-container-right">
+                {playlistContainer(rightPlaylists)}
             </div>
         </div>
     );

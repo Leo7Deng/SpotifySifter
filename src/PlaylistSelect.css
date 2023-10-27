@@ -12,10 +12,19 @@ label {
     display: grid;
 }
 
-.playlist-container {
+.playlist-container-left {
     position: absolute;
     width: 200px;
     height: calc(100% - 40px);
+    display: flex;
+    flex-direction: column;
+}
+
+.playlist-container-right {
+    position: absolute;
+    width: calc(100% - 200px);
+    height: calc(100% - 40px);
+    left: calc(100% - 200px);
     display: flex;
     flex-direction: column;
 }
@@ -74,7 +83,7 @@ label {
 }
 
 .embed.clicked {
-    transform: translateX(200px); /* Move the clicked card to the right */
+    transform: translateX(1400px); /* Move the clicked card to the right */
 }
 /* .playlist-checkbox {
     grid-column: 2 / 3;
