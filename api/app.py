@@ -6,7 +6,7 @@ from flask_session import Session
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, session
 from app_init import app, db
-from models import User, OAuth
+from models import User, OAuth, Playlist, Track, Skipped, PrevQueue
 from cron import run as cron_run
 
 # app = Flask(__name__)
@@ -145,12 +145,40 @@ def get_playlists(current_user_id):
         print(playlist["name"])
 
     return jsonify(playlists)
+
     # return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
 
-# @app.route("/manage_playlists<current_user_id>")
-# def manage_playlists(current_user_id):
-#     playlists = Playlist.query.filter_by(user_id=current_user_id).all()
-#     playlists = [playlist.playlist_id for playlist in playlists]
+@app.route("/manage_playlists<current_user_id>")
+def manage_playlists(current_user_id):
+    user = User.query.filter_by(id=current_user_id).first()
+    access_token = user.oauth.access_token
+    PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    response = requests.get(PLAYLISTS_URL, headers=headers, params={"limit": 50})
+
+    deleted_songs_playlists = Playlist.query.filter(Playlist.delete_playlist != None).all()
+    deleted_songs_playlists = [playlist.delete_playlist for playlist in deleted_songs_playlists]
+
+    for item in response.json()["items"]:
+        playlist_id = item["id"]
+
+        if item["owner"]["id"] == user.user_id and playlist_id not in deleted_songs_playlists:
+            playlist_db = Playlist.query.filter_by(user_id=user.id, playlist_id=playlist_id).first()
+
+            if not playlist_db:
+                playlist_db = Playlist(
+                    user_id=user.id,
+                    playlist_id=playlist_id,
+                    name=item["name"],
+                    currently_playing=False,
+                    selected=False,
+                    delete_playlist=None
+                )
+                db.session.add(playlist_db)
+                db.session.commit()
+    return jsonify({"success": True})
 
 
 

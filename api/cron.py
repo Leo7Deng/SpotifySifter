@@ -15,20 +15,6 @@ TOKEN_URL = "https://accounts.spotify.com/api/token"
 REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
 
 
-def owned_playlists(access_token, headers):
-    PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
-    response = requests.get(PLAYLISTS_URL, headers=headers)
-    playlists = []
-    for item in response.json()["items"]:
-        playlist = {
-            "name": item["name"],
-            "id": item["id"],
-            "owner_id": item["owner"]["id"],
-        }
-        playlists.append(playlist)
-    return playlists
-
-
 def set_repeat(access_token, headers):
     repeat_data = {"state": "context"}
     response = requests.put(REPEAT_URL, headers=headers, params=repeat_data)
@@ -82,7 +68,7 @@ def update_currently_playing_playlist(user):
     if response is None:
         return False
     is_playing = False
-    playlist_exists = False
+    playlist_selected = False
     try:
         uri = response["context"]["uri"]
     except KeyError:
@@ -97,8 +83,8 @@ def update_currently_playing_playlist(user):
     else:
         playlists = Playlist.query.filter_by(user_id=user.id).all()
         for playlist in playlists:
-            if playlist.playlist_id == uri:
-                playlist_exists = True
+            if playlist.selected == True:
+                playlist_selected = True
                 if playlist.currently_playing == False:
                     PrevQueue.query.filter_by(user_id=user.id).delete()
                 playlist_id = uri.split(":")[-1]
@@ -118,8 +104,8 @@ def update_currently_playing_playlist(user):
                     is_playing = True
             else:
                 playlist.currently_playing = False
-        if not playlist_exists:
-            print("Playing in an unregistered playlist")
+        if not playlist_selected:
+            print("Playing in an unselected playlist")
     db.session.commit()
     return is_playing
 
@@ -315,7 +301,7 @@ def skip_logic_user(user):
 def run():
     skip_logic()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
