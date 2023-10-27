@@ -52,8 +52,10 @@ function PlaylistSelect() {
     }, []);
 
     function playlistContainer(playlists, isLeftContainer) {
+        const sortedPlaylists = [...playlists].sort((a, b) => a.name.localeCompare(b.name));
+
         return (
-            Array.isArray(playlists) && playlists.map((playlist) => (
+            Array.isArray(sortedPlaylists) && sortedPlaylists.map((playlist) => (
                 <div
                     key={playlist.id}
                     className={`embed ${clickedPlaylist === playlist.id ? 'clicked' : ''}`}
