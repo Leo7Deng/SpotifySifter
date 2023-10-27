@@ -15,7 +15,10 @@ function PlaylistSelect() {
         const clickedPlaylist = leftPlaylists.find(playlist => playlist.id === playlistId);
         setRightPlaylists(prev => [...prev, clickedPlaylist]);
         setLeftPlaylists(prev => prev.filter(playlist => playlist.id !== playlistId));
-        
+        fetch(`http://localhost:8888/select/${current_user_id}/${playlistId}`)
+            .then(response => response.json())
+            .then(data => console.log('Manage Playlists Response:', data))
+            .catch(error => console.error('Error:', error));
     }
 
     const handleRightCardClick = (playlistId) => {
@@ -26,18 +29,18 @@ function PlaylistSelect() {
     }
 
     useEffect(() => {
-        fetch(`http://localhost:8888/get_playlists${current_user_id}`)
+        fetch(`http://localhost:8888/get_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(leftPlaylists => setLeftPlaylists(leftPlaylists))
             .catch(error => console.error('Error:', error));
-    }, [current_user_id]);
+    }, []);
 
     useEffect(() => {
-        fetch(`http://localhost:8888/manage_playlists${current_user_id}`)
+        fetch(`http://localhost:8888/manage_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(data => console.log('Manage Playlists Response:', data))
             .catch(error => console.error('Error:', error));
-    }, [current_user_id]);
+    }, []);
 
     function playlistContainer(playlists, isLeftContainer) {
         return (

@@ -116,7 +116,7 @@ def callback():
 
 from models import db, User, Playlist
 
-@app.route("/get_playlists<current_user_id>")
+@app.route("/get_playlists/<current_user_id>")
 def get_playlists(current_user_id):
     current_user = User.query.filter_by(id=current_user_id).first()
     access_token = current_user.oauth.access_token
@@ -130,15 +130,28 @@ def get_playlists(current_user_id):
     deleted_songs_playlists = Playlist.query.filter(Playlist.delete_playlist != None).all()
     deleted_songs_playlists = [playlist.delete_playlist for playlist in deleted_songs_playlists]
 
+    database_playlists = Playlist.query.filter_by(user_id=current_user_id).all()
+
     for item in response.json()["items"]:
+        # find the select column of database_playlists
+        selected = False
+        for playlist in database_playlists:
+            if playlist.playlist_id == item["id"]:
+                if playlist.selected:
+                    selected = True
         playlist = {
             "name": item["name"],
             "id": item["id"],
             "owner_id": item["owner"]["id"],
-            "image": item["images"][0]["url"],
+            "image": item["images"][0]["url"]
         }
 
-        if playlist["owner_id"] == current_user.user_id and playlist["id"] not in deleted_songs_playlists:
+        if selected:
+            playlist["selected"] = True
+        else:
+            playlist["selected"] = False
+
+        if current_user and playlist["owner_id"] == current_user.user_id and playlist["id"] not in deleted_songs_playlists:
             playlists.append(playlist)
 
     for playlist in playlists:
@@ -148,7 +161,7 @@ def get_playlists(current_user_id):
 
     # return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
 
-@app.route("/manage_playlists<current_user_id>")
+@app.route("/manage_playlists/<current_user_id>")
 def manage_playlists(current_user_id):
     user = User.query.filter_by(id=current_user_id).first()
     access_token = user.oauth.access_token
@@ -180,7 +193,20 @@ def manage_playlists(current_user_id):
                 db.session.commit()
     return jsonify({"success": True})
 
+from flask import jsonify
 
+from models import db, User, Playlist
+from flask import jsonify
+
+@app.route("/select/<current_user_id>/<playlistId>")
+def select(current_user_id, playlistId):
+    playlist = Playlist.query.filter_by(user_id=current_user_id, playlist_id=playlistId).first()
+    if playlist:
+        playlist.selected = True
+        db.session.commit()
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "Playlist not found."})
 
 if __name__ == "__main__":
     app.run(debug=True, port=8888)

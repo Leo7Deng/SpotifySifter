@@ -49,7 +49,7 @@ def get_response(access_token, endpoint):
     response = requests.get(endpoint, headers=headers)
     if not response.ok:
         raise Exception(f"HTTP error! status: {response.status_code}")
-    if response.status_code == 204:
+    if response.status_code == 204 or response.status_code == 503:
         return None
     return response.json()
 
