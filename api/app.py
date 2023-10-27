@@ -133,7 +133,6 @@ def get_playlists(current_user_id):
     database_playlists = Playlist.query.filter_by(user_id=current_user_id).all()
 
     for item in response.json()["items"]:
-        # find the select column of database_playlists
         selected = False
         for playlist in database_playlists:
             if playlist.playlist_id == item["id"]:

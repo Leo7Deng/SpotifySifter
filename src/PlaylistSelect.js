@@ -31,7 +31,12 @@ function PlaylistSelect() {
     useEffect(() => {
         fetch(`http://localhost:8888/get_playlists/${current_user_id}`)
             .then(response => response.json())
-            .then(leftPlaylists => setLeftPlaylists(leftPlaylists))
+            .then(playlists => {
+                const leftPlaylists = playlists.filter(playlist => playlist.selected === false);
+                const rightPlaylists = playlists.filter(playlist => playlist.selected === true);
+                setLeftPlaylists(leftPlaylists);
+                setRightPlaylists(rightPlaylists);
+            })
             .catch(error => console.error('Error:', error));
     }, []);
 
