@@ -141,7 +141,6 @@ def set_prev_queue(user_id, current_queue_uris):
 
 def delete_tracks_from_playlist(playlist, change_tracks, headers):
     playlist_uri = playlist.playlist_id
-    playlist_uri = playlist_uri.split(":")[-1]
     tracks_data = json.dumps({"tracks": [{"uri": uri} for uri in change_tracks]})
 
     ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
@@ -180,7 +179,7 @@ def skip_logic_user(user):
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
     if not is_playing:
-        print("Not currently playing")
+        # print("Not currently playing")
         return
 
     current_queue_uris = get_current_queue_uris(user_id=user.id)
