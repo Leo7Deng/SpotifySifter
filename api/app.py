@@ -207,6 +207,17 @@ def select(current_user_id, playlistId):
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
 
+@app.route("/unselect/<current_user_id>/<playlistId>")
+def unselect(current_user_id, playlistId):
+    playlist = Playlist.query.filter_by(user_id=current_user_id, playlist_id=playlistId).first()
+    if playlist:
+        playlist.selected = False
+        db.session.commit()
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "Playlist not found."})
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=8888)
 

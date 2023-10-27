@@ -26,6 +26,10 @@ function PlaylistSelect() {
         const clickedPlaylist = rightPlaylists.find(playlist => playlist.id === playlistId);
         setLeftPlaylists(prev => [...prev, clickedPlaylist]);
         setRightPlaylists(prev => prev.filter(playlist => playlist.id !== playlistId));
+        fetch(`http://localhost:8888/unselect/${current_user_id}/${playlistId}`)
+            .then(response => response.json())
+            .then(data => console.log('Manage Playlists Response:', data))
+            .catch(error => console.error('Error:', error));
     }
 
     useEffect(() => {
