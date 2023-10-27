@@ -65,15 +65,28 @@ label {
     height: 350px;
 }
 
+.hide-embed {
+    position: absolute;
+    visibility: hidden;
+}
+
 .large-card-background {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 520px;
-    height: 370px;
-    background-color: rgb(31, 31, 31);
+    width: 500px;
+    height: 350px;
+    border: 2px dashed rgb(132, 132, 132);
     border-radius: 15px;
+}
+
+h3 {
+    color:rgb(132, 132, 132);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
 }
 
 .playlist-iframe {
@@ -94,3 +107,4 @@ label {
 .playlist-container-right .embed:hover {
     transform: translateX(-40px); /* Move the card to the left */
 }
+

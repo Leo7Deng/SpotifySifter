@@ -55,7 +55,7 @@ function PlaylistSelect() {
         const sortedPlaylists = [...playlists].sort((a, b) => a.name.localeCompare(b.name));
 
         return (
-            Array.isArray(sortedPlaylists) && sortedPlaylists.map((playlist) => (
+            sortedPlaylists.map((playlist) => (
                 <div
                     key={playlist.id}
                     className={`embed ${clickedPlaylist === playlist.id ? 'clicked' : ''}`}
@@ -87,13 +87,14 @@ function PlaylistSelect() {
             <div className="playlist-container-left">
                 {playlistContainer(leftPlaylists, true)}
             </div>
-            <div className="large-card-background"></div>
+            <div className="large-card-background">
+                <h3>Click to select</h3>
+            </div>
             <div className="large-card">
-                {Array.isArray(leftPlaylists) && leftPlaylists.map((playlist) => (
+                {[...rightPlaylists, ...leftPlaylists].map((playlist) => (
                     <div
                         key={playlist.id}
-                        className="large-card-embed"
-                        style={{ display: hoveredPlaylist === playlist.id ? 'block' : 'none' }}
+                        className={`large-card-embed${hoveredPlaylist === playlist.id ? '' : ' hide-embed'}`}
                     >
                         <div className="overlay" style={{ display: hoveredPlaylist === playlist.id ? 'none' : 'block' }}></div>
                         <iframe
