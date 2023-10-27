@@ -9,30 +9,6 @@ function PlaylistSelect() {
     const [searchParams] = useSearchParams();
     const current_user_id = searchParams.get("current_user_id");
 
-    useEffect(() => {
-        const handleIframeClick = () => {
-            console.log('Iframe clicked');
-            const embeds = document.querySelectorAll('.embed');
-            embeds.forEach(embed => embed.classList.remove('clicked'));
-            const clickedEmbed = document.querySelector(`#embed-${clickedPlaylist}`);
-            if (clickedEmbed) {
-                clickedEmbed.classList.add('clicked');
-            }
-        }
-
-        window.addEventListener("blur", () => {
-            setTimeout(() => {
-                if (document.activeElement.tagName === "IFRAME") {
-                    handleIframeClick();
-                }
-            });
-        }, { once: true });
-
-        return () => {
-            window.removeEventListener("blur", handleIframeClick);
-        }
-    }, [clickedPlaylist]);
-
     const handleCardClick = (playlistId) => {
         console.log('Clicked Playlist ID:', playlistId);
         setClickedPlaylist(prev => prev === playlistId ? null : playlistId);
@@ -55,18 +31,17 @@ function PlaylistSelect() {
                         onMouseEnter={() => setHoveredPlaylist(playlist.id)}
                         onMouseLeave={() => setHoveredPlaylist(null)}
                     >
-                        <div className="iframe-container" onClick={() => handleCardClick(playlist.id)}>
-                            <iframe
-                                id={`embed-${playlist.id}`} 
-                                style={{ borderRadius: '12px' }}
-                                src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`}
-                                width="100%"
-                                height="352"
-                                frameBorder="0"
-                                allowFullScreen=""
-                                className="playlist-iframe"
-                            ></iframe>
-                        </div>
+                        <div className="iframe-clicker" onClick={() => handleCardClick(playlist.id)}></div>
+                        <iframe
+                            id={`embed-${playlist.id}`} 
+                            style={{ borderRadius: '12px' }}
+                            src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`}
+                            width="100%"
+                            height="352"
+                            frameBorder="0"
+                            allowFullScreen=""
+                            className="playlist-iframe"
+                        ></iframe>
                     </div>
                 ))}
             </div>

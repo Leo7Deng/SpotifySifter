@@ -36,6 +36,14 @@ label {
     transform: translateX(40px);
 }
 
+.iframe-clicker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .large-card {
     /* make in middle of screen */
     position: fixed;
