@@ -64,13 +64,14 @@ def get_currently_playing(user):
 
 
 def update_currently_playing_playlist(user):
+    option = 0
     response = get_currently_playing(user)
     if response is None:
         return False
     is_playing = False
-    playlist_selected = False
     try:
         uri = response["context"]["uri"]
+        uri = uri.split(":")[-1]
     except KeyError:
         if user is None:
             print ("User not found")
@@ -83,31 +84,55 @@ def update_currently_playing_playlist(user):
     else:
         playlists = Playlist.query.filter_by(user_id=user.id).all()
         for playlist in playlists:
-            if playlist.selected == True:
-                playlist_selected = True
-                if playlist.currently_playing == False:
-                    PrevQueue.query.filter_by(user_id=user.id).delete()
-                playlist_id = uri.split(":")[-1]
-                PLAYLIST_URL = (
-                    f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-                )
-                playlist_data = get_response(
-                    access_token=user.oauth.access_token, endpoint=PLAYLIST_URL
-                )
-                playlist_data = playlist_data["total"]
-                if playlist_data < 20:
-                    playlist.currently_playing = False
-                    print("Playlist has less than 20 songs")
-                else:
-                    playlist.currently_playing = True
-                    print(playlist.name + " is playing")
+            if playlist.playlist_id == uri:
+                if playlist.selected == True:
                     is_playing = True
+                    if playlist.currently_playing == False:
+                        PrevQueue.query.filter_by(user_id=user.id).delete()
+                    playlist.currently_playing = True
+                else:
+                    option = 1
+                    playlist.currently_playing = False
+                    
             else:
+                option = 2
                 playlist.currently_playing = False
-        if not playlist_selected:
+        db.session.commit()
+        if option == 1:
             print("Playing in an unselected playlist")
-    db.session.commit()
+            return False
+        elif option == 2:
+            print("Playing in a playlist not owned by user")
+            return False
+        else:
+            print("Currently playing")
+            return is_playing
     return is_playing
+
+    #         if playlist.selected == True:
+    #             playlist_selected = True
+    #             if playlist.currently_playing == False:
+    #                 PrevQueue.query.filter_by(user_id=user.id).delete()
+    #             playlist_id = uri.split(":")[-1]
+    #             PLAYLIST_URL = (
+    #                 f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+    #             )
+    #             playlist_data = get_response(
+    #                 access_token=user.oauth.access_token, endpoint=PLAYLIST_URL
+    #             )
+    #             playlist_data = playlist_data["total"]
+    #             if playlist_data < 20:
+    #                 playlist.currently_playing = False
+    #                 print("Playlist has less than 20 songs")
+    #             else:
+    #                 playlist.currently_playing = True
+    #                 print(playlist.name + " is playing")
+    #                 is_playing = True
+    #         else:
+    #             playlist.currently_playing = False
+    #     if not playlist_selected:
+    #         print("Playing in an unselected playlist")
+    # db.session.commit()
 
 
 def get_current_queue_uris(user_id):

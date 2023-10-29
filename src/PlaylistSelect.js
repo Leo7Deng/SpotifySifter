@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import './PlaylistSelect.css';
 
 function PlaylistSelect() {
@@ -88,7 +89,6 @@ function PlaylistSelect() {
                 {playlistContainer(leftPlaylists, true)}
             </div>
             <div className="large-card-background">
-                <h3>Click to select</h3>
             </div>
             <div className="large-card">
                 {[...rightPlaylists, ...leftPlaylists].map((playlist) => (
@@ -114,6 +114,9 @@ function PlaylistSelect() {
             <div className="playlist-container-right">
                 {playlistContainer(rightPlaylists, false)}
             </div>
+            <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}`}>
+                <button>Go to Deleted Songs Playlists</button>
+            </Link>
         </div>
     );
 }

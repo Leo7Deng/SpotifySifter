@@ -197,7 +197,15 @@ def manage_playlists(current_user_id):
                 db.session.commit()
     return jsonify({"success": True})
 
-from flask import jsonify
+@app.route("/get_delete_playlists<current_user_id>")
+def get_delete_playlists(current_user_id):
+    user = User.query.filter_by(id=current_user_id).first()
+    if user is None:
+        raise Exception("User not found.")
+    access_token = user.oauth.access_token
+    deleted_songs_playlists = Playlist.query.filter(Playlist.delete_playlist != None).all()
+    deleted_songs_playlists = [playlist.delete_playlist for playlist in deleted_songs_playlists]
+    return jsonify(deleted_songs_playlists)
 
 from models import db, User, Playlist
 from flask import jsonify
@@ -221,6 +229,7 @@ def unselect(current_user_id, playlistId):
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
+
 
 
 if __name__ == "__main__":
