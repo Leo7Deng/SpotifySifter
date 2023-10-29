@@ -119,7 +119,10 @@ from models import db, User, Playlist
 @app.route("/get_playlists/<current_user_id>")
 def get_playlists(current_user_id):
     current_user = User.query.filter_by(id=current_user_id).first()
+    if current_user is None:
+        raise Exception("User not found.")
     access_token = current_user.oauth.access_token
+
     headers = {
         'Authorization': f'Bearer {access_token}'
     }
@@ -163,6 +166,8 @@ def get_playlists(current_user_id):
 @app.route("/manage_playlists/<current_user_id>")
 def manage_playlists(current_user_id):
     user = User.query.filter_by(id=current_user_id).first()
+    if user is None:
+        raise Exception("User not found.")
     access_token = user.oauth.access_token
     PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
     headers = {
