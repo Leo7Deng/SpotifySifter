@@ -1,25 +1,35 @@
-// Get the current user ID from the URL
-const currentUserId = window.location.search.split('=')[1];
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 
-// Make a request to the backend endpoint
-fetch(`/get_delete_playlists${currentUserId}`)
-    .then(response => response.json())
-    .then(data => {
-        // Check if the response is not None
-        if (data !== null) {
-            // Loop through the playlist URIs and display the embedded playlists
-            data.forEach(uri => {
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://open.spotify.com/embed/playlist/${uri}`;
-                iframe.width = '300';
-                iframe.height = '380';
-                document.body.appendChild(iframe);
-            });
-        } else {
-            // Display "no playlists" if the response is None
-            const message = document.createElement('p');
-            message.textContent = 'No playlists';
-            document.body.appendChild(message);
-        }
-    })
-    .catch(error => console.error(error));
+function DeletedSongsPlaylists() {
+
+    const [searchParams] = useSearchParams();
+    const current_user_id = searchParams.get("current_user_id");
+    const [playlists, setPlaylists] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:8888/get_delete_playlists/${current_user_id}`)
+            .then(response => response.json())
+            .then(deleted_songs_playlists_uris => {
+                const playlists = deleted_songs_playlists_uris;
+                setPlaylists(playlists);
+            })
+            .catch(error => console.error('Error:', error));
+    }, []);
+
+
+    return (
+        playlists.length > 0 ? (
+            playlists.map((playlist) => (
+                <div className="deleted-songs-playlists">
+                    <iframe src={`https://open.spotify.com/embed/playlist/${playlist}`} width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                </div>
+            ))
+        ) : (
+            <p>No deleted songs playlists</p>
+        )
+    )
+}
+
+export default DeletedSongsPlaylists;
