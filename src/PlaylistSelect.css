@@ -81,6 +81,15 @@ label {
     border-radius: 15px;
 }
 
+.deleted-songs-playlist-button {
+    position: fixed;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 17px;
+    width: 260px;
+}
+
 h3 {
     color:rgb(132, 132, 132);
     position: absolute;

@@ -89,6 +89,9 @@ function PlaylistSelect() {
                 {playlistContainer(leftPlaylists, true)}
             </div>
             <div className="large-card-background">
+                <div className="large-card-background-text">
+                    <h3>Click to select playlist</h3>
+                </div>
             </div>
             <div className="large-card">
                 {[...rightPlaylists, ...leftPlaylists].map((playlist) => (
@@ -115,7 +118,7 @@ function PlaylistSelect() {
                 {playlistContainer(rightPlaylists, false)}
             </div>
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}`}>
-                <button>Go to Deleted Songs Playlists</button>
+                <button className="deleted-songs-playlist-button">See Deleted Songs Playlists</button>
             </Link>
         </div>
     );
