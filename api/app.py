@@ -4,10 +4,10 @@ import os
 from flask_cors import CORS
 from flask_session import Session
 from datetime import datetime
-from flask import Flask, redirect, request, jsonify, session
-from app_init import app, db
-from models import User, OAuth, Playlist, Track, Skipped, PrevQueue
-from cron import run as cron_run
+from flask import redirect, request, jsonify
+from api import app, db
+from .models import User, OAuth, Playlist
+from .cron import run as cron_run
 
 # app = Flask(__name__)
 
@@ -68,7 +68,7 @@ def callback():
     token_info = response.json()
 
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
-        return
+        return jsonify({})
     headers = {
         'Authorization': f'Bearer {token_info["access_token"]}'
     }
@@ -90,7 +90,6 @@ def callback():
     
     expires_at = datetime.now().timestamp() + token_info["expires_in"]
     if current_user:
-        from models import db, OAuth
         oauth = OAuth.query.filter_by(user_id=current_user.id).first()
 
         if oauth:
@@ -100,12 +99,11 @@ def callback():
             oauth.expires_at = expires_at
         else:
             # Create a new OAuth entry
-            oauth = OAuth(
-                user_id=current_user.id,
-                access_token=access_token,
-                refresh_token=refresh_token,
-                expires_at=expires_at
-            )
+            oauth = OAuth()
+            oauth.user_id = current_user.id
+            oauth.access_token = access_token
+            oauth.refresh_token = refresh_token
+            oauth.expires_at = expires_at
             db.session.add(oauth)
 
         db.session.commit()
@@ -113,8 +111,6 @@ def callback():
     cron_run()
     # return redirect(f'/get_playlists?current_user_id={current_user.id}')
     return redirect(f'http://localhost:3000/PlaylistSelect?current_user_id={current_user.id}')
-
-from models import db, User, Playlist
 
 @app.route("/get_playlists/<current_user_id>")
 def get_playlists(current_user_id):
@@ -183,18 +179,17 @@ def manage_playlists(current_user_id):
 
         if item["owner"]["id"] == user.user_id and playlist_id not in deleted_songs_playlists:
             playlist_db = Playlist.query.filter_by(user_id=user.id, playlist_id=playlist_id).first()
-
             if not playlist_db:
-                playlist_db = Playlist(
-                    user_id=user.id,
-                    playlist_id=playlist_id,
-                    name=item["name"],
-                    currently_playing=False,
-                    selected=False,
-                    delete_playlist=None
-                )
+                playlist_db = Playlist()
+                playlist_db.user_id = user.id
+                playlist_db.playlist_id = playlist_id
+                playlist_db.name = item["name"]
+                playlist_db.currently_playing = False
+                playlist_db.selected = False
+                playlist_db.delete_playlist = None
                 db.session.add(playlist_db)
                 db.session.commit()
+
     return jsonify({"success": True})
 
 @app.route("/get_delete_playlists/<current_user_id>")
@@ -206,9 +201,6 @@ def get_delete_playlists(current_user_id):
     deleted_songs_playlists = Playlist.query.filter(Playlist.delete_playlist != None).all()
     deleted_songs_playlists_uris = [playlist.delete_playlist for playlist in deleted_songs_playlists]
     return jsonify(deleted_songs_playlists_uris)
-
-from models import db, User, Playlist
-from flask import jsonify
 
 @app.route("/select/<current_user_id>/<playlistId>")
 def select(current_user_id, playlistId):
@@ -230,8 +222,5 @@ def unselect(current_user_id, playlistId):
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
 
-
-
 if __name__ == "__main__":
     app.run(debug=True, port=8888)
-

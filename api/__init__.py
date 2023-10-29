@@ -23,7 +23,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize Database Plugin
 with app.app_context():
-    from models import *
+    from .models import *
 db.init_app(app)
 migrate = Migrate(app, db)
 # migrate.init_app(app, db, render_as_batch=True)
+
+__all__ = ["app", "db", "migrate"]

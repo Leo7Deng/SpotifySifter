@@ -4,8 +4,8 @@ import requests
 import json
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-from app_init import db, app
-from models import User, OAuth, Playlist, PrevQueue, Skipped, Track, Playlist
+from api import db, app
+from .models import User, OAuth, Playlist, PrevQueue, Skipped, Playlist
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
@@ -56,7 +56,9 @@ def get_response(access_token, endpoint):
 
 def get_currently_playing(user):
     oauth = OAuth.query.get(user.id)
-    access_token = oauth.access_token
+    access_token = None
+    if oauth:
+        access_token = oauth.access_token
     response = get_response(
         access_token=access_token, endpoint=CURRENTLY_PLAYING_ENDPOINT
     )
@@ -137,6 +139,8 @@ def update_currently_playing_playlist(user):
 
 def get_current_queue_uris(user_id):
     oauth = OAuth.query.get(user_id)
+    if oauth is None:
+        return []
     access_token = oauth.access_token
     response = get_response(access_token=access_token, endpoint=QUEUE_ENDPOINT)
     if response:
@@ -159,9 +163,13 @@ def set_prev_queue(user_id, current_queue_uris):
             prev_queue[i].track_id = uri
     else:
         for i, uri in enumerate(current_queue_uris, start=1):
-            prev_queue_item = PrevQueue(track_id=uri, queue_index=i, user_id=user_id)
+            prev_queue_item = PrevQueue()
+            prev_queue_item.track_id = uri
+            prev_queue_item.queue_index = i
+            prev_queue_item.user_id = user_id
             db.session.add(prev_queue_item)
     db.session.commit()
+
 
 
 def delete_tracks_from_playlist(playlist, change_tracks, headers):
@@ -256,6 +264,10 @@ def skip_logic_user(user):
     recently_played_response = get_response(
         access_token=access_token, endpoint=RECENTLY_PLAYED_ENDPOINT
     )
+    if recently_played_response is None:
+        print("No recently played tracks found")
+        return
+
     recently_played_uris = [
         item["track"]["uri"] for item in recently_played_response["items"]
     ]
@@ -278,12 +290,11 @@ def skip_logic_user(user):
     change_tracks = []
     for skipped_uri in skipped_tracks_60_uris:
         if skipped_uri not in skipped_tracks_history_uris:
-            new_skipped = Skipped(
-                playlist_id=current_playlist.playlist_id,
-                track_id=skipped_uri,
-                user_id=user.id,
-                skipped_count=1,
-            )
+            new_skipped = Skipped()
+            new_skipped.playlist_id = current_playlist.playlist_id
+            new_skipped.track_id = skipped_uri
+            new_skipped.user_id = user.id
+            new_skipped.skipped_count = 1
             db.session.add(new_skipped)
             continue
 
