@@ -66,9 +66,10 @@ def get_currently_playing(user):
 
 
 def update_currently_playing_playlist(user):
-    option = 0
+    selected = True
     response = get_currently_playing(user)
     if response is None:
+        print("Not currently playing")
         return False
     is_playing = False
     try:
@@ -84,30 +85,32 @@ def update_currently_playing_playlist(user):
             print("Not currently playing")
         pass
     else:
+        currently_playing_playlist = None
         playlists = Playlist.query.filter_by(user_id=user.id).all()
         for playlist in playlists:
             if playlist.playlist_id == uri:
+                currently_playing_playlist = playlist
                 if playlist.selected == True:
+                    
                     is_playing = True
                     if playlist.currently_playing == False:
                         PrevQueue.query.filter_by(user_id=user.id).delete()
                     playlist.currently_playing = True
                 else:
-                    option = 1
+                    selected = False
                     playlist.currently_playing = False
                     
             else:
-                option = 2
                 playlist.currently_playing = False
         db.session.commit()
-        if option == 1:
+        if selected == False:
             print("Playing in an unselected playlist")
             return False
-        elif option == 2:
+        if currently_playing_playlist is None:
             print("Playing in a playlist not owned by user")
             return False
-        else:
-            print("Currently playing")
+        if is_playing == True:
+            print("Currently playing " + currently_playing_playlist.name)
             return is_playing
     return is_playing
 
@@ -212,7 +215,6 @@ def skip_logic_user(user):
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
     if not is_playing:
-        # print("Not currently playing")
         return
 
     current_queue_uris = get_current_queue_uris(user_id=user.id)
