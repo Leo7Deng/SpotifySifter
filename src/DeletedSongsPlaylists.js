@@ -18,7 +18,6 @@ function DeletedSongsPlaylists() {
             .catch(error => console.error('Error:', error));
     }, []);
 
-
     return (
         playlists.length > 0 ? (
             playlists.map((playlist) => (

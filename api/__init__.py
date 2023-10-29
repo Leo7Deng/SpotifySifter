@@ -16,7 +16,6 @@ db = SQLAlchemy(metadata=metadata)
 # def create_app(): 
 
 app = Flask(__name__)
-app.app_context().push()
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -27,5 +26,3 @@ with app.app_context():
 db.init_app(app)
 migrate = Migrate(app, db)
 # migrate.init_app(app, db, render_as_batch=True)
-
-__all__ = ["app", "db", "migrate"]

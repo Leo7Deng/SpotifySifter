@@ -67,8 +67,6 @@ def callback():
     response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
 
-    if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
-        return jsonify({})
     headers = {
         'Authorization': f'Bearer {token_info["access_token"]}'
     }
@@ -221,6 +219,3 @@ def unselect(current_user_id, playlistId):
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
-
-if __name__ == "__main__":
-    app.run(debug=True, port=8888)
