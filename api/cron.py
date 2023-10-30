@@ -195,12 +195,19 @@ def refresh_token(user):
         }
         response = requests.post(TOKEN_URL, data=req_body)
         new_token_info = response.json()
-        user.oauth.access_token = new_token_info["access_token"]
-        user.oauth.expires_at = (
-            datetime.now().timestamp() + new_token_info["expires_in"]
-        )
-        db.session.commit()
-        print("Refreshed token")
+        
+        print("New Token Info:", new_token_info)  # Add this line for debugging
+        breakpoint()
+        if "access_token" in new_token_info:
+            user.oauth.access_token = new_token_info["access_token"]
+            user.oauth.expires_at = (
+                datetime.now().timestamp() + new_token_info["expires_in"]
+            )
+            db.session.commit()
+            print("Refreshed token")
+        else:
+            print("Access token not found in response")
+
 
 
 def skip_logic():
@@ -338,7 +345,7 @@ def skip_logic_user(user):
 def run():
     skip_logic()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)

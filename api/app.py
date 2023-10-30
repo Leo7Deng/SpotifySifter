@@ -219,3 +219,9 @@ def unselect(current_user_id, playlistId):
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
+
+@app.route("/leaderboard")
+def leaderboard():
+    users = User.query.order_by(User.total_played.desc()).all()
+    users = [{"username": user.user_id, "total_played": user.total_played} for user in users]
+    return jsonify(users[:5])
