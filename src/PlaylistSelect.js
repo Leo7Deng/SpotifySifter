@@ -120,6 +120,9 @@ function PlaylistSelect() {
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}`}>
                 <button className="deleted-songs-playlist-button">See Deleted Songs Playlists</button>
             </Link>
+            <Link to={'/Leaderboard'}>
+                <button className="leaderboard-button">See Leaderboard</button>
+            </Link>
         </div>
     );
 }

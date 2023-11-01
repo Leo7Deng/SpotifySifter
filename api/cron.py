@@ -184,16 +184,18 @@ def delete_tracks_from_playlist(playlist, change_tracks, headers):
         ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data
     ).text
 
-
+import requests
 def refresh_token(user):
     if user.oauth.expires_at < datetime.now().timestamp():
         req_body = {
             "grant_type": "refresh_token",
             "refresh_token": user.oauth.refresh_token,
             "client_id": os.environ.get("CLIENT_ID"),
-            "client_secret": os.environ.get("CLIENT_SECRET"),
         }
-        response = requests.post(TOKEN_URL, data=req_body)
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        response = requests.post(TOKEN_URL, data=req_body, headers=headers)
         new_token_info = response.json()
         
         print("New Token Info:", new_token_info)  # Add this line for debugging
