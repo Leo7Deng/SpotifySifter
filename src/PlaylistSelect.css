@@ -84,19 +84,21 @@ label {
 .deleted-songs-playlist-button {
     position: fixed;
     top: 80%;
-    left: 50%;
+    left: 42%;
     transform: translate(-50%, -50%);
-    font-size: 17px;
-    width: 260px;
+    font-size: 16px;
+    width: 200px;
+    padding: 10px;
 }
 
 .leaderboard-button {
     position: fixed;
     top: 80%;
-    left: 45%;
+    left: 58%;
     transform: translate(-50%, -50%);
-    font-size: 17px;
-    width: 260px;
+    font-size: 16px;
+    width: 200px;
+    padding: 10px;
 }
 
 h3 {

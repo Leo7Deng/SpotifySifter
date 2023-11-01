@@ -118,7 +118,7 @@ function PlaylistSelect() {
                 {playlistContainer(rightPlaylists, false)}
             </div>
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}`}>
-                <button className="deleted-songs-playlist-button">See Deleted Songs Playlists</button>
+                <button className="deleted-songs-playlist-button">See Deleted Songs</button>
             </Link>
             <Link to={'/Leaderboard'}>
                 <button className="leaderboard-button">See Leaderboard</button>
