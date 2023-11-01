@@ -20,12 +20,15 @@ function Leaderboard() {
             <h4>Leaderboard</h4>
             {leaderboard.length > 0 ? (
                 <div className="leaderboard-container">
-                    {leaderboard.map((user) => (
+                    <div className="leaderboard-1-box" style={{ height: "79%" }}></div>
+                    <h5 className="leaderboard-1-name">{leaderboard[0].username}</h5>
+                    <h5 className="leaderboard-1-total">{leaderboard[0].total_played}</h5>
+                    {/* {leaderboard.map((user) => (
                         <div className="leaderboard-user">
                             <h5>{user.username}</h5>
                             <h5>{user.total_played}</h5>
                         </div>
-                    ))}
+                    ))} */}
                 </div>
             ) : (
                 <h4 className="no-songs">No songs have been sifted!</h4>
