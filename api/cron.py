@@ -1,4 +1,5 @@
 import atexit
+import base64
 import os
 import requests
 import json
@@ -187,19 +188,27 @@ def delete_tracks_from_playlist(playlist, change_tracks, headers):
 import requests
 def refresh_token(user):
     if user.oauth.expires_at < datetime.now().timestamp():
+        breakpoint()
         req_body = {
             "grant_type": "refresh_token",
             "refresh_token": user.oauth.refresh_token,
-            "client_id": os.environ.get("CLIENT_ID"),
+            "client_id": os.environ.get("SPOTIFY_CLIENT_ID"),
         }
+        client_secret = os.environ.get("SPOTIFY_CLIENT_SECRET")
+        auth_header = f"{os.environ.get('SPOTIFY_CLIENT_ID')}:{client_secret}"
+        auth_header = auth_header.encode("ascii")
+        auth_header = base64.b64encode(auth_header)
+        auth_header = auth_header.decode("ascii")
         headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': f'Basic {auth_header}'
         }
+
         response = requests.post(TOKEN_URL, data=req_body, headers=headers)
+        print("Status Code:", response.status_code)
         new_token_info = response.json()
         
         print("New Token Info:", new_token_info)  # Add this line for debugging
-        breakpoint()
         if "access_token" in new_token_info:
             user.oauth.access_token = new_token_info["access_token"]
             user.oauth.expires_at = (
@@ -224,6 +233,7 @@ def skip_logic_user(user):
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
     if not is_playing:
+        print("Not currently playing")
         return
 
     current_queue_uris = get_current_queue_uris(user_id=user.id)
@@ -347,8 +357,8 @@ def skip_logic_user(user):
 def run():
     skip_logic()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
-    # scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
+    # scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
+    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
     # db.session.commit()
