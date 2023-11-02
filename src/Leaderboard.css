@@ -5,21 +5,88 @@
     top: 15%;
 }
 
-.leaderboard-1-name {
+.leaderboard-name {
     position: absolute;
     top: 90%;
-    left: 50%;
     transform: translate(-50%, -50%);
     font-size: 10px;
     color:white;
     transform: rotate(45deg);
 }
 
-.leaderboard-1-box {
+.leaderboard-name-1 {
+    left: 50%;
+}
+
+.leaderboard-name-2 {
+    left: 60%;
+}
+
+.leaderboard-name-3 {
+    left: 40%;
+}
+
+.leaderboard-name-4 {
+    left: 70%;
+}
+
+.leaderboard-name-5 {
+    left: 30%;
+}
+
+.leaderboard-box {
     background-color: rgb(47, 255, 47);
     position: absolute;
     width: 10px;
     top: 10%;
-    left: 50%;
-
 }
+
+
+.leaderboard-box-1 {
+    left: 50%;
+}
+
+.leaderboard-box-2 {
+    left: 60%;
+}
+
+.leaderboard-box-3 {
+    left: 40%;
+}
+
+.leaderboard-box-4 {
+    left: 70%;
+}
+
+.leaderboard-box-5 {
+    left: 30%;
+}
+
+.leaderboard-total {
+    position: absolute;
+    top: 5%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color:white;
+}
+
+.leaderboard-total-1 {
+    left: 50%;
+}
+
+.leaderboard-total-2 {
+    left: 60%;
+}
+
+.leaderboard-total-3 {
+    left: 40%;
+}
+
+.leaderboard-total-4 {
+    left: 70%;
+}
+
+.leaderboard-total-5 {
+    left: 30%;
+}
+

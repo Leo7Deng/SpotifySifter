@@ -1,9 +1,8 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './Leaderboard.css';
 
 function Leaderboard() {
-    const [leaderboard, setLeaderboard] = useState([]); // [ { username: blazing7ice, total_played: 100 }, { username: blazing7ice, total_played: 100 } ]
+    const [leaderboard, setLeaderboard] = useState([]); 
 
     useEffect(() => {
         fetch(`http://localhost:8888/leaderboard`)
@@ -12,23 +11,24 @@ function Leaderboard() {
                 setLeaderboard(leaderboard);
             })
             .catch(error => console.error('Error:', error));
-    }
-    , []);
+    }, []);
     
+    const totalPlayedValues = leaderboard.map(item => item.total_played);
+    const maxTotalPlayed = Math.max(...totalPlayedValues);
+    const heights = totalPlayedValues.map(value => (value / maxTotalPlayed) * 79);
+
     return (
         <>
             <h4>Leaderboard</h4>
             {leaderboard.length > 0 ? (
                 <div className="leaderboard-container">
-                    <div className="leaderboard-1-box" style={{ height: "79%" }}></div>
-                    <h5 className="leaderboard-1-name">{leaderboard[0].username}</h5>
-                    <h5 className="leaderboard-1-total">{leaderboard[0].total_played}</h5>
-                    {/* {leaderboard.map((user) => (
-                        <div className="leaderboard-user">
-                            <h5>{user.username}</h5>
-                            <h5>{user.total_played}</h5>
-                        </div>
-                    ))} */}
+                    {leaderboard.map((item, index) => (
+                        <>
+                            <div className={`leaderboard-box leaderboard-box-${index+1}`} style={{ height: `${heights[index]}%` }} key={index}></div>
+                            <h5 className={`leaderboard-name leaderboard-name-${index+1}`}>{item.username}</h5>
+                            <h5 className={`leaderboard-total leaderboard-total-${index+1}`}>{item.total_played}</h5>
+                        </>
+                    ))}
                 </div>
             ) : (
                 <h4 className="no-songs">No songs have been sifted!</h4>
