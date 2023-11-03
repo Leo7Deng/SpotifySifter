@@ -34,9 +34,7 @@ EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
 @app.route("/login")
 def login():
-    scope = "user-read-recently-played user-read-playback-state user-read-email user-library-read playlist-modify-public playlist-modify-private user-modify-playback-state playlist-read-private"
-    
-
+    scope = "user-read-recently-played user-read-playback-state user-read-email user-read-private user-library-read playlist-modify-public playlist-modify-private user-modify-playback-state playlist-read-private"
     params = {
         "client_id": CLIENT_ID,
         "response_type": "code",
@@ -71,10 +69,8 @@ def callback():
         'Authorization': f'Bearer {token_info["access_token"]}'
     }
     user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
-
     user_email = user_info.json()['email']
     current_user = User.query.filter_by(email=user_email).first()
-
     if not current_user:
         current_user = User()
         current_user.email = user_email
@@ -82,6 +78,7 @@ def callback():
         current_user.total_played = 0
         db.session.add(current_user)
         db.session.commit()
+        print("Added new user")
 
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
@@ -108,7 +105,7 @@ def callback():
     
     cron_run()
     # return redirect(f'/get_playlists?current_user_id={current_user.id}')
-    return redirect(f'http://localhost:3000/PlaylistSelect?current_user_id={current_user.id}')
+    return redirect(f'http://localhost:3000/PlaylistSelectCheck?current_user_id={current_user.id}')
 
 @app.route("/get_playlists/<current_user_id>")
 def get_playlists(current_user_id):
@@ -117,9 +114,7 @@ def get_playlists(current_user_id):
         raise Exception("User not found.")
     access_token = current_user.oauth.access_token
 
-    headers = {
-        'Authorization': f'Bearer {access_token}'
-    }
+    headers = {"Authorization": f"Bearer {access_token}"}
     PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
     response = requests.get(PLAYLISTS_URL, headers=headers, params={"limit": 50})
     playlists = []

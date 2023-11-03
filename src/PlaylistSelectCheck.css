@@ -1,0 +1,26 @@
+/* input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    margin: 0;
+} */
+
+.playlist-check-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 3fr 1fr;
+    grid-template-rows: 200px; 
+    grid-gap: 5px;
+    margin-top: 200px;
+}
+
+.playlist-check-iframe {
+    grid-column: 3 / 4;
+    width: 100%;
+    height: 100%
+}
+
+.playlist-checkbox {
+    grid-column: 2 / 3;
+    width: 100%;
+    height: 100%;
+}

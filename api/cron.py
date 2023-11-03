@@ -188,7 +188,6 @@ def delete_tracks_from_playlist(playlist, change_tracks, headers):
 import requests
 def refresh_token(user):
     if user.oauth.expires_at < datetime.now().timestamp():
-        breakpoint()
         req_body = {
             "grant_type": "refresh_token",
             "refresh_token": user.oauth.refresh_token,
@@ -233,7 +232,7 @@ def skip_logic_user(user):
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
     if not is_playing:
-        print("Not currently playing")
+        # print("Not currently playing")
         return
 
     current_queue_uris = get_current_queue_uris(user_id=user.id)
