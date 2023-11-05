@@ -6,7 +6,7 @@ input[type="checkbox"] {
   /* For iOS < 15 */
   background-color: var(--form-background);
   /* Not removed via appearance */
-  margin: 0;
+  margin-left:150px;
 
   font: inherit;
   color: white;
@@ -17,24 +17,26 @@ input[type="checkbox"] {
   transform: translateY(-0.075em);
 
   display: grid;
-  place-content: center;
+  /* bottom left -50px, 50px*/
+  place-content: end start;
 }
 
 input[type="checkbox"]::before {
     content: "";
-    width: 0.65em;
-    height: 0.65em;
-    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    width: 0.75em;
+    height: 1em;
+    margin-bottom: .25em;
+    clip-path: polygon(18% 56%, 36% 95%, 85% 6%, 74% 5%, 37% 77%, 25% 52%);
     transform: scale(0);
     transform-origin: bottom left;
     transition: 120ms transform ease-in-out;
     box-shadow: inset 1em 1em var(--form-control-color);
     /* Windows High Contrast Mode */
-    background-color: white;
+    background-color: rgb(255, 255, 255);
 }
   
 input[type="checkbox"]:checked::before {
-    transform: scale(1);
+    transform: scale(4);
   }
   
 input[type="checkbox"]:focus {
@@ -45,16 +47,18 @@ input[type="checkbox"]:focus {
 
 .playlist-check-container {
     display: grid;
-    grid-template-columns: 1fr 1fr 3fr 1fr;
-    grid-template-rows: 200px; 
+    grid-template-columns: 1.5fr 1fr 3fr 2.5fr;
     grid-gap: 5px;
     margin-top: 200px;
 }
 
 .playlist-check-iframe {
     grid-column: 3 / 4;
+    margin-bottom: -30px;
     width: 100%;
-    height: 100%
+    height: 100px;
+    /* width: 100%; */
+    /* height: 100% */
 }
 
 .playlist-checkbox {
