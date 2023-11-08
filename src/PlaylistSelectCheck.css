@@ -20,7 +20,7 @@ input[type="checkbox"] {
     content: "";
     width: 2.2em;
     height: 4.2em;
-    /* border: 0.15em solid black; */
+    border: 0.15em solid black;
     border-radius: 10px;
     transform: scale(0);
     transition: 120ms transform ease-in-out;

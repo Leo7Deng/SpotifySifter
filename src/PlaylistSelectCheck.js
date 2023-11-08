@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import './PlaylistSelectCheck.css';
 
-function DeletedSongsCheck() {
+function PlaylistSelectCheck() {
 
     const [searchParams] = useSearchParams();
     const current_user_id = searchParams.get("current_user_id");
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
+    
 
     useEffect(() => {
         fetch(`http://localhost:8888/get_playlists/${current_user_id}`)
@@ -20,37 +21,63 @@ function DeletedSongsCheck() {
                 setUnselectedPlaylists(unselected);
             })
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [current_user_id]);
+
+    function handleCheckboxChange(event, playlistId) {
+        const isChecked = event.target.checked;
+    
+        if (isChecked) {
+            console.log('Checked Playlist ID:', playlistId);
+            fetch(`http://localhost:8888/unselect/${current_user_id}/${playlistId}`)
+                .then(response => response.json())
+                .then(data => console.log('Manage Playlists Response:', data))
+                .catch(error => console.error('Error:', error));
+        } else {
+            console.log('Unchecked Playlist ID:', playlistId);
+            fetch(`http://localhost:8888/select/${current_user_id}/${playlistId}`)
+                .then(response => response.json())
+                .then(data => console.log('Manage Playlists Response:', data))
+                .catch(error => console.error('Error:', error));
+        }
+    }
+    
+    
 
     return (
         <>
             <h4>Select Playlists you want sifted</h4>
-            {(selectedPlaylists.length > 0 && unselectedPlaylists.length > 0) ? (
+            {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
                 <div className="playlist-check-container">
                     {selectedPlaylists.map((playlist) => (
-                         <>
-                            <input 
-                                class="playlist-checkbox"
+                        <>
+                            <input
+                                className="playlist-checkbox"
                                 type="checkbox"
-                                key={playlist.id}></input>
-                            <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className = "playlist-check-iframe"></iframe>
+                                key={playlist.id}
+                                checked={true}
+                                onChange={(e) => handleCheckboxChange(e, playlist.id)}
+                                
+                            />
+                            <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className="playlist-check-iframe"></iframe>
                         </>
                     ))}
                     {unselectedPlaylists.map((playlist) => (
-                         <>
-                            <input 
-                                class="playlist-checkbox"
+                        <>
+                            <input
+                                className="playlist-checkbox"
                                 type="checkbox"
-                                key={playlist.id}></input>
-                            <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className = "playlist-check-iframe"></iframe>
+                                key={playlist.id}
+                                onChange={(e) => handleCheckboxChange(e, playlist.id)}
+                            />
+                            <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className="playlist-check-iframe"></iframe>
                         </>
                     ))}
                 </div>
             ) : (
-                <h4 className="no-songs">No songs have been sifted!</h4>
+                <h4 className="no-songs">No playlists!</h4>
             )}
         </>
     )
 }
 
-export default DeletedSongsCheck;
+export default PlaylistSelectCheck;

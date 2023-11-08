@@ -201,6 +201,7 @@ def select(current_user_id, playlistId):
     if playlist:
         playlist.selected = True
         db.session.commit()
+        print("Selected playlist " + playlist.name)
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
@@ -211,6 +212,7 @@ def unselect(current_user_id, playlistId):
     if playlist:
         playlist.selected = False
         db.session.commit()
+        print("Unselected playlist " + playlist.name)
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
