@@ -1,5 +1,5 @@
 body {
-    background-color: rgb(9, 9, 9);
+    background-color: rgb(224, 224, 219);
 }
 
 .home {
@@ -12,14 +12,14 @@ body {
 
 h1 {
     text-align: center;
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 70px;
 }
 
 button {
     background-color: rgb(0, 200, 80);
-    color: white;
-    border: 1px solid white;
+    color: rgb(0, 0, 0);
+    border: 1px solid rgb(0, 0, 0);
     border-radius: 70px;
     padding: 15px;
     font-size: 30px;
@@ -30,7 +30,7 @@ button {
 }
 
 .loader {
-    border: 16px solid #f3f3f3; /* Light grey */
+    border: 16px solid #000000; /* Light grey */
     border-top: 16px solid #00cc6d; /* Blue */
     border-radius: 50%;
     padding: 20px;

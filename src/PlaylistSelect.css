@@ -1,12 +1,12 @@
 p {
-    color: white;
+    color: rgb(0, 0, 0);
 }
 h2 {
-    color: white;
+    color: rgb(0, 0, 0);
     text-align: center;
 }
 ul {
-    color: white;
+    color: rgb(0, 0, 0);
 }
 label {
     display: grid;

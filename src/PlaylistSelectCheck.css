@@ -1,48 +1,42 @@
 input[type="checkbox"] {
-    /* Add if not using autoprefixer */
-  -webkit-appearance: none;
-  /* Remove most all native input styles */
-  appearance: none;
-  /* For iOS < 15 */
-  background-color: var(--form-background);
-  /* Not removed via appearance */
-  margin-left:150px;
-
-  font: inherit;
-  color: white;
-  width: 3em;
-  height: 5em;
-  border: 0.15em solid currentColor;
-  border-radius: 0.15em;
-  transform: translateY(-0.075em);
-
-  display: grid;
-  /* bottom left -50px, 50px*/
-  place-content: end start;
-}
-
-input[type="checkbox"]::before {
-    content: "";
-    width: 0.75em;
-    height: 1em;
-    margin-bottom: .25em;
-    clip-path: polygon(18% 56%, 36% 95%, 85% 6%, 74% 5%, 37% 77%, 25% 52%);
-    transform: scale(0);
-    transform-origin: bottom left;
-    transition: 120ms transform ease-in-out;
-    box-shadow: inset 1em 1em var(--form-control-color);
-    /* Windows High Contrast Mode */
-    background-color: rgb(255, 255, 255);
-}
-  
-input[type="checkbox"]:checked::before {
-    transform: scale(4);
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--form-background);
+    font: inherit;
+    color: rgb(0, 0, 0);
+    width: 3em;
+    height: 5em;
+    border: 0.15em solid currentColor;
+    border-radius: 15px;
+    transform: translateY(-0.075em);
+    margin-left: 15em;
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    
   }
   
-input[type="checkbox"]:focus {
+  input[type="checkbox"]::before {
+    content: "";
+    width: 2.2em;
+    height: 4.2em;
+    /* border: 0.15em solid black; */
+    border-radius: 10px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    /* box-shadow: inset 1em 1em var(--form-control-color); */
+    background-color: rgb(57, 243, 60);
+  }
+  
+  
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
+  }
+  
+/* input[type="checkbox"]:focus {
     outline: max(2px, 0.15em) solid currentColor;
     outline-offset: max(2px, 0.15em);
-}
+} */
 
 
 .playlist-check-container {
