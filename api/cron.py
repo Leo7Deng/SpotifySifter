@@ -74,6 +74,10 @@ def update_currently_playing_playlist(user):
         return False
     is_playing = False
     try:
+        if response is None:
+            raise KeyError
+        if response["context"] is None:
+            raise KeyError
         uri = response["context"]["uri"]
         uri = uri.split(":")[-1]
     except KeyError:
