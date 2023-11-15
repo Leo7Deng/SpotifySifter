@@ -28,13 +28,13 @@ function PlaylistSelectCheck() {
     
         if (isChecked) {
             console.log('Checked Playlist ID:', playlistId);
-            fetch(`http://localhost:8888/unselect/${current_user_id}/${playlistId}`)
+            fetch(`http://localhost:8888/select/${current_user_id}/${playlistId}`)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
         } else {
             console.log('Unchecked Playlist ID:', playlistId);
-            fetch(`http://localhost:8888/select/${current_user_id}/${playlistId}`)
+            fetch(`http://localhost:8888/unselect/${current_user_id}/${playlistId}`)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
@@ -47,6 +47,7 @@ function PlaylistSelectCheck() {
         <>
             <h4>Select Playlists you want sifted</h4>
             {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
+                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}>
                 <div className="playlist-check-container">
                     {selectedPlaylists.map((playlist) => (
                         <>
@@ -72,6 +73,7 @@ function PlaylistSelectCheck() {
                             <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className="playlist-check-iframe"></iframe>
                         </>
                     ))}
+                </div>
                 </div>
             ) : (
                 <h4 className="no-songs">No playlists!</h4>

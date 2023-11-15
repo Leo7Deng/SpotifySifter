@@ -41,7 +41,7 @@ input[type="checkbox"]:checked::before {
 
 .playlist-check-container {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 3fr 2.5fr;
+    grid-template-columns: 1fr 1fr 3fr 2.5fr;
     grid-gap: 5px;
     margin-top: 200px;
 }
@@ -54,6 +54,11 @@ input[type="checkbox"]:checked::before {
     /* width: 100%; */
     /* height: 100% */
 }
+
+/* .large-playlist {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+} */
 
 .playlist-checkbox {
     grid-column: 2 / 3;
