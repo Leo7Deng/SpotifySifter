@@ -46,16 +46,15 @@ function PlaylistSelectCheck() {
 
     return (
         <>
-            <h4>Select Playlists you want sifted</h4>
+            <h4 className="check-title">Select Playlists you want sifted</h4>
             {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
-                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}>
+                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}style={{ paddingTop: '50px' }}>
                     <div className="playlist-check-container">
                         {selectedPlaylists.map((playlist) => (
-                            <>
+                            <div key={playlist.id} className="playlist-item">
                                 <input
                                     className="playlist-checkbox"
                                     type="checkbox"
-                                    key={playlist.id}
                                     checked={initialChecked}
                                     onChange={(e) => {
                                         setInitialChecked(!initialChecked);
@@ -64,18 +63,17 @@ function PlaylistSelectCheck() {
 
                                 />
                                 <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className="playlist-check-iframe"></iframe>
-                            </>
+                            </div>
                         ))}
                         {unselectedPlaylists.map((playlist) => (
-                            <>
+                            <div key={playlist.id} className="playlist-item">
                                 <input
                                     className="playlist-checkbox"
                                     type="checkbox"
-                                    key={playlist.id}
                                     onChange={(e) => handleCheckboxChange(e, playlist.id)}
                                 />
                                 <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className="playlist-check-iframe"></iframe>
-                            </>
+                            </div>
                         ))}
                     </div>
                 </div>
