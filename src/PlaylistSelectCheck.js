@@ -47,19 +47,18 @@ function PlaylistSelectCheck() {
         <>
             <h4 className="check-title">Select Playlists you want sifted</h4>
             {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
-                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`} style={{ paddingTop: '50px' }}>
+                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}style={{ paddingTop: '50px' }}>
                     <div className="playlist-check-container">
                         {selectedPlaylists.map((playlist) => (
                             <div key={playlist.id} className="playlist-item">
-                                <div className = "checkbox-overlay">
-                                    <input
-                                        className="playlist-checkbox"
-                                        type="checkbox"
-                                        checked={initialChecked}
-                                        onChange={(e) => {
-                                            setInitialChecked(!initialChecked);
-                                            handleCheckboxChange(e, playlist.id);
-                                        }}
+                                <input
+                                    className="playlist-checkbox"
+                                    type="checkbox"
+                                    checked={initialChecked}
+                                    onChange={(e) => {
+                                        setInitialChecked(!initialChecked);
+                                        handleCheckboxChange(e, playlist.id);
+                                    }}
 
                                     />
                                 </div>

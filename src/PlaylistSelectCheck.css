@@ -29,17 +29,6 @@ input[type="checkbox"]:checked::before {
   transform: scale(1);
 }
 
-.checkbox-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3em;
-  height: 5em;
-  border-radius: 15px;
-  background-color: rgba(0, 0, 0, 0.1);
-  transition: 120ms background-color ease-in-out;
-}
-
 .playlist-item {
   display: flex;
   align-items: center;
