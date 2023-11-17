@@ -24,7 +24,6 @@ input[type="checkbox"] {
     border-radius: 10px;
     transform: scale(0);
     transition: 120ms transform ease-in-out;
-    /* box-shadow: inset 1em 1em var(--form-control-color); */
     background-color: rgb(57, 243, 60);
   }
   
