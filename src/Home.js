@@ -7,7 +7,7 @@ function Home() {
   const handleLoginClick = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:8888/login', {
+      const response = await fetch('http://localhost:8889/login', {
         method: 'GET',
       });
       if (response.status === 200) {

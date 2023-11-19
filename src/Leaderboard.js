@@ -5,7 +5,7 @@ function Leaderboard() {
     const [leaderboard, setLeaderboard] = useState([]); 
 
     useEffect(() => {
-        fetch(`http://localhost:8888/leaderboard`)
+        fetch(`http://localhost:8889/leaderboard`)
             .then(response => response.json())
             .then(leaderboard => {
                 setLeaderboard(leaderboard);
@@ -20,6 +20,7 @@ function Leaderboard() {
     return (
         <>
             <h4>Leaderboard</h4>
+            <div className="leaderboard-line"></div>
             {leaderboard.length > 0 ? (
                 <div className="leaderboard-container">
                     {leaderboard.map((item, index) => (

@@ -10,7 +10,7 @@ function DeletedSongsPlaylists() {
     const [playlists, setPlaylists] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:8888/get_delete_playlists/${current_user_id}`)
+        fetch(`http://localhost:8889/get_delete_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(deleted_songs_playlists_uris => {
                 const playlists = deleted_songs_playlists_uris;

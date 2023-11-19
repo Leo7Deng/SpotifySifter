@@ -23,7 +23,7 @@ CORS(app)
 
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
-REDIRECT_URI = "http://localhost:8888/callback"
+REDIRECT_URI = "http://localhost:8889/callback"
 
 
 AUTH_URL = "https://accounts.spotify.com/authorize"

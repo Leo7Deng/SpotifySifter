@@ -13,7 +13,7 @@ function PlaylistSelectCheck() {
 
 
     useEffect(() => {
-        fetch(`http://localhost:8888/get_playlists/${current_user_id}`)
+        fetch(`http://localhost:8889/get_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(playlists => {
                 const unselected = playlists.filter(playlist => playlist.selected === false);
@@ -29,13 +29,13 @@ function PlaylistSelectCheck() {
 
         if (isChecked) {
             console.log('Checked Playlist ID:', playlistId);
-            fetch(`http://localhost:8888/select/${current_user_id}/${playlistId}`)
+            fetch(`http://localhost:8889/select/${current_user_id}/${playlistId}`)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
         } else {
             console.log('Unchecked Playlist ID:', playlistId);
-            fetch(`http://localhost:8888/unselect/${current_user_id}/${playlistId}`)
+            fetch(`http://localhost:8889/unselect/${current_user_id}/${playlistId}`)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
