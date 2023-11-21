@@ -105,7 +105,7 @@ def callback():
     
     cron_run()
     # return redirect(f'/get_playlists?current_user_id={current_user.id}')
-    return redirect(f'http://localhost:3000/PlaylistSelectCheck?current_user_id={current_user.id}')
+    return redirect(f'http://localhost:3000/PlaylistSelectCheck?current_user_id={current_user.id}&access_token={access_token}')
 
 @app.route("/get_playlists/<current_user_id>")
 def get_playlists(current_user_id):
@@ -222,3 +222,14 @@ def leaderboard():
     users = User.query.order_by(User.total_played.desc()).all()
     users = [{"username": user.user_id, "total_played": user.total_played} for user in users]
     return jsonify(users[:5])
+
+@app.route("/currently_playing/<access_token>")
+def currently_playing(access_token):
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    response = requests.get("https://api.spotify.com/v1/me/player/currently-playing", headers=headers)
+    if response.status_code == 200:
+        return jsonify(response.json()["item"]["name"])
+    else:
+        return jsonify({"success": False})

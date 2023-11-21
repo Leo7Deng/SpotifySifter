@@ -11,7 +11,6 @@ function PlaylistSelectCheck() {
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
     const [initialChecked, setInitialChecked] = useState(true);
 
-
     useEffect(() => {
         fetch(`http://localhost:8889/get_playlists/${current_user_id}`)
             .then(response => response.json())
@@ -42,11 +41,12 @@ function PlaylistSelectCheck() {
         }
     }
 
-
+    
 
     return (
         <>
             <h4 className="check-title">Select Playlists you want sifted</h4>
+      
             {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
                 <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}style={{ paddingTop: '50px' }}>
                     <div className="playlist-check-container">
