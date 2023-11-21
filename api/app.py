@@ -34,7 +34,7 @@ EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
 @app.route("/login")
 def login():
-    scope = "user-read-recently-played user-read-playback-state user-read-email user-read-private user-library-read playlist-modify-public playlist-modify-private user-modify-playback-state playlist-read-private user-library-modify user-read-currently-playing user-modify-playback-state"
+    scope = "user-read-recently-played user-read-playback-state user-read-email user-read-private user-library-read playlist-modify-public playlist-modify-private user-modify-playback-state playlist-read-private user-read-currently-playing"
     params = {
         "client_id": CLIENT_ID,
         "response_type": "code",
