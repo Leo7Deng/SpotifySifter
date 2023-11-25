@@ -10,31 +10,26 @@ function PlaylistSelectCheck() {
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
     const [initialChecked, setInitialChecked] = useState(true);
-    const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
-    const accessToken = searchParams.get("access_token");
+    // const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
+    // const accessToken = searchParams.get("access_token");
 
-    const fetchCurrentlyPlaying = () => {
-        fetch(`http://localhost:8889/currently_playing/${accessToken}`)
-            .then(response => response.json())
-            .then(data => {
-                // Set the currently playing track state
-                setCurrentlyPlaying(data);
-            })
-            .catch(error => console.error('Error fetching currently playing track:', error));
-    };
+    // const fetchCurrentlyPlaying = () => {
+    //     fetch(`http://localhost:8889/currently_playing/${accessToken}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             setCurrentlyPlaying(data);
+    //         })
+    //         .catch(error => console.error('Error fetching currently playing track:', error));
+    // };
 
-    useEffect(() => {
-        // Fetch initially
-        fetchCurrentlyPlaying();
-        
-        // Fetch every 10 seconds (for example)
-        const interval = setInterval(fetchCurrentlyPlaying, 10000);
+    // useEffect(() => {
+    //     fetchCurrentlyPlaying();
+    //     const interval = setInterval(fetchCurrentlyPlaying, 10000);
 
-        return () => {
-            // Clean up the interval on component unmount
-            clearInterval(interval);
-        };
-    }, []);
+    //     return () => {
+    //         clearInterval(interval);
+    //     };
+    // }, []);
 
     useEffect(() => {
         fetch(`http://localhost:8889/get_playlists/${current_user_id}`)
@@ -66,27 +61,31 @@ function PlaylistSelectCheck() {
         }
     }
 
-    
+
 
     return (
         <>
             <h4 className="check-title">Select Playlists you want sifted</h4>
-            {currentlyPlaying && (<p>Track: {currentlyPlaying}</p>)}
+            {/* {currentlyPlaying && currentlyPlaying.length > 0 && (
+                <p>Track: {currentlyPlaying[0].trackName}</p>
+            )} */}
             {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
-                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}style={{ paddingTop: '50px' }}>
+                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`} style={{ paddingTop: '50px' }}>
                     <div className="playlist-check-container">
                         {selectedPlaylists.map((playlist) => (
                             <div key={playlist.id} className="playlist-item">
-                                <input
-                                    className="playlist-checkbox"
-                                    type="checkbox"
-                                    checked={initialChecked}
-                                    onChange={(e) => {
-                                        setInitialChecked(!initialChecked);
-                                        handleCheckboxChange(e, playlist.id);
-                                    }}
+                                <div className = "checkbox-overlay">
+                                    <input
+                                        className="playlist-checkbox"
+                                        type="checkbox"
+                                        checked={initialChecked}
+                                        onChange={(e) => {
+                                            setInitialChecked(!initialChecked);
+                                            handleCheckboxChange(e, playlist.id);
+                                        }}
 
-                                />
+                                    />
+                                </div>
                                 <iframe frameBorder="0" src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`} loading="lazy" className="playlist-check-iframe"></iframe>
                             </div>
                         ))}
