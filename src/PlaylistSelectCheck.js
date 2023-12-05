@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useState, useRef } from "react";
 import './PlaylistSelectCheck.css';
+import { Link } from 'react-router-dom';
 
 function PlaylistSelectCheck() {
 
@@ -70,9 +71,16 @@ function PlaylistSelectCheck() {
 
     return (
         <>
-            <h4 className="check-title">Select Playlists you want sifted</h4>
+            <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}`}>
+                <div className="right-arrow">
+                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow"/>
+                </div>
+            </Link>
+            <h4 className="check-title">Select playlists you want sifted</h4>
             {currentlyPlaying !== null && typeof currentlyPlaying === 'object' ? (
-                <h5>No track currently playing</h5> 
+                <div className="currently-playing">
+                    <h5>Spotify is not currently playing</h5> 
+                </div>
             ) : (
                 <div className="currently-playing">
                     <h5>Currently Playing: {currentlyPlaying}</h5>
@@ -111,7 +119,7 @@ function PlaylistSelectCheck() {
                     </div>
                 </div>
             ) : (
-                <h4 className="no-songs">No playlists!</h4>
+                <h4 className="currently-playing">No playlists!</h4>
             )}
         </>
     )
