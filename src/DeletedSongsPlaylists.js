@@ -21,7 +21,9 @@ function DeletedSongsPlaylists() {
 
     return (
         <>
-            <h4>Browse the playlists your songs got sifted into!</h4>
+            <div className="deleted-title">
+                <h4>Browse the playlists your songs got sifted into!</h4>
+            </div>
             {playlists.length > 0 ? (
                 <div className="deleted-songs-playlists-container">
                     {playlists.map((playlist) => (

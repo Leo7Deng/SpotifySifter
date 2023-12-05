@@ -54,7 +54,6 @@ input[type="checkbox"]:checked::before {
 .large-check-container {
   display: grid;
   justify-content: center; 
-  transform: translate(0px, 50px);
 }
 
 .large-playlist .playlist-check-container {
@@ -65,3 +64,18 @@ input[type="checkbox"]:checked::before {
   justify-content: center; 
 }
 
+.currently-playing {
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Added to horizontally center */
+  margin: 0 auto 0;
+}
+
+.check-title {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  margin-bottom: 0px;
+}

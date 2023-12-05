@@ -71,9 +71,17 @@ function PlaylistSelectCheck() {
     return (
         <>
             <h4 className="check-title">Select Playlists you want sifted</h4>
-            {currentlyPlaying && (<p>Track: {currentlyPlaying}</p>)}
+            {currentlyPlaying !== null && typeof currentlyPlaying === 'object' ? (
+                <h5>No track currently playing</h5> 
+            ) : (
+                <div className="currently-playing">
+                    <h5>Currently Playing: {currentlyPlaying}</h5>
+                    <img src={require('./musicnote.gif')} alt="GIF" width="28" />
+                </div>
+            )}
+
             {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
-                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}style={{ paddingTop: '50px' }}>
+                <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}>
                     <div className="playlist-check-container">
                         {selectedPlaylists.map((playlist) => (
                             <div key={playlist.id} className="playlist-item">
