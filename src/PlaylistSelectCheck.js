@@ -74,6 +74,13 @@ function PlaylistSelectCheck() {
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}`}>
                 <div className="right-arrow">
                     <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow"/>
+                    <div className="arrow-emoji">🗑️</div>
+                </div>
+            </Link>
+            <Link to = {`/Leaderboard?current_user_id=${current_user_id}`}>
+                <div class="left-arrow">
+                    <img src={require('./rightarrow.png')} alt="Left Arrow"  width="28" class="arrow-left" />
+                    <div class="arrow-emoji-left">🏆</div>
                 </div>
             </Link>
             <h4 className="check-title">Select playlists you want sifted</h4>

@@ -87,21 +87,72 @@ input[type="checkbox"]:checked::before {
   right: 0;
   width: 100px;
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.3s, width 0.3s;
-}
-
-.right-arrow:hover {
-  background-color: rgba(210, 210, 205, 0.5); 
 }
 
 .arrow {
-  transition: width 0.3s ease-in-out;
+  position: absolute; 
+  top: 50%;
+  right: 35px; 
+}
+
+.arrow-emoji {
+  position: absolute; 
+  top: 49.4%;
+  right: 65px; 
+  font-size: 40px;
 }
 
 .right-arrow:hover .arrow {
-  width: 40px; 
+  width: 35px; 
+  transform: translateX(15px) translateY(-2px);
+
+}
+
+.right-arrow:hover .arrow-emoji {
+  font-size: 45px;
+  transform: translateX(11px);
+}
+
+.right-arrow .arrow,
+.right-arrow .arrow-emoji {
+  transition: width 0.4s, transform 0.4s, font-size 0.4s; 
+}
+
+.left-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  width: 100px;
+  height: 100vh;
+}
+
+.arrow-left {
+  left: 35px;
+  transform: rotate(180deg); 
+  position: absolute; 
+  top: 50%;
+}
+
+.arrow-emoji-left {
+  left: 65px;
+  font-size: 40px;
+  position: absolute;
+  top: 49.4%;
+}
+
+.left-arrow:hover .arrow-left {
+  width: 35px;
+  transform: translate(-15px, -2px) rotate(180deg);
+}
+
+.left-arrow:hover .arrow-emoji-left {
+  font-size: 45px;
+  transform: translateX(-11px); 
+}
+
+.left-arrow .arrow-left,
+.left-arrow .arrow-emoji-left {
+  transition: width 0.4s, transform 0.4s, font-size 0.4s;
 }
 
