@@ -87,6 +87,7 @@ input[type="checkbox"]:checked::before {
   right: 0;
   width: 100px;
   height: 100vh;
+  z-index: 999;
 }
 
 .arrow {
@@ -125,6 +126,7 @@ input[type="checkbox"]:checked::before {
   left: 0;
   width: 100px;
   height: 100vh;
+  z-index: 999;
 }
 
 .arrow-left {

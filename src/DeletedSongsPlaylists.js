@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
+import { Link } from 'react-router-dom';
 import './DeletedSongsPlaylists.css';
 
 function DeletedSongsPlaylists() {
 
     const [searchParams] = useSearchParams();
     const current_user_id = searchParams.get("current_user_id");
+    const access_token = searchParams.get("access_token");
     const [playlists, setPlaylists] = useState([]);
 
     useEffect(() => {
@@ -21,6 +23,18 @@ function DeletedSongsPlaylists() {
 
     return (
         <>
+            <Link to = {`/Leaderboard?current_user_id=${current_user_id}&access_token=${access_token}`}>
+                <div className="right-arrow">
+                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow"/>
+                    <div className="arrow-emoji">🏆</div>
+                </div>
+            </Link>
+            <Link to={`/PlaylistSelectCheck?current_user_id=${current_user_id}&access_token=${access_token}`}>
+                <div class="left-arrow">
+                    <img src={require('./rightarrow.png')} alt="Left Arrow"  width="28" class="arrow-left" />
+                    <div class="arrow-emoji-left">🎵</div>
+                </div>
+            </Link>
             <div className="deleted-title">
                 <h4>Browse the playlists your songs got sifted into!</h4>
             </div>
