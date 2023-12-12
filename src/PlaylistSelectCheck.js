@@ -95,7 +95,7 @@ function PlaylistSelectCheck() {
                 </div>
             )}
 
-            {(selectedPlaylists.length > 0 || unselectedPlaylists.length > 0) ? (
+            {(selectedPlaylists.length + unselectedPlaylists.length > 0) ? (
                 <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}>
                     <div className="playlist-check-container">
                         {selectedPlaylists.map((playlist) => (

@@ -76,7 +76,7 @@ def callback():
         current_user = User()
         current_user.email = user_email
         current_user.user_id = user_info.json()['id']
-        current_user.profile_pic = user_info.json()['images'][0]['url']
+        current_user.profile_pic = user_info.json()['images'][1]['url']
         current_user.total_played = 0
         db.session.add(current_user)
         db.session.commit()
@@ -222,8 +222,8 @@ def unselect(current_user_id, playlistId):
 @app.route("/leaderboard")
 def leaderboard():
     users = User.query.order_by(User.total_played.desc()).all()
-    users = [{"username": user.user_id, "total_played": user.total_played} for user in users]
-    return jsonify(users[:5])
+    users = [{"username": user.user_id, "total_played": user.total_played, "profile_pic": user.profile_pic} for user in users]
+    return jsonify(users[:10])
 
 @app.route("/currently_playing/<access_token>")
 def currently_playing(access_token):

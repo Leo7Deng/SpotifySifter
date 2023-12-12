@@ -1,60 +1,3 @@
-.leaderboard-container {
-    position: absolute;
-    height: 80%;
-    width: 100%;
-    top: 15%;
-}
-
-.leaderboard-name {
-    position: absolute;
-    top: 90%;
-    transform: translate(-50%, -50%);
-    font-size: 10px;
-    color:rgb(0, 0, 0);
-    transform: rotate(45deg);
-}
-
-.leaderboard-name-1 {
-    left: 50%;
-}
-
-.leaderboard-name-2 {
-    left: 60%;
-}
-
-.leaderboard-name-3 {
-    left: 40%;
-}
-
-.leaderboard-name-4 {
-    left: 70%;
-}
-
-.leaderboard-name-5 {
-    left: 30%;
-}
-
-.leaderboard-box {
-    background-color: rgb(29, 185, 84);
-    position: absolute;
-    width: 40px;
-    top: 10%;
-    border: 2px solid black;
-    transform: translate(-15px);
-}
-
-.leaderboard-line {
-    /* make a horizontal line at the bottom of the screen */
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background-color: rgb(0, 0, 0);
-    top: 86%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-}
-
 .leaderboard-title {
     margin-left: auto;
     margin-right: auto;
@@ -62,52 +5,59 @@
     margin-bottom: 0px;
 }
 
-
-.leaderboard-box-1 {
-    left: 50%;
+.leaderboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 100%;
+    width: 100%;
 }
 
-.leaderboard-box-2 {
-    left: 60%;
+.leaderboard-user-rank {
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
-.leaderboard-box-3 {
-    left: 40%;
+.leaderboard-user {
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    grid-column-start: 2;
+    background-color: rgb(174, 175, 170);
+    height: 80px;
+    border-radius: 5px;
 }
 
-.leaderboard-box-4 {
-    left: 70%;
+.leaderboard-user-picture {
+    width: 80px;
+    height: 80px;
 }
 
-.leaderboard-box-5 {
-    left: 30%;
+.leaderboard-user-iframe {
+    height: 300px;
+    width: 300px;
+    transform: scale(0.235);
+    transform-origin: 0 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 25px;
 }
 
-.leaderboard-total {
-    position: absolute;
-    top: 5%;
-    transform: translate(-50%, -50%);
-    font-size: 10px;
-    color:rgb(0, 0, 0);
+.leaderboard-user-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+    margin-right: 50px;
 }
 
-.leaderboard-total-1 {
-    left: 50%;
+.leaderboard-user-score {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: 20px;
 }
-
-.leaderboard-total-2 {
-    left: 60%;
-}
-
-.leaderboard-total-3 {
-    left: 40%;
-}
-
-.leaderboard-total-4 {
-    left: 70%;
-}
-
-.leaderboard-total-5 {
-    left: 30%;
-}
-
