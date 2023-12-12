@@ -68,6 +68,7 @@ def callback():
     headers = {
         'Authorization': f'Bearer {token_info["access_token"]}'
     }
+
     user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
     user_email = user_info.json()['email']
     current_user = User.query.filter_by(email=user_email).first()
@@ -75,6 +76,7 @@ def callback():
         current_user = User()
         current_user.email = user_email
         current_user.user_id = user_info.json()['id']
+        current_user.profile_pic = user_info.json()['images'][0]['url']
         current_user.total_played = 0
         db.session.add(current_user)
         db.session.commit()

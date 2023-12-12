@@ -35,7 +35,7 @@
 }
 
 .leaderboard-box {
-    background-color: rgb(47, 255, 47);
+    background-color: rgb(29, 185, 84);
     position: absolute;
     width: 40px;
     top: 10%;
@@ -53,6 +53,13 @@
     left: 50%;
     transform: translate(-50%, -50%);
 
+}
+
+.leaderboard-title {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-bottom: 0px;
 }
 
 

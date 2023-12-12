@@ -37,7 +37,10 @@ function Leaderboard() {
                     <div className="arrow-emoji-left">🗑️</div>
                 </div>
             </Link>
-            <h4>Leaderboard</h4>
+            <div className="leaderboard-title">
+                <h4 style={{ marginBottom: '0px' }}>Leaderboard</h4>
+                <h5 style={{ marginTop: '5px' }}>Songs played</h5>
+            </div>
             <div className="leaderboard-line"></div>
             {leaderboard.length > 0 ? (
                 <div className="leaderboard-container">

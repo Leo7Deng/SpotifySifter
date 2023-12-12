@@ -22,7 +22,7 @@ input[type="checkbox"]::before {
   border-radius: 10px;
   transform: scale(0);
   transition: 120ms transform ease-in-out;
-  background-color: rgb(57, 243, 60);
+  background-color: rgb(29, 185, 84)
 }
 
 input[type="checkbox"]:checked::before {

@@ -18,13 +18,17 @@ h4 {
 }
 
 .deleted-songs-playlists-container {
-    display: grid;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
     position: absolute;
     top: 20%;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 20px;
+    width: 100%; 
+    flex-wrap: wrap; 
 }
 
 .deleted-songs-playlist-iframe {
-    grid-column-start: 2;
+    width: calc(33.33% - 20px);
+    margin: 0; 
+    box-sizing: border-box;
 }
