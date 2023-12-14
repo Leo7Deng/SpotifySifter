@@ -8,6 +8,8 @@ from flask import redirect, request, jsonify
 from api import app, db
 from .models import User, OAuth, Playlist
 from .cron import run as cron_run
+from typing import Union
+from flask import Response
 
 # app = Flask(__name__)
 
@@ -244,7 +246,7 @@ def unselect(current_user_id, playlistId):
 @app.route("/leaderboard")
 def leaderboard():
     users = User.query.order_by(User.total_played.desc()).all()
-    users = [{"username": user.user_id, "total_played": user.total_played, "profile_pic": user.profile_pic} for user in users]
+    users = [{"username": user.user_id, "total_played": user.total_played, "profile_pic": user.profile_pic, "id": user.id} for user in users]
     return jsonify(users[:10])
 
 @app.route("/currently_playing/<access_token>")
@@ -257,3 +259,12 @@ def currently_playing(access_token):
         return jsonify(response.json()["item"]["name"])
     else:
         return jsonify({"success": False})
+
+
+@app.route("/total_played/<current_user_id>/<access_token>")
+def total_played(current_user_id: str, access_token: str):
+    user = User.query.filter_by(id=current_user_id).first()
+    if user is None or user.oauth.access_token != access_token:
+        return jsonify({"success": False, "message": "Invalid access token."})
+    total_played = user.total_played
+    return jsonify({"success": True, "total_played": total_played, "profile_pic": user.profile_pic, "username": user.user_id})

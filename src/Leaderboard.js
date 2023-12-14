@@ -5,19 +5,45 @@ import { Link } from 'react-router-dom';
 
 function Leaderboard() {
     const [leaderboard, setLeaderboard] = useState([]);
+    const [isUserInLeaderboard, setIsUserInLeaderboard] = useState(false);
+    const [total_played, setTotalPlayed] = useState(0);
+    const [profile_pic, setProfilePic] = useState(null);
+    const [username, setUsername] = useState(null);
+
+    const [searchParams] = useSearchParams();
+    const access_token = searchParams.get("access_token");
+    const current_user_id = searchParams.get("current_user_id");
 
     useEffect(() => {
         fetch(`http://localhost:8889/leaderboard`)
             .then(response => response.json())
             .then(leaderboard => {
                 setLeaderboard(leaderboard);
+                console.log('Current User ID:', current_user_id);
+                console.log('Leaderboard:', leaderboard);
+
+                const foundUser = leaderboard.find(user => user.id === Number(current_user_id));
+                console.log('Found User:', foundUser);
+
+                if (foundUser) {
+                    setIsUserInLeaderboard(true);
+                }
             })
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [current_user_id]);
 
-    const [searchParams] = useSearchParams();
-    const access_token = searchParams.get("access_token");
-    const current_user_id = searchParams.get("current_user_id");
+    useEffect(() => {
+        if (!isUserInLeaderboard) {
+            fetch(`http://localhost:8889/total_played/${current_user_id}/${access_token}`)
+                .then(response => response.json())
+                .then(data => {
+                    setTotalPlayed(data.total_played);
+                    setProfilePic(data.profile_pic);
+                    setUsername(data.username);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }, [isUserInLeaderboard]);
 
     return (
         <>
@@ -48,6 +74,17 @@ function Leaderboard() {
                         <div className="leaderboard-user-score">{user.total_played}</div>
                     </div>
                 ))}
+
+                {!isUserInLeaderboard && (
+                    <div className="leaderboard-user">
+                        <div className="leaderboard-user-rank">...</div>
+                        <div className="leaderboard-user-picture">
+                            <iframe className="leaderboard-user-iframe" src={profile_pic} frameBorder="0"></iframe>
+                        </div>
+                        <div className="leaderboard-user-name">{username}</div>
+                        <div className="leaderboard-user-score">{total_played}</div>
+                    </div>
+                )}
             </div>
         </>
     );
