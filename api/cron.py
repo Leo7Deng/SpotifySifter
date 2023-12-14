@@ -181,13 +181,19 @@ def set_prev_queue(user_id, current_queue_uris):
 
 
 def delete_tracks_from_playlist(playlist, change_tracks, headers):
+    breakpoint()
     playlist_uri = playlist.playlist_id
-    tracks_data = json.dumps({"tracks": [{"uri": uri} for uri in change_tracks]})
-
-    ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+    if playlist_uri == "collection":
+        DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/me/tracks"
+        tracks_data = json.dumps({"ids": [uri.split(":")[-1] for uri in change_tracks]})
+    else:
+        DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+        tracks_data = json.dumps({"tracks": [{"uri": uri} for uri in change_tracks]})
+    
     response = requests.delete(
-        ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data
-    ).text
+        DELETE_ITEMS_ENDPOINT, headers=headers, data=tracks_data
+    )
+    print(response.status_code)
 
 import requests
 def refresh_token(user):

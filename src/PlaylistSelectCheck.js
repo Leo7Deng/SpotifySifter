@@ -43,19 +43,22 @@ function PlaylistSelectCheck() {
             .then(response => response.json())
             .then(playlists => {
                 const likedSongsPlaylist = playlists.find(playlist => playlist.name === "Liked Songs");
-
+    
                 if (likedSongsPlaylist && likedSongsPlaylist.selected) {
-                    const selected = playlists.filter(playlist => playlist.selected && playlist.name !== "Liked Songs");
+                    const selected = playlists.filter(playlist => playlist.selected && playlist.id !== likedSongsPlaylist.id);
                     setSelectedPlaylists([likedSongsPlaylist, ...selected]);
+                    setUnselectedPlaylists(playlists.filter(playlist => !playlist.selected));
                 } else {
-                    const selected = playlists.filter(playlist => playlist.selected && playlist.name !== "Liked Songs");
-                    const unselected = playlists.filter(playlist => !playlist.selected && playlist.name !== "Liked Songs");
+                    const selected = playlists.filter(playlist => playlist.selected);
+                    const unselected = playlists.filter(playlist => !playlist.selected && playlist.id !== likedSongsPlaylist.id);
                     setUnselectedPlaylists([likedSongsPlaylist, ...unselected]);
                     setSelectedPlaylists(selected);
                 }
             })
             .catch(error => console.error('Error:', error));
     }, [current_user_id]);
+    
+
 
     function handleCheckboxChange(event, playlistId) {
         const isChecked = event.target.checked;
