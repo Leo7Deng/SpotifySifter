@@ -3,10 +3,10 @@ body {
 }
 
 .home {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    left: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-top: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,11 +42,10 @@ button {
     height: 30px;
     animation: spin 2s linear infinite;
     margin: 30px;
-    position: absolute;
-    top: 70%;
-    left: 44%;
-    transform: translate(-50%, -50%);
-
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-bottom: 0px;
   }
   
   @keyframes spin {

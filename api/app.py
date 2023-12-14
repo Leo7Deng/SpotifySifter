@@ -79,6 +79,17 @@ def callback():
         current_user.profile_pic = user_info.json()['images'][1]['url']
         current_user.total_played = 0
         db.session.add(current_user)
+        current_user = User.query.filter_by(email=user_email).first()  
+        if not current_user:
+            raise Exception("User not found.")
+        liked_songs_playlist = Playlist()
+        liked_songs_playlist.user_id = current_user.id
+        liked_songs_playlist.playlist_id = "collection"
+        liked_songs_playlist.name = "Liked Songs"
+        liked_songs_playlist.currently_playing = False
+        liked_songs_playlist.selected = False
+        liked_songs_playlist.delete_playlist = None
+        db.session.add(liked_songs_playlist)
         db.session.commit()
         print("Added new user")
 
@@ -128,10 +139,20 @@ def get_playlists(current_user_id):
 
     for item in response.json()["items"]:
         selected = False
-        for playlist in database_playlists:
-            if playlist.playlist_id == item["id"]:
-                if playlist.selected:
-                    selected = True
+        if item["id"] in database_playlists:
+            if database_playlists[item["id"]].selected:
+                selected = True
+        elif item["owner"]["id"] == current_user.user_id and item["id"] not in deleted_songs_playlists:
+            playlist_db = Playlist()
+            playlist_db.user_id = current_user_id
+            playlist_db.playlist_id = item["id"]
+            playlist_db.name = item["name"]
+            playlist_db.currently_playing = False
+            playlist_db.selected = False
+            playlist_db.delete_playlist = None
+            db.session.add(playlist_db)
+            db.session.commit()
+
         playlist = {
             "name": item["name"],
             "id": item["id"],
