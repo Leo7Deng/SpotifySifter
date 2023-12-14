@@ -140,22 +140,22 @@ def get_playlists(current_user_id):
     deleted_songs_playlists = [playlist.delete_playlist for playlist in deleted_songs_playlists]
 
     database_playlists = Playlist.query.filter_by(user_id=current_user_id).all()
-
+    breakpoint()
     for item in response.json()["items"]:
         selected = False
-        if item["id"] in database_playlists:
-            if database_playlists[item["id"]].selected:
-                selected = True
-        elif item["owner"]["id"] == current_user.user_id and item["id"] not in deleted_songs_playlists:
-            playlist_db = Playlist()
-            playlist_db.user_id = current_user_id
-            playlist_db.playlist_id = item["id"]
-            playlist_db.name = item["name"]
-            playlist_db.currently_playing = False
-            playlist_db.selected = False
-            playlist_db.delete_playlist = None
-            db.session.add(playlist_db)
-            db.session.commit()
+        for playlist in database_playlists:
+            if playlist.playlist_id == item["id"]:
+                selected = playlist.selected
+            elif item["owner"]["id"] == current_user.user_id and item["id"] not in deleted_songs_playlists:
+                playlist_db = Playlist()
+                playlist_db.user_id = current_user_id
+                playlist_db.playlist_id = item["id"]
+                playlist_db.name = item["name"]
+                playlist_db.currently_playing = False
+                playlist_db.selected = False
+                playlist_db.delete_playlist = None
+                db.session.add(playlist_db)
+                db.session.commit()
 
         playlist = {
             "name": item["name"],
