@@ -130,8 +130,10 @@ def get_playlists(current_user_id):
     headers = {"Authorization": f"Bearer {access_token}"}
     PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
     response = requests.get(PLAYLISTS_URL, headers=headers, params={"limit": 50})
-    playlists = []
- 
+
+    liked_songs_playlist = Playlist.query.filter_by(user_id=current_user_id, playlist_id="collection").first()
+    playlists = [{"name": "Liked Songs", "id": "collection", "selected": liked_songs_playlist.selected if liked_songs_playlist else False}]
+
     deleted_songs_playlists = Playlist.query.filter(Playlist.delete_playlist != None).all()
     deleted_songs_playlists = [playlist.delete_playlist for playlist in deleted_songs_playlists]
 
@@ -157,7 +159,6 @@ def get_playlists(current_user_id):
             "name": item["name"],
             "id": item["id"],
             "owner_id": item["owner"]["id"],
-            "image": item["images"][0]["url"]
         }
 
         if selected:

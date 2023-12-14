@@ -51,6 +51,23 @@ input[type="checkbox"]:checked::before {
   transform: translate(0px, 10px);
 }
 
+.liked-songs {
+  border-radius: 15px;
+  height: 100px;
+  transform: translate(0px, -8px);
+}
+
+.trim {
+  max-width: 300px;
+  max-height: 80px;
+  overflow: hidden;
+  border-radius: 15px;
+  border-color: blueviolet;
+  border-width: 5px;
+  /* border-style: solid; */
+}
+
+
 .large-check-container {
   display: grid;
   justify-content: center; 
