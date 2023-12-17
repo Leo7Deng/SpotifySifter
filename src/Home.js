@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Home.css';
 
 function Home() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
+  const [authUrl, setAuthUrl] = useState('');
+
+  useEffect(() => {
+    if (fadeOut && authUrl) {
+      const timer = setTimeout(() => {
+        window.location.href = authUrl;
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [fadeOut, authUrl]);
 
   const handleLoginClick = async () => {
     try {
-      setIsLoading(true);
+      setFadeOut(true);
       const response = await fetch('http://localhost:8889/login', {
         method: 'GET',
       });
       if (response.status === 200) {
         const { auth_url } = await response.json();
-        console.log(auth_url)
-        window.location.href = auth_url;
+        setAuthUrl(auth_url); 
       } else {
         console.error('Failed to initiate login:', response.status, response.statusText);
       }
@@ -24,13 +34,14 @@ function Home() {
 
   return (
     <>
-      <div className='home'>
+      <div className={`home ${fadeOut ? 'fade-out' : ''}`}>
         <h1>Spotify Sifter</h1>
-        <button className="home-button" onClick={handleLoginClick}>Login with Spotify</button>
+        <button className="home-button" onClick={handleLoginClick}>
+          Login with Spotify
+        </button>
       </div>
-      {isLoading && <div className="loader"></div>}
     </>
   );
 }
-  
+
 export default Home;

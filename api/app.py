@@ -140,7 +140,6 @@ def get_playlists(current_user_id):
     deleted_songs_playlists = [playlist.delete_playlist for playlist in deleted_songs_playlists]
 
     database_playlists = Playlist.query.filter_by(user_id=current_user_id).all()
-    breakpoint()
     for item in response.json()["items"]:
         selected = False
         for playlist in database_playlists:
