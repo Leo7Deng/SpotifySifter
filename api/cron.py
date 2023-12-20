@@ -185,7 +185,6 @@ def set_prev_queue(user_id, current_queue_uris):
 
 
 def delete_tracks_from_playlist(playlist, change_tracks, headers):
-    breakpoint()
     playlist_uri = playlist.playlist_id
     if playlist_uri == "collection":
         DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/me/tracks"
