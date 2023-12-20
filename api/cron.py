@@ -5,6 +5,9 @@ import requests
 import json
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError
+import atexit
+import threading
 from api import db, app
 from .models import User, OAuth, Playlist, PrevQueue, Skipped, Playlist
 
@@ -15,6 +18,7 @@ EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
 
+job_lock = threading.Lock()
 
 def set_repeat(access_token, headers):
     repeat_data = {"state": "context"}
@@ -238,6 +242,14 @@ def skip_logic():
 
 def skip_logic_user(user):
     refresh_token(user)
+    acquired = job_lock.acquire(blocking=False)
+    if acquired:
+        try:
+            # Your skip_logic() implementation here
+            print("Executing skip_logic()")
+        finally:
+            # Release the lock after the job finishes
+            job_lock.release()
     access_token = user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
@@ -367,6 +379,7 @@ def run():
     skip_logic()
     scheduler = BackgroundScheduler()
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
+    
     scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
