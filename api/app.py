@@ -240,7 +240,8 @@ def get_delete_playlists(current_user_id):
     if user is None:
         raise Exception("User not found.")
     deleted_songs_playlists = Playlist.query.filter(
-        Playlist.delete_playlist != None
+        Playlist.delete_playlist != None,
+        Playlist.user_id == user.id
     ).all()
     deleted_songs_playlists_uris = [
         playlist.delete_playlist for playlist in deleted_songs_playlists
