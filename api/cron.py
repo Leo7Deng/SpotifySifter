@@ -350,9 +350,12 @@ def skip_logic_user(user):
         change_tracks.append(skipped_track.track_id)
         if current_playlist.delete_playlist:
             playlist_uri = current_playlist.delete_playlist
-            ADD_ITEMS_ENDPOINT = (
-                f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
-            )
+            if playlist_uri == "collection":
+                ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/me/tracks"
+            else:
+                ADD_ITEMS_ENDPOINT = (
+                    f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+                )
             tracks_data = json.dumps(
                 {
                     "uris": [skipped_track.track_id],

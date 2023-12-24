@@ -239,7 +239,6 @@ def get_delete_playlists(current_user_id):
     user = User.query.filter_by(id=current_user_id).first()
     if user is None:
         raise Exception("User not found.")
-    access_token = user.oauth.access_token
     deleted_songs_playlists = Playlist.query.filter(
         Playlist.delete_playlist != None
     ).all()
