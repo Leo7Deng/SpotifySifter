@@ -53,3 +53,26 @@ button {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+  @keyframes bruh {
+    0% { transform: rotate(0deg); }
+    1% { transform: rotate(0deg); }
+    2% { transform: rotate(0deg); }
+    3% { transform: rotate(0deg); }
+    4% { transform: rotate(0deg); }
+    5% { transform: rotate(0deg); }
+    6% { transform: rotate(0deg); }
+    7% { transform: rotate(0deg); }
+    8% { transform: rotate(0deg); }
+    9% { transform: rotate(0deg); }
+    10% { transform: rotate(0deg); }
+    11% { transform: rotate(0deg); }
+    12% { transform: rotate(0deg); }
+    13% { transform: rotate(0deg); }
+    14% { transform: rotate(0deg); }
+    15% { transform: rotate(0deg); }
+    16% { transform: rotate(0deg); }
+    17% { transform: rotate(0deg); }
+    101% { transform: rotate(0deg); }
+    -5% { transform: rotate(0deg); }
+    hi leo
+  }
