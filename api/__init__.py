@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -11,13 +12,15 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 metadata = MetaData(naming_convention=convention)
-db = SQLAlchemy(metadata=metadata)
+db = SQLAlchemy(metadata=metadata) # type: ignore
 
 # def create_app(): 
 
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["AWS_DATABASE_URL"]
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize Database Plugin

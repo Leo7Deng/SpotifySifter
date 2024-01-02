@@ -1,28 +1,12 @@
 from api import db
 
-# from app import app
-# db = SQLAlchemy(app, metadata=metadata)
-# # db.init_app(app)
-# migrate = Migrate(app, db)
-# migrate.init_app(app, db, render_as_batch=True)
-
-
 class Skipped(db.Model):
     __tablename__ = "skipped"
     id = db.Column(db.Integer, primary_key=True)
     skipped_count = db.Column(db.Integer)
-    track_id = db.Column(db.String(120), db.ForeignKey("track.id"))
+    track_id = db.Column(db.String(120))
     playlist_id = db.Column(db.Integer, db.ForeignKey("playlist.id"))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
-
-class Track(db.Model):
-    __tablename__ = "track"
-    id = db.Column(db.Integer, primary_key=True)
-    track_id = db.Column(db.String(120))
-    name = db.Column(db.String(120))
-    playlist_id = db.Column(db.Integer, db.ForeignKey("playlist.id"))
-
 
 class Playlist(db.Model):
     __tablename__ = "playlist"
@@ -45,7 +29,7 @@ class User(db.Model):
 class PrevQueue(db.Model):
     __tablename__ = "prev_queue"
     id = db.Column(db.Integer, primary_key=True)
-    track_id = db.Column(db.Integer, db.ForeignKey("track.id"))
+    track_id = db.Column(db.String(120))
     queue_index = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
