@@ -1,39 +1,91 @@
 import { useEffect, useState } from "react";
 import './Leaderboard.css';
+import { useSearchParams } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 function Leaderboard() {
-    const [leaderboard, setLeaderboard] = useState([]); 
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [isUserInLeaderboard, setIsUserInLeaderboard] = useState(false);
+    const [total_played, setTotalPlayed] = useState(0);
+    const [profile_pic, setProfilePic] = useState(null);
+    const [username, setUsername] = useState(null);
+
+    const [searchParams] = useSearchParams();
+    const access_token = searchParams.get("access_token");
+    const current_user_id = searchParams.get("current_user_id");
 
     useEffect(() => {
         fetch(`http://localhost:8889/leaderboard`)
             .then(response => response.json())
             .then(leaderboard => {
                 setLeaderboard(leaderboard);
+                console.log('Current User ID:', current_user_id);
+                console.log('Leaderboard:', leaderboard);
+
+                const foundUser = leaderboard.find(user => user.id === Number(current_user_id));
+                console.log('Found User:', foundUser);
+
+                if (foundUser) {
+                    setIsUserInLeaderboard(true);
+                }
             })
             .catch(error => console.error('Error:', error));
-    }, []);
-    
-    const totalPlayedValues = leaderboard.map(item => item.total_played);
-    const maxTotalPlayed = Math.max(...totalPlayedValues);
-    const heights = totalPlayedValues.map(value => (value / maxTotalPlayed) * 79);
+    }, [current_user_id]);
+
+    useEffect(() => {
+        if (!isUserInLeaderboard) {
+            fetch(`http://localhost:8889/total_played/${current_user_id}/${access_token}`)
+                .then(response => response.json())
+                .then(data => {
+                    setTotalPlayed(data.total_played);
+                    setProfilePic(data.profile_pic);
+                    setUsername(data.username);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }, [isUserInLeaderboard]);
 
     return (
         <>
-            <h4>Leaderboard</h4>
-            <div className="leaderboard-line"></div>
-            {leaderboard.length > 0 ? (
-                <div className="leaderboard-container">
-                    {leaderboard.map((item, index) => (
-                        <>
-                            <div className={`leaderboard-box leaderboard-box-${index+1}`} style={{ height: `${heights[index]}%` }} key={index}></div>
-                            <h5 className={`leaderboard-name leaderboard-name-${index+1}`}>{item.username}</h5>
-                            <h5 className={`leaderboard-total leaderboard-total-${index+1}`}>{item.total_played}</h5>
-                        </>
-                    ))}
+            <Link to={`/PlaylistSelectCheck?current_user_id=${current_user_id}&access_token=${access_token}`}>
+                <div className="right-arrow">
+                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
+                    <div className="arrow-emoji">🎵</div>
                 </div>
-            ) : (
-                <h4 className="no-songs">No songs have been sifted!</h4>
-            )}
+            </Link>
+            <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}&access_token=${access_token}`}>
+                <div class="left-arrow">
+                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow-left" />
+                    <div className="arrow-emoji-left">🗑️</div>
+                </div>
+            </Link>
+            <div className="leaderboard-title">
+                <h4 style={{ marginBottom: '0px' }}>Leaderboard</h4>
+                <h5 style={{ marginTop: '0px' }}>Total Songs Played</h5>
+            </div>
+            <div className="leaderboard">
+                {leaderboard.map((user, index) => (
+                    <div className="leaderboard-user" key={index}>
+                        <div className="leaderboard-user-rank">#{index + 1}</div>
+                        <div className="leaderboard-user-picture">
+                            <iframe className="leaderboard-user-iframe" src={user.profile_pic} frameBorder="0"></iframe>
+                        </div>
+                        <div className="leaderboard-user-name">{user.username}</div>
+                        <div className="leaderboard-user-score">{user.total_played}</div>
+                    </div>
+                ))}
+
+                {!isUserInLeaderboard && (
+                    <div className="leaderboard-user">
+                        <div className="leaderboard-user-rank">...</div>
+                        <div className="leaderboard-user-picture">
+                            <iframe className="leaderboard-user-iframe" src={profile_pic} frameBorder="0"></iframe>
+                        </div>
+                        <div className="leaderboard-user-name">{username}</div>
+                        <div className="leaderboard-user-score">{total_played}</div>
+                    </div>
+                )}
+            </div>
         </>
     );
 }

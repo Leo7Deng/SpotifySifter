@@ -5,6 +5,9 @@ import requests
 import json
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError
+import atexit
+import threading
 from api import db, app
 from .models import User, OAuth, Playlist, PrevQueue, Skipped, Playlist
 
@@ -15,6 +18,7 @@ EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
 
+job_lock = threading.Lock()
 
 def set_repeat(access_token, headers):
     repeat_data = {"state": "context"}
@@ -183,12 +187,17 @@ def set_prev_queue(user_id, current_queue_uris):
 
 def delete_tracks_from_playlist(playlist, change_tracks, headers):
     playlist_uri = playlist.playlist_id
-    tracks_data = json.dumps({"tracks": [{"uri": uri} for uri in change_tracks]})
-
-    ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+    if playlist_uri == "collection":
+        DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/me/tracks"
+        tracks_data = json.dumps({"ids": [uri.split(":")[-1] for uri in change_tracks]})
+    else:
+        DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+        tracks_data = json.dumps({"tracks": [{"uri": uri} for uri in change_tracks]})
+    
     response = requests.delete(
-        ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data
-    ).text
+        DELETE_ITEMS_ENDPOINT, headers=headers, data=tracks_data
+    )
+    print(response.status_code)
 
 import requests
 def refresh_token(user):
@@ -233,6 +242,14 @@ def skip_logic():
 
 def skip_logic_user(user):
     refresh_token(user)
+    acquired = job_lock.acquire(blocking=False)
+    if acquired:
+        try:
+            # Your skip_logic() implementation here
+            print("Executing skip_logic()")
+        finally:
+            # Release the lock after the job finishes
+            job_lock.release()
     access_token = user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
@@ -334,9 +351,12 @@ def skip_logic_user(user):
         change_tracks.append(skipped_track.track_id)
         if current_playlist.delete_playlist:
             playlist_uri = current_playlist.delete_playlist
-            ADD_ITEMS_ENDPOINT = (
-                f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
-            )
+            if playlist_uri == "collection":
+                ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/me/tracks"
+            else:
+                ADD_ITEMS_ENDPOINT = (
+                    f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+                )
             tracks_data = json.dumps(
                 {
                     "uris": [skipped_track.track_id],
@@ -362,6 +382,7 @@ def run():
     skip_logic()
     scheduler = BackgroundScheduler()
     # scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
+    
     scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=5)
     scheduler.start()
     # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)

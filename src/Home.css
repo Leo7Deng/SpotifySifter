@@ -3,10 +3,10 @@ body {
 }
 
 .home {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    left: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-top: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,14 +42,145 @@ button {
     height: 30px;
     animation: spin 2s linear infinite;
     margin: 30px;
-    position: absolute;
-    top: 70%;
-    left: 44%;
-    transform: translate(-50%, -50%);
-
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-bottom: 0px;
   }
   
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+  .home {
+    opacity: 1;
+    transition: opacity 1s;
+  }
+  
+  .home.fade-out {
+    opacity: 0;
+  }
+
+  .symbol {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    /* column gap */
+    grid-column-gap: 20px;
+    text-align: center;
+    background-color: rgb(201, 189, 174);
+    margin-top: 250px;
+    padding-bottom: 70px;
+  }
+
+  .symbol-music-paragraph {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .symbol-music {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 50px;
+  }
+
+  .symbol-trash {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 50px;
+  }
+
+  .symbol-trash-paragraph {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 3;
+    grid-row: 2;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .symbol-trophy {
+    grid-column: 4;
+    grid-row: 1;
+    font-size: 50px;
+  }
+
+  .symbol-trophy-paragraph {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 4;
+    grid-row: 2;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .about {
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 3fr 1fr;
+    grid-template-rows: 0.2fr 1fr 1fr;
+    background-color: rgb(201, 189, 174);
+  }
+
+  .about-title {
+    font-size: 50px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 2;
+    grid-row: 4;
+  }
+
+  .about-paragraph {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 3;
+    grid-row: 4;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .how-title {
+    font-size: 50px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 2;
+    grid-row: 5;
+  }
+
+  .how-paragraph {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 3;
+    grid-row: 5;
+    margin-top: auto;
+    margin-bottom: auto;
+  } 
+
+  .more-title {
+    font-size: 50px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 2;
+    grid-row: 6;
+  }
+
+  .more-paragraph {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    grid-column: 3;
+    grid-row: 6;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+

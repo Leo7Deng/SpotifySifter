@@ -1,6 +1,10 @@
 h4 {
     color: rgb(0, 0, 0);
     font-size: 20px;
+    
+}
+
+.deleted-title {
     position: absolute;
     transform: translate(-50%, -50%);
     top: 5%;
@@ -8,19 +12,25 @@ h4 {
 }
 
 .no-songs {
-    top: 20%;
-    left: 50%;
-    font-size: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-top: 80px;
+    font-size: 16px;
 }
 
 .deleted-songs-playlists-container {
-    display: grid;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
     position: absolute;
     top: 20%;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 20px;
+    width: 100%; 
+    flex-wrap: wrap; 
 }
 
 .deleted-songs-playlist-iframe {
-    grid-column-start: 2;
+    width: calc(33.33% - 20px);
+    margin: 0; 
+    box-sizing: border-box;
 }
