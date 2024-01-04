@@ -34,6 +34,15 @@ input[type="checkbox"]:checked::before {
     outline-offset: max(2px, 0.15em);
 } */
 
+.playlist-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  max-height: 80px;
+  margin-bottom: 10px;
+}
+
 
 .playlist-check-container {
   display: flex;
