@@ -37,7 +37,7 @@ class OAuth(db.Model):
     __tablename__ = "oauth"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    access_token = db.Column(db.String(120))
-    refresh_token = db.Column(db.String(120))
+    access_token = db.Column(db.String(360))
+    refresh_token = db.Column(db.String(180))
     expires_at = db.Column(db.Integer)
     user = db.relationship("User", backref=db.backref("oauth", uselist=False))

@@ -51,7 +51,6 @@ def create_playlist(access_token, playlist, t, user_id, headers):
 
 def get_response(access_token, endpoint):
     headers = {"Authorization": f"Bearer {access_token}"}
-    print(endpoint, headers)
     response = requests.get(endpoint, headers=headers)
     if not response.ok:
         raise Exception(f"HTTP error! status: {response.status_code}")
