@@ -97,28 +97,28 @@ def update_currently_playing_playlist(user):
         currently_playing_playlist = None
         playlists = Playlist.query.filter_by(user_id=user.id).all()
         for playlist in playlists:
-            if playlist.playlist_id == uri:
+            if playlist.playlist_id == uri: # if playlist is currently playing
                 currently_playing_playlist = playlist
-                if playlist.selected == True:
+                if playlist.selected == True: # if playlist is selected
                     
                     is_playing = True
-                    if playlist.currently_playing == False:
+                    if playlist.currently_playing == False: # if playlist was not previously playing
                         PrevQueue.query.filter_by(user_id=user.id).delete()
                     playlist.currently_playing = True
-                else:
+                else: # if playlist is not selected
                     selected = False
                     playlist.currently_playing = False
                     
-            else:
+            else: # if playlist is not currently playing
                 playlist.currently_playing = False
         db.session.commit()
-        if selected == False:
+        if selected == False: # if playlist is not selected
             print("Playing in an unselected playlist")
             return False
-        if currently_playing_playlist is None:
+        if currently_playing_playlist is None: # if playlist is not owned by user
             print("Playing in a playlist not owned by user")
             return False
-        if is_playing == True:
+        if is_playing == True: # if playlist is currently playing
             print("Currently playing " + currently_playing_playlist.name)
             return is_playing
     return is_playing
@@ -150,6 +150,7 @@ def update_currently_playing_playlist(user):
 
 
 def get_current_queue_uris(user_id):
+    # get current queue
     oauth = OAuth.query.get(user_id)
     if oauth is None:
         return []
@@ -169,6 +170,7 @@ def get_current_queue_uris(user_id):
 
 
 def set_prev_queue(user_id, current_queue_uris):
+    # each user has 20 prev_queue items
     prev_queue = PrevQueue.query.filter_by(user_id=user_id).all()
     if prev_queue:
         for i, uri in enumerate(current_queue_uris):
@@ -256,6 +258,7 @@ def skip_logic_user(user):
         # print("Not currently playing")
         return
 
+    # wont work if queue is less than 20 songs
     current_queue_uris = get_current_queue_uris(user_id=user.id)
     if len(current_queue_uris) < 20:
         set_repeat(access_token=access_token, headers=headers)
@@ -275,6 +278,7 @@ def skip_logic_user(user):
         set_prev_queue(user_id=user.id, current_queue_uris=current_queue_uris)
         return
 
+    # tracks played in the last 60 seconds including skipped
     played_tracks_60_uris = [
         track.track_id
         for track in prev_queue
@@ -309,10 +313,12 @@ def skip_logic_user(user):
         print("No recently played tracks found")
         return
 
+    # tracks played in the last 60 seconds excluding skipped
     recently_played_uris = [
         item["track"]["uri"] for item in recently_played_response["items"]
     ]
 
+    # tracks skipped in the last 60 seconds
     skipped_tracks_60_uris = [
         track for track in played_tracks_60_uris if track not in recently_played_uris
     ]
@@ -328,6 +334,7 @@ def skip_logic_user(user):
     # print("Skipped: ", skipped_tracks_60_list)
     print(len(skipped_tracks_60_uris), " songs skipped")
 
+    # tracks that will be removed from playlist
     change_tracks = []
     for skipped_uri in skipped_tracks_60_uris:
         if skipped_uri not in skipped_tracks_history_uris:
