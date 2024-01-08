@@ -6,7 +6,7 @@ import './PlaylistSelect.css';
 function PlaylistSelect() {
     const [leftPlaylists, setLeftPlaylists] = useState([]);
     const [rightPlaylists, setRightPlaylists] = useState([]);
-    const [clickedPlaylist, setClickedPlaylist] = useState(null);
+    const [clickedPlaylist] = useState(null);
     const [hoveredPlaylist, setHoveredPlaylist] = useState(null);
     const [searchParams] = useSearchParams();
     const current_user_id = searchParams.get("current_user_id");
@@ -43,14 +43,14 @@ function PlaylistSelect() {
                 setRightPlaylists(rightPlaylists);
             })
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [current_user_id]);
 
     useEffect(() => {
         fetch(`http://localhost:9/manage_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(data => console.log('Manage Playlists Response:', data))
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [current_user_id]);
 
     function playlistContainer(playlists, isLeftContainer) {
         const sortedPlaylists = [...playlists].sort((a, b) => a.name.localeCompare(b.name));
@@ -73,6 +73,7 @@ function PlaylistSelect() {
                         frameBorder="0"
                         allowFullScreen=""
                         className="playlist-iframe"
+                        title={playlist.name}
                         loading="lazy"
                         key={`embed-${playlist.id}`}
                     ></iframe>
@@ -99,7 +100,7 @@ function PlaylistSelect() {
                         key={playlist.id}
                         className={`large-card-embed${hoveredPlaylist === playlist.id ? '' : ' hide-embed'}`}
                     >
-                        <div className="overlay" style={{ display: hoveredPlaylist === playlist.id ? 'none' : 'block' }}></div>
+                        <div className="overlay" title={playlist.id} style={{ display: hoveredPlaylist === playlist.id ? 'none' : 'block' }}></div>
                         <iframe
                             id={`embed-${playlist.id}`} 
                             style={{ borderRadius: '12px' }}
@@ -109,6 +110,7 @@ function PlaylistSelect() {
                             frameBorder="0"
                             allowFullScreen=""
                             loading="lazy"
+                            title={playlist.name}
                             // allow="allow=autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         ></iframe>
                     </div>

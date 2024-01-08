@@ -43,7 +43,7 @@ function Leaderboard() {
                 })
                 .catch(error => console.error('Error:', error));
         }
-    }, [isUserInLeaderboard]);
+    }, [isUserInLeaderboard, current_user_id, access_token]);
 
     return (
         <>
@@ -68,7 +68,7 @@ function Leaderboard() {
                     <div className="leaderboard-user" key={index}>
                         <div className="leaderboard-user-rank">#{index + 1}</div>
                         <div className="leaderboard-user-picture">
-                            <iframe className="leaderboard-user-iframe" src={user.profile_pic} frameBorder="0"></iframe>
+                            <iframe className="leaderboard-user-iframe" src={user.profile_pic} frameBorder="0" title={`User ${user.username}`}></iframe>
                         </div>
                         <div className="leaderboard-user-name">{user.username}</div>
                         <div className="leaderboard-user-score">{user.total_played}</div>
@@ -79,7 +79,7 @@ function Leaderboard() {
                     <div className="leaderboard-user">
                         <div className="leaderboard-user-rank">...</div>
                         <div className="leaderboard-user-picture">
-                            <iframe className="leaderboard-user-iframe" src={profile_pic} frameBorder="0"></iframe>
+                            <iframe className="leaderboard-user-iframe" src={profile_pic} frameBorder="0" title={`Bottom-User ${username}`}></iframe>
                         </div>
                         <div className="leaderboard-user-name">{username}</div>
                         <div className="leaderboard-user-score">{total_played}</div>

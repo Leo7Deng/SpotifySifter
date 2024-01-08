@@ -19,7 +19,7 @@ function DeletedSongsPlaylists() {
                 setPlaylists(playlists);
             })
             .catch(error => console.error('Error:', error));
-    }, []);
+    }, [current_user_id]);
 
     return (
         <>
@@ -41,7 +41,7 @@ function DeletedSongsPlaylists() {
             {playlists.length > 0 ? (
                 <div className="deleted-songs-playlists-container">
                     {playlists.map((playlist) => (
-                        <iframe src={`https://open.spotify.com/embed/playlist/${playlist}`} width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media" className="deleted-songs-playlist-iframe"></iframe>
+                        <iframe src={`https://open.spotify.com/embed/playlist/${playlist}`} width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media" className="deleted-songs-playlist-iframe" title={`Playlist ${playlist}`}></iframe>
                     ))}
                 </div>
             ) : (

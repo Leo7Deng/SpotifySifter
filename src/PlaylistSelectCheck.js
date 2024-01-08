@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useCallback } from "react";
 import './PlaylistSelectCheck.css';
 import { Link } from 'react-router-dom';
 
@@ -10,12 +10,11 @@ function PlaylistSelectCheck() {
     const current_user_id = searchParams.get("current_user_id");
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
-    const [likedSongs, setLikedSongs] = useState([]);
     const [initialChecked, setInitialChecked] = useState(true);
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
     const accessToken = searchParams.get("access_token");
 
-    const fetchCurrentlyPlaying = () => {
+    const fetchCurrentlyPlaying = useCallback(() => {
         fetch(`http://localhost:8889/currently_playing/${accessToken}`)
             .then(response => response.json())
             .then(data => {
@@ -23,7 +22,7 @@ function PlaylistSelectCheck() {
                 setCurrentlyPlaying(data);
             })
             .catch(error => console.error('Error fetching currently playing track:', error));
-    };
+    }, [accessToken]);
 
     useEffect(() => {
         // Fetch initially
@@ -36,7 +35,7 @@ function PlaylistSelectCheck() {
             // Clean up the interval on component unmount
             clearInterval(interval);
         };
-    }, []);
+    }, [fetchCurrentlyPlaying]);
 
     useEffect(() => {
         fetch(`http://localhost:8889/get_playlists/${current_user_id}`)
@@ -134,6 +133,7 @@ function PlaylistSelectCheck() {
                                     src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`}
                                     loading="lazy"
                                     className="playlist-check-iframe"
+                                    title={`Playlist ${playlist.id}`}
                                 ></iframe>
                             )}
                         </div>
@@ -159,6 +159,7 @@ function PlaylistSelectCheck() {
                                     src={`https://open.spotify.com/embed/playlist/${playlist.id}?utm_source=generator`}
                                     loading="lazy"
                                     className="playlist-check-iframe"
+                                    title={`Playlist ${playlist.id}`}
                                 ></iframe>
                             )}
                         </div>
