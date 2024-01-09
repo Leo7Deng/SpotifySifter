@@ -15,7 +15,7 @@ function PlaylistSelectCheck() {
     const accessToken = searchParams.get("access_token");
 
     const fetchCurrentlyPlaying = useCallback(() => {
-        fetch(`http://localhost:8889/currently_playing/${accessToken}`)
+        fetch(`/currently_playing/${accessToken}`)
             .then(response => response.json())
             .then(data => {
                 // Set the currently playing track state
@@ -38,7 +38,7 @@ function PlaylistSelectCheck() {
     }, [fetchCurrentlyPlaying]);
 
     useEffect(() => {
-        fetch(`http://localhost:8889/get_playlists/${current_user_id}`)
+        fetch(`/get_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(playlists => {
                 const likedSongsPlaylist = playlists.find(playlist => playlist.name === "Liked Songs");
@@ -64,13 +64,13 @@ function PlaylistSelectCheck() {
 
         if (isChecked) {
             console.log('Checked Playlist ID:', playlistId);
-            fetch(`http://localhost:8889/select/${current_user_id}/${playlistId}`)
+            fetch(`/select/${current_user_id}/${playlistId}`)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
         } else {
             console.log('Unchecked Playlist ID:', playlistId);
-            fetch(`http://localhost:8889/unselect/${current_user_id}/${playlistId}`)
+            fetch(`/unselect/${current_user_id}/${playlistId}`)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
@@ -88,9 +88,9 @@ function PlaylistSelectCheck() {
                 </div>
             </Link>
             <Link to={`/Leaderboard?current_user_id=${current_user_id}&access_token=${accessToken}`}>
-                <div class="left-arrow">
-                    <img src={require('./rightarrow.png')} alt="Left Arrow" width="28" class="arrow-left" />
-                    <div class="arrow-emoji-left">🏆</div>
+                <div className="left-arrow">
+                    <img src={require('./rightarrow.png')} alt="Left Arrow" width="28" className="arrow-left" />
+                    <div className="arrow-emoji-left">🏆</div>
                 </div>
             </Link>
             <h4 className="check-title">Select playlists you want sifted</h4>

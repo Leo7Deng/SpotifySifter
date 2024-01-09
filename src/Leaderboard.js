@@ -15,7 +15,7 @@ function Leaderboard() {
     const current_user_id = searchParams.get("current_user_id");
 
     useEffect(() => {
-        fetch(`http://localhost:8889/leaderboard`)
+        fetch(`/leaderboard`)
             .then(response => response.json())
             .then(leaderboard => {
                 setLeaderboard(leaderboard);
@@ -34,7 +34,7 @@ function Leaderboard() {
 
     useEffect(() => {
         if (!isUserInLeaderboard) {
-            fetch(`http://localhost:8889/total_played/${current_user_id}/${access_token}`)
+            fetch(`/total_played/${current_user_id}/${access_token}`)
                 .then(response => response.json())
                 .then(data => {
                     setTotalPlayed(data.total_played);
@@ -54,7 +54,7 @@ function Leaderboard() {
                 </div>
             </Link>
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}&access_token=${access_token}`}>
-                <div class="left-arrow">
+                <div className="left-arrow">
                     <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🗑️</div>
                 </div>

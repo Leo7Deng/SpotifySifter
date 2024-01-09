@@ -18,7 +18,7 @@ function Home() {
   const handleLoginClick = async () => {
     try {
       setFadeOut(true);
-      const response = await fetch('http://localhost:8889/login', {
+      const response = await fetch('/login', {
         method: 'GET',
       });
       if (response.status === 200) {

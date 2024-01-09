@@ -25,7 +25,11 @@ CORS(app)
 
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
-REDIRECT_URI = "http://localhost:8889/callback"
+if os.environ["FLASK_ENV"] == "development":
+    REDIRECT_URI = "http://localhost:8889/callback"
+else:
+    REDIRECT_URI = "https://spotifysifter.com/callback"
+    
 
 
 AUTH_URL = "https://accounts.spotify.com/authorize"
@@ -122,7 +126,7 @@ def callback():
     cron_run()
     # return redirect(f'/get_playlists?current_user_id={current_user.id}')
     return redirect(
-        f"http://localhost:3000/PlaylistSelectCheck?current_user_id={current_user.id}&access_token={access_token}"
+        f"/PlaylistSelectCheck?current_user_id={current_user.id}&access_token={access_token}"
     )
 
 
@@ -318,3 +322,6 @@ def total_played(current_user_id: str, access_token: str):
             "username": user.user_id,
         }
     )
+
+if __name__ == "__main__":
+    app.run()

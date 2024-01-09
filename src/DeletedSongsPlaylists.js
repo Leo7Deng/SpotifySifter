@@ -12,7 +12,7 @@ function DeletedSongsPlaylists() {
     const [playlists, setPlaylists] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:8889/get_delete_playlists/${current_user_id}`)
+        fetch(`/get_delete_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(deleted_songs_playlists_uris => {
                 const playlists = deleted_songs_playlists_uris;
@@ -30,9 +30,9 @@ function DeletedSongsPlaylists() {
                 </div>
             </Link>
             <Link to={`/PlaylistSelectCheck?current_user_id=${current_user_id}&access_token=${access_token}`}>
-                <div class="left-arrow">
-                    <img src={require('./rightarrow.png')} alt="Left Arrow"  width="28" class="arrow-left" />
-                    <div class="arrow-emoji-left">🎵</div>
+                <div className="left-arrow">
+                    <img src={require('./rightarrow.png')} alt="Left Arrow"  width="28" className="arrow-left" />
+                    <div className="arrow-emoji-left">🎵</div>
                 </div>
             </Link>
             <div className="deleted-title">

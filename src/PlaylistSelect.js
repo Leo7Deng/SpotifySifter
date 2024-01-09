@@ -16,7 +16,7 @@ function PlaylistSelect() {
         const clickedPlaylist = leftPlaylists.find(playlist => playlist.id === playlistId);
         setRightPlaylists(prev => [...prev, clickedPlaylist]);
         setLeftPlaylists(prev => prev.filter(playlist => playlist.id !== playlistId));
-        fetch(`http://localhost:8889/select/${current_user_id}/${playlistId}`)
+        fetch(`/select/${current_user_id}/${playlistId}`)
             .then(response => response.json())
             .then(data => console.log('Manage Playlists Response:', data))
             .catch(error => console.error('Error:', error));
@@ -27,14 +27,14 @@ function PlaylistSelect() {
         const clickedPlaylist = rightPlaylists.find(playlist => playlist.id === playlistId);
         setLeftPlaylists(prev => [...prev, clickedPlaylist]);
         setRightPlaylists(prev => prev.filter(playlist => playlist.id !== playlistId));
-        fetch(`http://localhost:8889/unselect/${current_user_id}/${playlistId}`)
+        fetch(`/unselect/${current_user_id}/${playlistId}`)
             .then(response => response.json())
             .then(data => console.log('Manage Playlists Response:', data))
             .catch(error => console.error('Error:', error));
     }
 
     useEffect(() => {
-        fetch(`http://localhost:9/get_playlists/${current_user_id}`)
+        fetch(`/get_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(playlists => {
                 const leftPlaylists = playlists.filter(playlist => playlist.selected === false);
@@ -46,7 +46,7 @@ function PlaylistSelect() {
     }, [current_user_id]);
 
     useEffect(() => {
-        fetch(`http://localhost:9/manage_playlists/${current_user_id}`)
+        fetch(`/manage_playlists/${current_user_id}`)
             .then(response => response.json())
             .then(data => console.log('Manage Playlists Response:', data))
             .catch(error => console.error('Error:', error));
