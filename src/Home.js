@@ -4,6 +4,7 @@ import './Home.css';
 function Home() {
   const [fadeOut, setFadeOut] = useState(false);
   const [authUrl, setAuthUrl] = useState('');
+  const loginUrl = process.env.NODE_ENV === 'production' ? '/login' : 'http://localhost:8889/login';
 
   useEffect(() => {
     if (fadeOut && authUrl) {
@@ -18,7 +19,7 @@ function Home() {
   const handleLoginClick = async () => {
     try {
       setFadeOut(true);
-      const response = await fetch('/login', {
+      const response = await fetch(loginUrl, {
         method: 'GET',
       });
       if (response.status === 200) {

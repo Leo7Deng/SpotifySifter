@@ -13,16 +13,20 @@ function PlaylistSelectCheck() {
     const [initialChecked, setInitialChecked] = useState(true);
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
     const accessToken = searchParams.get("access_token");
-
+    const currentlyPlayingUrl = process.env.NODE_ENV === 'production' ? `/currently_playing/` : `http://localhost:8889/currently_playing/`;
+    const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? `/get_playlists/` : `http://localhost:8889/get_playlists/`;
+    const selectUrl = process.env.NODE_ENV === 'production' ? `/select/` : `http://localhost:8889/select/`;
+    const unselectUrl = process.env.NODE_ENV === 'production' ? `/unselect/` : `http://localhost:8889/unselect/`;
+    
     const fetchCurrentlyPlaying = useCallback(() => {
-        fetch(`/currently_playing/${accessToken}`)
+        fetch(`${currentlyPlayingUrl}${accessToken}`)
             .then(response => response.json())
             .then(data => {
                 // Set the currently playing track state
                 setCurrentlyPlaying(data);
             })
             .catch(error => console.error('Error fetching currently playing track:', error));
-    }, [accessToken]);
+    }, [accessToken, currentlyPlayingUrl]);
 
     useEffect(() => {
         // Fetch initially
@@ -38,7 +42,7 @@ function PlaylistSelectCheck() {
     }, [fetchCurrentlyPlaying]);
 
     useEffect(() => {
-        fetch(`/get_playlists/${current_user_id}`)
+        fetch(`${getPlaylistsUrl}${current_user_id}`)
             .then(response => response.json())
             .then(playlists => {
                 const likedSongsPlaylist = playlists.find(playlist => playlist.name === "Liked Songs");
@@ -55,7 +59,7 @@ function PlaylistSelectCheck() {
                 }
             })
             .catch(error => console.error('Error:', error));
-    }, [current_user_id]);
+    }, [current_user_id, getPlaylistsUrl]);
     
 
 
@@ -64,13 +68,13 @@ function PlaylistSelectCheck() {
 
         if (isChecked) {
             console.log('Checked Playlist ID:', playlistId);
-            fetch(`/select/${current_user_id}/${playlistId}`)
+            fetch(selectUrl + current_user_id + '/' + playlistId)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
         } else {
             console.log('Unchecked Playlist ID:', playlistId);
-            fetch(`/unselect/${current_user_id}/${playlistId}`)
+            fetch(unselectUrl + current_user_id + '/' + playlistId)
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));

@@ -21,7 +21,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 if os.environ.get("FLASK_ENV") == "production":
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["MYSQL_PRIVATE_URL"]
 else:
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["AWS_DATABASE_URL"]
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["MYSQL_URL"]
+    # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["AWS_DATABASE_URL"]
 
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 
@@ -32,4 +33,3 @@ with app.app_context():
     from .models import *
 db.init_app(app)
 migrate = Migrate(app, db)
-# migrate.init_app(app, db, render_as_batch=True)

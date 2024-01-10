@@ -13,9 +13,11 @@ function Leaderboard() {
     const [searchParams] = useSearchParams();
     const access_token = searchParams.get("access_token");
     const current_user_id = searchParams.get("current_user_id");
+    const leaderboardUrl = process.env.NODE_ENV === 'production' ? `/leaderboard` : `http://localhost:8889/leaderboard`;
+    const totalPlayedUrl = process.env.NODE_ENV === 'production' ? `/total_played/` : `http://localhost:8889/total_played/`;
 
     useEffect(() => {
-        fetch(`/leaderboard`)
+        fetch(`${leaderboardUrl}`)
             .then(response => response.json())
             .then(leaderboard => {
                 setLeaderboard(leaderboard);
@@ -30,11 +32,13 @@ function Leaderboard() {
                 }
             })
             .catch(error => console.error('Error:', error));
-    }, [current_user_id]);
+    }, [current_user_id, leaderboardUrl]);
 
     useEffect(() => {
+        console.log('Is User In Leaderboard:', isUserInLeaderboard);
         if (!isUserInLeaderboard) {
-            fetch(`/total_played/${current_user_id}/${access_token}`)
+            console.log('Fetching Total Played');
+            fetch(`${totalPlayedUrl}${current_user_id}/${access_token}`)
                 .then(response => response.json())
                 .then(data => {
                     setTotalPlayed(data.total_played);
@@ -43,7 +47,7 @@ function Leaderboard() {
                 })
                 .catch(error => console.error('Error:', error));
         }
-    }, [isUserInLeaderboard, current_user_id, access_token]);
+    }, [isUserInLeaderboard, current_user_id, access_token, totalPlayedUrl]);
 
     return (
         <>
