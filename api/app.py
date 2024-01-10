@@ -8,8 +8,6 @@ from flask import redirect, request, jsonify
 from api import app, db
 from .models import User, OAuth, Playlist
 from .cron import run as cron_run
-from typing import Union
-from flask import Response
 
 # app = Flask(__name__)
 
@@ -133,14 +131,20 @@ def callback():
 @app.route("/get_playlists/<current_user_id>")
 def get_playlists(current_user_id):
     current_user = User.query.filter_by(id=current_user_id).first()
+
+    # Check if user exists
     if current_user is None:
         raise Exception("User not found.")
+    
+    # Set headers
     access_token = current_user.oauth.access_token
-
     headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Get playlists up to 50
     PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
     response = requests.get(PLAYLISTS_URL, headers=headers, params={"limit": 50})
 
+    # Get liked songs playlist from database
     liked_songs_playlist = Playlist.query.filter_by(
         user_id=current_user_id, playlist_id="collection"
     ).first()
@@ -149,19 +153,25 @@ def get_playlists(current_user_id):
             "name": "Liked Songs",
             "id": "collection",
             "selected": liked_songs_playlist.selected
-            if liked_songs_playlist
+            if liked_songs_playlist # if no existing liked songs, set selected to False
             else False,
         }
     ]
 
+    # Get playlists that hold the sifted songs from database
     deleted_songs_playlists = Playlist.query.filter(
         Playlist.delete_playlist != None
-    ).all()
+    ).all() 
+
+    # List of playlist ids that hold the sifted songs
     deleted_songs_playlists = [
         playlist.delete_playlist for playlist in deleted_songs_playlists
     ]
 
+    # Get playlists from database
     database_playlists = Playlist.query.filter_by(user_id=current_user_id).all()
+
+    # For each playlist in the response, add it to the database if it doesn't exist
     for item in response.json()["items"]:
         selected = False
         if (
@@ -189,6 +199,7 @@ def get_playlists(current_user_id):
                 {"name": item["name"], "id": item["id"], "selected": selected}
             )
 
+    # Print playlists that are in the database or response
     for playlist in playlists:
         print(playlist["name"])
 
@@ -197,16 +208,25 @@ def get_playlists(current_user_id):
     # return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
 
 
+# Only used in PlaylistSelectCheck.js
 @app.route("/manage_playlists/<current_user_id>")
 def manage_playlists(current_user_id):
+    # Get user from database
     user = User.query.filter_by(id=current_user_id).first()
+
+    # Check if user exists
     if user is None:
         raise Exception("User not found.")
+    
+    # Set headers
     access_token = user.oauth.access_token
-    PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
     headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Get playlists up to 50
+    PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
     response = requests.get(PLAYLISTS_URL, headers=headers, params={"limit": 50})
 
+    # Get playlists that hold the sifted songs from database
     deleted_songs_playlists = Playlist.query.filter(
         Playlist.delete_playlist != None
     ).all()
@@ -214,6 +234,7 @@ def manage_playlists(current_user_id):
         playlist.delete_playlist for playlist in deleted_songs_playlists
     ]
 
+    # For each playlist in the response, add it to the database if it doesn't exist
     for item in response.json()["items"]:
         playlist_id = item["id"]
 
@@ -240,24 +261,36 @@ def manage_playlists(current_user_id):
 
 @app.route("/get_delete_playlists/<current_user_id>")
 def get_delete_playlists(current_user_id):
+    # Get user from database
     user = User.query.filter_by(id=current_user_id).first()
+
+    # Check if user exists
     if user is None:
         raise Exception("User not found.")
+    
+    # Get playlists that hold the sifted songs from database
     deleted_songs_playlists = Playlist.query.filter(
         Playlist.delete_playlist != None,
         Playlist.user_id == user.id
     ).all()
+
+    # List of playlist ids that hold the sifted songs
     deleted_songs_playlists_uris = [
         playlist.delete_playlist for playlist in deleted_songs_playlists
     ]
+
+    # Return list of playlist ids that hold the sifted songs
     return jsonify(deleted_songs_playlists_uris)
 
 
 @app.route("/select/<current_user_id>/<playlistId>")
 def select(current_user_id, playlistId):
+    # Get playlist from database
     playlist = Playlist.query.filter_by(
         user_id=current_user_id, playlist_id=playlistId
     ).first()
+
+    # Check if playlist exists
     if playlist:
         playlist.selected = True
         db.session.commit()
@@ -269,9 +302,12 @@ def select(current_user_id, playlistId):
 
 @app.route("/unselect/<current_user_id>/<playlistId>")
 def unselect(current_user_id, playlistId):
+    # Get playlist from database
     playlist = Playlist.query.filter_by(
         user_id=current_user_id, playlist_id=playlistId
     ).first()
+
+    # Check if playlist exists
     if playlist:
         playlist.selected = False
         db.session.commit()
@@ -283,7 +319,10 @@ def unselect(current_user_id, playlistId):
 
 @app.route("/leaderboard")
 def leaderboard():
+    # Get users from database in descending order of total_played
     users = User.query.order_by(User.total_played.desc()).all()
+
+    # Return list of users
     users = [
         {
             "username": user.user_id,
@@ -293,6 +332,8 @@ def leaderboard():
         }
         for user in users
     ]
+
+    # Return top 10 users
     return jsonify(users[:10])
 
 
