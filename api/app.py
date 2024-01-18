@@ -24,9 +24,10 @@ CORS(app)
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 if os.environ.get("FLASK_ENV") == "production":
-    REDIRECT_URI = "https://spotifysifter.com/callback"
+    REDIRECT_URI = "https://spotifysifter.up.railway.app/callback"
 else:
-    REDIRECT_URI = "http://localhost:8889/callback" 
+    REDIRECT_URI = "https://spotifysifter.up.railway.app/callback"
+    # REDIRECT_URI = "http://localhost:8889/callback" 
 
 
 AUTH_URL = "https://accounts.spotify.com/authorize"
@@ -125,7 +126,8 @@ def callback():
     if os.environ.get("FLASK_ENV") == "production":
         redirect_url = "https://spotifysifter.com"
     else:
-        redirect_url = "http://localhost:3000"
+        redirect_url = "https://spotifysifter.com"
+        # redirect_url = "http://localhost:3000"
     return redirect(
         f"{redirect_url}/PlaylistSelectCheck?current_user_id={current_user.id}&access_token={access_token}"
     )
