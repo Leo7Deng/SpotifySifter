@@ -19,7 +19,7 @@ db = SQLAlchemy(metadata=metadata) # type: ignore
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
 if os.environ.get("FLASK_ENV") == "production":
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["MYSQL_PRIVATE_URL"]
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["MYSQL_URL"]
 else:
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["MYSQL_URL"]
     # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["AWS_DATABASE_URL"]

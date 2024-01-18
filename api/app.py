@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_session import Session
 from datetime import datetime
 from flask import redirect, request, jsonify
-from api import app, db
+from .__init__ import app, db
 from .models import User, OAuth, Playlist
 from .cron import run as cron_run
 
