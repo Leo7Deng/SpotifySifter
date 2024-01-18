@@ -1,4 +1,4 @@
-from api import db
+from config import db
 
 class Skipped(db.Model):
     __tablename__ = "skipped"

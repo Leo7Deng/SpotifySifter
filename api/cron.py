@@ -8,8 +8,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError
 import atexit
 import threading
-from api import db, app
-from .models import User, OAuth, Playlist, PrevQueue, Skipped, Playlist
+from config import app, db
+from models import User, OAuth, Playlist, PrevQueue, Skipped, Playlist
 
 QUEUE_ENDPOINT = "https://api.spotify.com/v1/me/player/queue"
 RECENTLY_PLAYED_ENDPOINT = "https://api.spotify.com/v1/me/player/recently-played"
