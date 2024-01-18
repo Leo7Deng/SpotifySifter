@@ -13,8 +13,8 @@ function Leaderboard() {
     const [searchParams] = useSearchParams();
     const access_token = searchParams.get("access_token");
     const current_user_id = searchParams.get("current_user_id");
-    const leaderboardUrl = process.env.NODE_ENV === 'production' ? `/leaderboard` : `http://localhost:8889/leaderboard`;
-    const totalPlayedUrl = process.env.NODE_ENV === 'production' ? `/total_played/` : `http://localhost:8889/total_played/`;
+    const leaderboardUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/leaderboard` : `http://localhost:8889/leaderboard`;
+    const totalPlayedUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/total_played/` : `http://localhost:8889/total_played/`;
 
     useEffect(() => {
         fetch(`${leaderboardUrl}`)

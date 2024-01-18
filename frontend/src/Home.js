@@ -4,7 +4,7 @@ import './Home.css';
 function Home() {
   const [fadeOut, setFadeOut] = useState(false);
   const [authUrl, setAuthUrl] = useState('');
-  const loginUrl = process.env.NODE_ENV === 'production' ? '/login' : 'http://localhost:8889/login';
+  const loginUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/login' : 'http://localhost:8889/login';
 
   useEffect(() => {
     if (fadeOut && authUrl) {

@@ -10,7 +10,7 @@ function DeletedSongsPlaylists() {
     const current_user_id = searchParams.get("current_user_id");
     const access_token = searchParams.get("access_token");
     const [playlists, setPlaylists] = useState([]);
-    const getDeletedSongsPlaylistsUrl = process.env.NODE_ENV === 'production' ? `/get_delete_playlists/` : `http://localhost:8889/get_delete_playlists/`;
+    const getDeletedSongsPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_delete_playlists/` : `http://localhost:8889/get_delete_playlists/`;
     
     useEffect(() => {
         fetch(`${getDeletedSongsPlaylistsUrl}${current_user_id}`)
