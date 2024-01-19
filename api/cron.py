@@ -224,8 +224,17 @@ def refresh_token(user):
 
         response = requests.post(TOKEN_URL, data=req_body, headers=headers)
         print("Status Code:", response.status_code)
+        if response.status_code == 400:
+            print("User revoked access, deleting user")
+            Skipped.query.filter_by(user_id=user.id).delete()
+            Playlist.query.filter_by(user_id=user.id).delete()
+            PrevQueue.query.filter_by(user_id=user.id).delete()
+            OAuth.query.filter_by(user_id=user.id).delete()
+            db.session.delete(user)
+            db.session.commit()
+            return
         new_token_info = response.json()
-
+        print(user.user_id)
         print("New Token Info:", new_token_info)  # Add this line for debugging
         if "access_token" in new_token_info:
             user.oauth.access_token = new_token_info["access_token"]
@@ -239,6 +248,7 @@ def refresh_token(user):
 
 
 def skip_logic():
+    print("Executing skip_logic()")
     with app.app_context():
         for user in User.query.all():
             skip_logic_user(user)
@@ -324,7 +334,7 @@ def skip_logic_user(user):
     ]
 
     skipped_tracks_history = Skipped.query.filter_by(
-        playlist_id=current_playlist.playlist_id, user_id=user.id
+        playlist_id=current_playlist.id, user_id=user.id
     ).all()
     for track in skipped_tracks_history:
         if track.track_id in recently_played_uris:
@@ -339,7 +349,7 @@ def skip_logic_user(user):
     for skipped_uri in skipped_tracks_60_uris:
         if skipped_uri not in skipped_tracks_history_uris:
             new_skipped = Skipped()
-            new_skipped.playlist_id = current_playlist.playlist_id
+            new_skipped.playlist_id = current_playlist.id
             new_skipped.track_id = skipped_uri
             new_skipped.user_id = user.id
             new_skipped.skipped_count = 1
@@ -386,6 +396,11 @@ def skip_logic_user(user):
 
 def main():
     skip_logic()
+    if os.environ.get("FLASK_ENV") != "production":
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(func=skip_logic, trigger="interval", seconds=5)
+        scheduler.start()
+        atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
     main()
