@@ -59,10 +59,6 @@ input[type="checkbox"]:checked::before {
   max-width: 250px;
 }
 
-.mobile-arrow {
-  width: 20px;
-}
-
 .playlist-check-iframe {
   height: 100px;
   transform: translate(0px, 10px);
@@ -192,3 +188,6 @@ input[type="checkbox"]:checked::before {
   transition: width 0.4s, transform 0.4s, font-size 0.4s;
 }
 
+.mobile-arrow {
+  width: 30px;
+}

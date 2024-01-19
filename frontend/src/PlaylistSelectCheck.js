@@ -87,14 +87,14 @@ function PlaylistSelectCheck() {
     return (
         <>
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}&access_token=${accessToken}`}>
-                <div className="right-arrow">
-                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className={`arrow ${isMobile ? 'mobile-arrow' : ''}`} />
+                <div className={`right-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
+                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🗑️</div>
                 </div>
             </Link>
             <Link to={`/Leaderboard?current_user_id=${current_user_id}&access_token=${accessToken}`}>
-                <div className="left-arrow">
-                    <img src={require('./rightarrow.png')} alt="Left Arrow" width="28" className={`arrow-left ${isMobile ? 'mobile-arrow' : ''}`} />
+                <div className={`left-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
+                    <img src={require('./rightarrow.png')} alt="Left Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🏆</div>
                 </div>
             </Link>
