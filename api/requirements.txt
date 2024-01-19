@@ -1,6 +1,7 @@
 alembic==1.13.1
 APScheduler==3.10.4
 blinker==1.7.0
+build==1.0.3
 cachelib==0.10.2
 certifi==2023.11.17
 charset-normalizer==3.3.2
@@ -21,6 +22,7 @@ packaging==23.2
 postgres==4.0
 psycopg2-binary==2.9.9
 psycopg2-pool==1.2
+pyproject_hooks==1.0.0
 pytz==2023.3.post1
 react==4.3.0
 requests==2.31.0

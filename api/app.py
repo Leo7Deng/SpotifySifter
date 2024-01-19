@@ -7,7 +7,7 @@ from datetime import datetime
 from flask import redirect, request, jsonify
 from config import app, db
 from models import User, OAuth, Playlist
-from cron import run as cron_run
+from cron import main as cron_run
 
 # app = Flask(__name__)
 
@@ -26,9 +26,8 @@ CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 if os.environ.get("FLASK_ENV") == "production":
     REDIRECT_URI = "https://spotifysifter.up.railway.app/callback"
 else:
-    REDIRECT_URI = "https://spotifysifter.up.railway.app/callback"
-    # REDIRECT_URI = "http://localhost:8889/callback" 
-
+    # REDIRECT_URI = "https://spotifysifter.up.railway.app/callback"
+    REDIRECT_URI = "http://localhost:8889/callback"
 
 AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
@@ -59,7 +58,7 @@ def callback():
         error_message = request.args["error"]
         print(f"Error in callback: {error_message}")
         return jsonify({"error": request.args["error"]})
-    
+
     req_body = {}
     if "code" in request.args:
         req_body = {
@@ -74,6 +73,7 @@ def callback():
     token_info = response.json()
     headers = {"Authorization": f'Bearer {token_info["access_token"]}'}
     user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
+    print(user_info.text)
     user_email = user_info.json()["email"]
     current_user = User.query.filter_by(email=user_email).first()
     if not current_user:
@@ -121,7 +121,8 @@ def callback():
 
         db.session.commit()
 
-    cron_run()
+    # cron_run()
+
     # return redirect(f'/get_playlists?current_user_id={current_user.id}')
     if os.environ.get("FLASK_ENV") == "production":
         redirect_url = "https://spotifysifter.com"
@@ -140,7 +141,7 @@ def get_playlists(current_user_id):
     # Check if user exists
     if current_user is None:
         raise Exception("User not found.")
-    
+
     # Set headers
     access_token = current_user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -158,7 +159,7 @@ def get_playlists(current_user_id):
             "name": "Liked Songs",
             "id": "collection",
             "selected": liked_songs_playlist.selected
-            if liked_songs_playlist # if no existing liked songs, set selected to False
+            if liked_songs_playlist  # if no existing liked songs, set selected to False
             else False,
         }
     ]
@@ -166,7 +167,7 @@ def get_playlists(current_user_id):
     # Get playlists that hold the sifted songs from database
     deleted_songs_playlists = Playlist.query.filter(
         Playlist.delete_playlist != None
-    ).all() 
+    ).all()
 
     # List of playlist ids that hold the sifted songs
     deleted_songs_playlists = [
@@ -222,7 +223,7 @@ def manage_playlists(current_user_id):
     # Check if user exists
     if user is None:
         raise Exception("User not found.")
-    
+
     # Set headers
     access_token = user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -272,11 +273,10 @@ def get_delete_playlists(current_user_id):
     # Check if user exists
     if user is None:
         raise Exception("User not found.")
-    
+
     # Get playlists that hold the sifted songs from database
     deleted_songs_playlists = Playlist.query.filter(
-        Playlist.delete_playlist != None,
-        Playlist.user_id == user.id
+        Playlist.delete_playlist != None, Playlist.user_id == user.id
     ).all()
 
     # List of playlist ids that hold the sifted songs
@@ -369,5 +369,6 @@ def total_played(current_user_id: str, access_token: str):
         }
     )
 
+
 if __name__ == "__main__":
-    app.run(host="localhost", port=8889, debug=True)
+    app.run(host="localhost", port=8889, debug=False)

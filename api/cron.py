@@ -3,7 +3,7 @@ import base64
 import os
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError
 import atexit
@@ -19,6 +19,7 @@ TOKEN_URL = "https://accounts.spotify.com/api/token"
 REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
 
 job_lock = threading.Lock()
+
 
 def set_repeat(access_token, headers):
     repeat_data = {"state": "context"}
@@ -86,7 +87,7 @@ def update_currently_playing_playlist(user):
         uri = uri.split(":")[-1]
     except KeyError:
         if user is None:
-            print ("User not found")
+            print("User not found")
         else:
             playlists = Playlist.query.filter_by(user_id=user.id).all()
             for playlist in playlists:
@@ -97,28 +98,29 @@ def update_currently_playing_playlist(user):
         currently_playing_playlist = None
         playlists = Playlist.query.filter_by(user_id=user.id).all()
         for playlist in playlists:
-            if playlist.playlist_id == uri: # if playlist is currently playing
+            if playlist.playlist_id == uri:  # if playlist is currently playing
                 currently_playing_playlist = playlist
-                if playlist.selected == True: # if playlist is selected
-                    
+                if playlist.selected == True:  # if playlist is selected
                     is_playing = True
-                    if playlist.currently_playing == False: # if playlist was not previously playing
+                    if (
+                        playlist.currently_playing == False
+                    ):  # if playlist was not previously playing
                         PrevQueue.query.filter_by(user_id=user.id).delete()
                     playlist.currently_playing = True
-                else: # if playlist is not selected
+                else:  # if playlist is not selected
                     selected = False
                     playlist.currently_playing = False
-                    
-            else: # if playlist is not currently playing
+
+            else:  # if playlist is not currently playing
                 playlist.currently_playing = False
         db.session.commit()
-        if selected == False: # if playlist is not selected
+        if selected == False:  # if playlist is not selected
             print("Playing in an unselected playlist")
             return False
-        if currently_playing_playlist is None: # if playlist is not owned by user
+        if currently_playing_playlist is None:  # if playlist is not owned by user
             print("Playing in a playlist not owned by user")
             return False
-        if is_playing == True: # if playlist is currently playing
+        if is_playing == True:  # if playlist is currently playing
             print("Currently playing " + currently_playing_playlist.name)
             return is_playing
     return is_playing
@@ -185,22 +187,24 @@ def set_prev_queue(user_id, current_queue_uris):
     db.session.commit()
 
 
-
 def delete_tracks_from_playlist(playlist, change_tracks, headers):
     playlist_uri = playlist.playlist_id
     if playlist_uri == "collection":
         DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/me/tracks"
         tracks_data = json.dumps({"ids": [uri.split(":")[-1] for uri in change_tracks]})
     else:
-        DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+        DELETE_ITEMS_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+        )
         tracks_data = json.dumps({"tracks": [{"uri": uri} for uri in change_tracks]})
-    
-    response = requests.delete(
-        DELETE_ITEMS_ENDPOINT, headers=headers, data=tracks_data
-    )
+
+    response = requests.delete(DELETE_ITEMS_ENDPOINT, headers=headers, data=tracks_data)
     print(response.status_code)
 
+
 import requests
+
+
 def refresh_token(user):
     if user.oauth.expires_at < datetime.now().timestamp():
         req_body = {
@@ -214,14 +218,14 @@ def refresh_token(user):
         auth_header = base64.b64encode(auth_header)
         auth_header = auth_header.decode("ascii")
         headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': f'Basic {auth_header}'
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": f"Basic {auth_header}",
         }
 
         response = requests.post(TOKEN_URL, data=req_body, headers=headers)
         print("Status Code:", response.status_code)
         new_token_info = response.json()
-        
+
         print("New Token Info:", new_token_info)  # Add this line for debugging
         if "access_token" in new_token_info:
             user.oauth.access_token = new_token_info["access_token"]
@@ -234,7 +238,6 @@ def refresh_token(user):
             print("Access token not found in response")
 
 
-
 def skip_logic():
     with app.app_context():
         for user in User.query.all():
@@ -243,14 +246,12 @@ def skip_logic():
 
 def skip_logic_user(user):
     refresh_token(user)
-    acquired = job_lock.acquire(blocking=False)
-    if acquired:
-        try:
-            # Your skip_logic() implementation here
-            print("Executing skip_logic()")
-        finally:
-            # Release the lock after the job finishes
-            job_lock.release()
+    # acquired = job_lock.acquire(blocking=False)
+    # if acquired:
+    #     try:
+    #         print("Executing skip_logic()")
+    #     finally:
+    #         job_lock.release()
     access_token = user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
@@ -289,8 +290,7 @@ def skip_logic_user(user):
     if (
         # code to see if skipped to previous
         current_queue_uris[19] == prev_queue[19 - len(played_tracks_60_uris)].track_id
-        and
-        len(played_tracks_60_uris) > 0
+        and len(played_tracks_60_uris) > 0
     ):
         print("Skipped to previous")
         set_prev_queue(user_id=user.id, current_queue_uris=current_queue_uris)
@@ -384,15 +384,8 @@ def skip_logic_user(user):
     db.session.commit()
 
 
-def run():
+def main():
     skip_logic()
-    scheduler = BackgroundScheduler()
-    # scheduler.add_job(func=skip_logic, args=(), trigger="interval", minutes=1)
-    
-    scheduler.add_job(func=skip_logic, args=(), trigger="interval", seconds=60)
-    scheduler.start()
-    # blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
-    # db.session.commit()
-    # Shut down the scheduler when exiting the app
 
-    atexit.register(lambda: scheduler.shutdown())
+if __name__ == "__main__":
+    main()
