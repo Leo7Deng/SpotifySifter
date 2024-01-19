@@ -55,6 +55,14 @@ input[type="checkbox"]:checked::before {
   max-width: 300px; /* Set a maximum width to keep it centered */
 }
 
+.mobile-playlist {
+  max-width: 250px;
+}
+
+.mobile-arrow {
+  width: 20px;
+}
+
 .playlist-check-iframe {
   height: 100px;
   transform: translate(0px, 10px);

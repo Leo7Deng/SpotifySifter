@@ -3,9 +3,10 @@ import { useSearchParams } from "react-router-dom";
 import { useState, useCallback } from "react";
 import './PlaylistSelectCheck.css';
 import { Link } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive'; 
 
 function PlaylistSelectCheck() {
-
+    const isMobile = useMediaQuery({ maxWidth: 600 }); 
     const [searchParams] = useSearchParams();
     const current_user_id = searchParams.get("current_user_id");
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
@@ -87,13 +88,13 @@ function PlaylistSelectCheck() {
         <>
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}&access_token=${accessToken}`}>
                 <div className="right-arrow">
-                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
+                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className={`arrow ${isMobile ? 'mobile-arrow' : ''}`} />
                     <div className="arrow-emoji">🗑️</div>
                 </div>
             </Link>
             <Link to={`/Leaderboard?current_user_id=${current_user_id}&access_token=${accessToken}`}>
                 <div className="left-arrow">
-                    <img src={require('./rightarrow.png')} alt="Left Arrow" width="28" className="arrow-left" />
+                    <img src={require('./rightarrow.png')} alt="Left Arrow" width="28" className={`arrow-left ${isMobile ? 'mobile-arrow' : ''}`} />
                     <div className="arrow-emoji-left">🏆</div>
                 </div>
             </Link>
@@ -110,10 +111,10 @@ function PlaylistSelectCheck() {
             )}
 
 {(selectedPlaylists.length + unselectedPlaylists.length > 0) ? (
-            <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 ? 'large-playlist' : ''}`}>
+            <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 && !isMobile ? 'large-playlist' : ''}`}>
                 <div className="playlist-check-container">
                     {selectedPlaylists.map((playlist) => (
-                        <div key={playlist.id} className="playlist-item">
+                        <div key={playlist.id} className={`playlist-item ${isMobile ? 'mobile-playlist' : ''}`}>
                             <input
                                 className="playlist-checkbox"
                                 type="checkbox"
@@ -143,7 +144,7 @@ function PlaylistSelectCheck() {
                         </div>
                     ))}
                     {unselectedPlaylists.map((playlist) => (
-                        <div key={playlist.id} className="playlist-item">
+                        <div key={playlist.id} className={`playlist-item ${isMobile ? 'mobile-playlist' : ''}`}>
                             <input
                                 className="playlist-checkbox"
                                 type="checkbox"
