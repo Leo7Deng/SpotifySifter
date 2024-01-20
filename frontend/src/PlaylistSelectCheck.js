@@ -12,6 +12,7 @@ function PlaylistSelectCheck() {
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
     const [initialChecked, setInitialChecked] = useState(true);
+    const [initialCheckedLikedSongs, setInitialCheckedLikedSongs] = useState(true);
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
     const accessToken = searchParams.get("access_token");
     const currentlyPlayingUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/currently_playing/` : `http://localhost:8889/currently_playing/`;
@@ -118,9 +119,13 @@ function PlaylistSelectCheck() {
                             <input
                                 className="playlist-checkbox"
                                 type="checkbox"
-                                checked={initialChecked}
+                                checked={playlist.id === "collection" ? initialCheckedLikedSongs : initialChecked}
                                 onChange={(e) => {
-                                    setInitialChecked(!initialChecked);
+                                    if (playlist.id === "collection") {
+                                        setInitialCheckedLikedSongs(!initialCheckedLikedSongs);
+                                    } else {
+                                        setInitialChecked(!initialChecked);
+                                    }
                                     handleCheckboxChange(e, playlist.id);
                                 }}
                             />
