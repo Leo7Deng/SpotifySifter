@@ -7,7 +7,7 @@ from flask_session import Session
 from datetime import datetime
 from flask import redirect, request, jsonify
 from config import app, db
-from models import User, OAuth, Playlist
+from models import Skipped, User, OAuth, Playlist
 from cron import main as cron_run
 
 # app = Flask(__name__)
@@ -94,6 +94,7 @@ def callback():
         liked_songs_playlist.currently_playing = False
         liked_songs_playlist.selected = False
         liked_songs_playlist.delete_playlist = None
+        liked_songs_playlist.skip_count = 2
         db.session.add(liked_songs_playlist)
         db.session.commit()
         print("Added new user")
@@ -193,6 +194,7 @@ def get_playlists(current_user_id):
                 playlist_db.currently_playing = False
                 playlist_db.selected = False
                 playlist_db.delete_playlist = None
+                playlist_db.skip_count = 2
                 db.session.add(playlist_db)
                 db.session.commit()
             else:
@@ -258,6 +260,7 @@ def manage_playlists(current_user_id):
                 playlist_db.currently_playing = False
                 playlist_db.selected = False
                 playlist_db.delete_playlist = None
+                playlist_db.skip_count = 2
                 db.session.add(playlist_db)
                 db.session.commit()
 
@@ -406,14 +409,36 @@ def refresh_delete_playlists(current_user_id, playlistId, access_token):
         playlist.delete_playlist = playlist_uri
         db.session.commit()
         return jsonify({"success": True})
-    
-
-        
-        
-
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
 
+@app.route("/update_playlist_skip_count/<current_user_id>/<playlistId>/<new_skip_count>/<access_token>")
+def update_playlist_skip_count(current_user_id, playlistId, new_skip_count, access_token):
+    user = User.query.filter_by(id=current_user_id).first()
+    if user is None or user.oauth.access_token != access_token:
+        return jsonify({"success": False, "message": "Invalid access token."})
+    playlist = Playlist.query.filter_by(
+        user_id=current_user_id, playlist_id=playlistId
+    ).first()
+    if playlist:
+        playlist.skip_count = int(new_skip_count)
+        GET_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get(GET_PLAYLIST_ENDPOINT, headers=headers).json()
+        tracks = response["items"]
+        track_ids = []
+        for track in tracks:
+            track_ids.append(track["track"]["id"])
+        for track_id in track_ids:
+            skipped = Skipped.query.filter_by(track_id=track_id, playlist_id=playlist.id).first()
+            if skipped:
+                if skipped.skipped_count < playlist.skip_count:
+                    PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks?uris=spotify%3Atrack%3A{track_id}"
+                    response = requests.delete(PLAYLIST_ADD_ENDPOINT, headers=headers)
+        db.session.commit()
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "Playlist not found."})
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8889, debug=False)

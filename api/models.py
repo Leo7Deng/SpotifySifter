@@ -17,6 +17,7 @@ class Playlist(db.Model):
     currently_playing = db.Column(db.Boolean)
     selected = db.Column(db.Boolean)
     delete_playlist = db.Column(db.String(120))
+    skip_count = db.Column(db.Integer)
 
 class User(db.Model):
     __tablename__ = "user"
