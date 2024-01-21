@@ -371,8 +371,8 @@ def total_played(current_user_id: str, access_token: str):
         }
     )
 
-@app.route("/refresh_delete_playlists/<current_user_id>/<playlistId>/<access_token>")
-def refresh_delete_playlists(current_user_id, playlistId, access_token):
+@app.route("/new_delete_playlists/<current_user_id>/<playlistId>/<access_token>")
+def new_delete_playlists(current_user_id, playlistId, access_token):
     user = User.query.filter_by(id=current_user_id).first()
     if user is None or user.oauth.access_token != access_token:
         return jsonify({"success": False, "message": "Invalid access token."})
@@ -436,6 +436,57 @@ def update_playlist_skip_count(current_user_id, playlistId, new_skip_count, acce
                     PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks?uris=spotify%3Atrack%3A{track_id}"
                     response = requests.delete(PLAYLIST_ADD_ENDPOINT, headers=headers)
         db.session.commit()
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "Playlist not found."})
+
+@app.route("/resift_playlist/<current_user_id>/<playlistId>/<access_token>")
+def resift_playlist(current_user_id, playlistId, access_token):
+    user = User.query.filter_by(id=current_user_id).first()
+    if user is None or user.oauth.access_token != access_token:
+        return jsonify({"success": False, "message": "Invalid access token."})
+    playlist = Playlist.query.filter_by(
+        user_id=current_user_id, playlist_id=playlistId
+    ).first()
+    if playlist:
+        if not playlist.delete_playlist:
+            return jsonify({"success": False, "message": "Playlist not sifted."})
+        delete_playlist_id = playlist.delete_playlist
+        GET_DELETE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{delete_playlist_id}/tracks"
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get(GET_DELETE_PLAYLIST_ENDPOINT, headers=headers).json()
+        sifted_tracks = response["items"]
+        sifted_tracks_id = []
+        for track in sifted_tracks:
+            sifted_tracks_id.append(track["track"]["id"])
+
+        GET_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
+        response = requests.get(GET_PLAYLIST_ENDPOINT, headers=headers).json()
+        tracks = response["items"]
+        tracks_id = []
+        for track in tracks:
+            tracks_id.append(track["track"]["id"])
+
+        skipped_tracks_db = Skipped.query.filter_by(playlist_id=playlist.id).all()
+        add_tracks = []
+        remove_tracks = []
+        for skipped_track in skipped_tracks_db:
+            if skipped_track.track_id not in sifted_tracks_id:
+                add_tracks.append(skipped_track.track_id)
+            if skipped_track.track_id in tracks_id:
+                remove_tracks.append(skipped_track.track_id)
+        add_tracks_data = {
+            "uris": add_tracks,
+        }
+        remove_tracks_data = {
+            "tracks": [{"uri": f"spotify:track:{track_id}"} for track_id in remove_tracks],
+        }
+        ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{delete_playlist_id}/tracks"
+        response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=add_tracks_data).text
+        DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
+        response = requests.delete(DELETE_ITEMS_ENDPOINT, headers=headers, data=remove_tracks_data).text
+
+
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
