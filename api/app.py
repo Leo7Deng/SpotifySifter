@@ -1,3 +1,4 @@
+import json
 import requests
 import urllib.parse
 import os
@@ -366,6 +367,52 @@ def total_played(current_user_id: str, access_token: str):
             "username": user.user_id,
         }
     )
+
+@app.route("/refresh_delete_playlists/<current_user_id>/<playlistId>/<access_token>")
+def refresh_delete_playlists(current_user_id, playlistId, access_token):
+    user = User.query.filter_by(id=current_user_id).first()
+    if user is None or user.oauth.access_token != access_token:
+        return jsonify({"success": False, "message": "Invalid access token."})
+    playlist = Playlist.query.filter_by(
+        user_id=current_user_id, playlist_id=playlistId
+    ).first()
+    if playlist:
+        GET_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
+        CREATE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/users/{user.user_id}/playlists"
+
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get(GET_PLAYLIST_ENDPOINT, headers=headers).json()
+        tracks = response["items"]
+        track_ids = []
+        for track in tracks:
+            track_ids.append(track["track"]["uri"])
+        
+        headers = {"Authorization": f"Bearer {access_token}"}
+        playlist_data = {
+            "name": f"{playlist.name}'s Sifted Songs",
+            "description": f"Playlist created by Spotify Sifter",
+            "public": False,
+        }
+        response = requests.post(
+            CREATE_PLAYLIST_ENDPOINT, headers=headers, data=playlist_data
+        ).text
+        playlist_uri = json.loads(response)["id"]   
+        headers = {"Authorization": f"Bearer {access_token}"}
+        tracks_data = {
+            "uris": track_ids,
+        }
+        ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+        response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
+        playlist.delete_playlist = playlist_uri
+        db.session.commit()
+        return jsonify({"success": True})
+    
+
+        
+        
+
+    else:
+        return jsonify({"success": False, "message": "Playlist not found."})
 
 
 if __name__ == "__main__":
