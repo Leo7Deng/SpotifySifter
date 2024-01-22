@@ -60,8 +60,8 @@ def get_response(access_token, endpoint):
     return response.json()
 
 
-def get_currently_playing(user):
-    oauth = OAuth.query.get(user.id)
+def get_currently_playing(user, session):
+    oauth = session.query(OAuth).get(user.id)
     access_token = None
     if oauth:
         access_token = oauth.access_token
@@ -73,7 +73,7 @@ def get_currently_playing(user):
 
 def update_currently_playing_playlist(user):
     selected = True
-    response = get_currently_playing(user)
+    response = get_currently_playing(user, session=db.session)
     if response is None:
         print("Not currently playing")
         return False
@@ -126,9 +126,9 @@ def update_currently_playing_playlist(user):
     return is_playing
 
 
-def get_current_queue_uris(user_id):
+def get_current_queue_uris(user_id, session):
     # get current queue
-    oauth = OAuth.query.get(user_id)
+    oauth = session.query(OAuth).get(user_id)
     if oauth is None:
         return []
     access_token = oauth.access_token
@@ -245,10 +245,10 @@ def skip_logic_user(user):
         return
 
     # wont work if queue is less than 20 songs
-    current_queue_uris = get_current_queue_uris(user_id=user.id)
+    current_queue_uris = get_current_queue_uris(user_id=user.id, session=db.session)
     if len(current_queue_uris) < 20:
         set_repeat(access_token=access_token, headers=headers)
-        current_queue_with_repeat = get_current_queue_uris(user_id=user.id)
+        current_queue_with_repeat = get_current_queue_uris(user_id=user.id, session=db.session)
         if len(current_queue_with_repeat) < 20:
             print("Queue has less than 20 songs")
             return
