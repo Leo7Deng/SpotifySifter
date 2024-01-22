@@ -95,13 +95,13 @@ function PlaylistSelectCheck() {
         <>
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}&access_token=${accessToken}`}>
                 <div className={`right-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
-                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
+                    <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🗑️</div>
                 </div>
             </Link>
             <Link to={`/Leaderboard?current_user_id=${current_user_id}&access_token=${accessToken}`}>
                 <div className={`left-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
-                    <img src={require('./rightarrow.png')} alt="Left Arrow" width="28" className="arrow-left" />
+                    <img src={require('./images/rightarrow.png')} alt="Left Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🏆</div>
                 </div>
             </Link>
@@ -113,7 +113,7 @@ function PlaylistSelectCheck() {
             ) : (
                 <div className="currently-playing">
                     <h5>Currently Playing: {currentlyPlaying}</h5>
-                    <img src={require('./musicnote.gif')} alt="GIF" width="28" />
+                    <img src={require('./images/musicnote.gif')} alt="GIF" width="28" />
                 </div>
             )}
 
@@ -137,7 +137,7 @@ function PlaylistSelectCheck() {
                                 {playlist.name === "Liked Songs" ? (
                                     <div className="trim">
                                         <img
-                                            src={require('./LikedSongs.png')}
+                                            src={require('./images/LikedSongs.png')}
                                             alt="Liked Songs"
                                             className="playlist-check-iframe liked-songs"
                                         />
@@ -163,7 +163,7 @@ function PlaylistSelectCheck() {
                                 {playlist.name === "Liked Songs" ? (
                                     <div className="trim">
                                         <img
-                                            src={require('./LikedSongs.png')}
+                                            src={require('./images/LikedSongs.png')}
                                             alt="Liked Songs"
                                             className="playlist-check-iframe liked-songs"
                                         />

@@ -53,13 +53,13 @@ function Leaderboard() {
         <>
             <Link to={`/PlaylistSelectCheck?current_user_id=${current_user_id}&access_token=${access_token}`}>
                 <div className="right-arrow">
-                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
+                    <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🎵</div>
                 </div>
             </Link>
             <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}&access_token=${access_token}`}>
                 <div className="left-arrow">
-                    <img src={require('./rightarrow.png')} alt="Right Arrow" width="28" className="arrow-left" />
+                    <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🗑️</div>
                 </div>
             </Link>
