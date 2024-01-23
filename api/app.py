@@ -5,7 +5,7 @@ import os
 from flask_cors import CORS
 from flask_session import Session
 from datetime import datetime
-from flask import redirect, request, jsonify, session
+from flask import redirect, request, jsonify, session, render_template, url_for
 from config import app, db
 from models import Skipped, User, OAuth, Playlist
 from cron import main as cron_run
@@ -20,7 +20,7 @@ from cron import main as cron_run
 # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 Session(app)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
@@ -35,6 +35,9 @@ API_BASE_URL = "https://api.spotify.com/v1/"
 
 EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route("/login")
 def login():
@@ -101,6 +104,8 @@ def callback():
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
     session["user_id"] = current_user.id
+    print(session["user_id"])
+    print(session)
 
     expires_at = datetime.now().timestamp() + token_info["expires_in"]
     if current_user:
@@ -130,13 +135,18 @@ def callback():
     else:
         redirect_url = "http://localhost:3000"
     return redirect(
-        f"{redirect_url}/PlaylistSelectCheck?current_user_id={current_user.id}&access_token={access_token}"
+        f"{redirect_url}/PlaylistSelectCheck"
     )
 
 
-@app.route("/get_playlists/<current_user_id>")
-def get_playlists(current_user_id):
-    current_user = User.query.filter_by(id=current_user_id).first()
+@app.route("/get_playlists")
+def get_playlists():
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # get user from user_id using get
+    current_user = User.query.get(session["user_id"])
 
     # Check if user exists
     if current_user is None:
@@ -152,7 +162,7 @@ def get_playlists(current_user_id):
 
     # Get liked songs playlist from database
     liked_songs_playlist = Playlist.query.filter_by(
-        user_id=current_user_id, playlist_id="collection"
+        user_id=current_user.id, playlist_id="collection"
     ).first()
     playlists = [
         {
@@ -175,7 +185,7 @@ def get_playlists(current_user_id):
     ]
 
     # Get playlists from database
-    database_playlists = Playlist.query.filter_by(user_id=current_user_id).all()
+    database_playlists = Playlist.query.filter_by(user_id=current_user.id).all()
 
     # For each playlist in the response, add it to the database if it doesn't exist
     for item in response.json()["items"]:
@@ -188,7 +198,7 @@ def get_playlists(current_user_id):
                 playlist.playlist_id for playlist in database_playlists
             ]:
                 playlist_db = Playlist()
-                playlist_db.user_id = current_user_id
+                playlist_db.user_id = current_user.id
                 playlist_db.playlist_id = item["id"]
                 playlist_db.name = item["name"]
                 playlist_db.currently_playing = False
@@ -211,73 +221,23 @@ def get_playlists(current_user_id):
 
     return jsonify(playlists)
 
-    # return redirect(f'http://localhost:3000/PlaylistSelect?playlists={playlists}')
 
+@app.route("/get_delete_playlists")
+def get_delete_playlists():
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
 
-# Only used in PlaylistSelect.js
-@app.route("/manage_playlists/<current_user_id>")
-def manage_playlists(current_user_id):
     # Get user from database
-    user = User.query.filter_by(id=current_user_id).first()
+    current_user = User.query.get(session["user_id"])
 
     # Check if user exists
-    if user is None:
-        raise Exception("User not found.")
-
-    # Set headers
-    access_token = user.oauth.access_token
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    # Get playlists up to 50
-    PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists"
-    response = requests.get(PLAYLISTS_URL, headers=headers, params={"limit": 50})
-
-    # Get playlists that hold the sifted songs from database
-    deleted_songs_playlists = Playlist.query.filter(
-        Playlist.delete_playlist != None
-    ).all()
-    deleted_songs_playlists = [
-        playlist.delete_playlist for playlist in deleted_songs_playlists
-    ]
-
-    # For each playlist in the response, add it to the database if it doesn't exist
-    for item in response.json()["items"]:
-        playlist_id = item["id"]
-
-        if (
-            item["owner"]["id"] == user.user_id
-            and playlist_id not in deleted_songs_playlists
-        ):
-            playlist_db = Playlist.query.filter_by(
-                user_id=user.id, playlist_id=playlist_id
-            ).first()
-            if not playlist_db:
-                playlist_db = Playlist()
-                playlist_db.user_id = user.id
-                playlist_db.playlist_id = playlist_id
-                playlist_db.name = item["name"]
-                playlist_db.currently_playing = False
-                playlist_db.selected = False
-                playlist_db.delete_playlist = None
-                playlist_db.skip_count = 2
-                db.session.add(playlist_db)
-                db.session.commit()
-
-    return jsonify({"success": True})
-
-
-@app.route("/get_delete_playlists/<current_user_id>")
-def get_delete_playlists(current_user_id):
-    # Get user from database
-    user = User.query.filter_by(id=current_user_id).first()
-
-    # Check if user exists
-    if user is None:
+    if current_user is None:
         raise Exception("User not found.")
 
     # Get playlists that hold the sifted songs from database
     deleted_songs_playlists = Playlist.query.filter(
-        Playlist.delete_playlist != None, Playlist.user_id == user.id
+        Playlist.delete_playlist != None, Playlist.user_id == current_user.id
     ).all()
 
     # List of playlist ids that hold the sifted songs
@@ -289,11 +249,20 @@ def get_delete_playlists(current_user_id):
     return jsonify(deleted_songs_playlists_uris)
 
 
-@app.route("/select/<current_user_id>/<playlistId>")
-def select(current_user_id, playlistId):
+@app.route("/select/<playlist_id>")
+def select(playlist_id):
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # Get user from database
+    current_user = User.query.get(session["user_id"])
+    if current_user is None:
+        raise Exception("User not found.")
+
     # Get playlist from database
     playlist = Playlist.query.filter_by(
-        user_id=current_user_id, playlist_id=playlistId
+        user_id=current_user.id, playlist_id=playlist_id
     ).first()
 
     # Check if playlist exists
@@ -306,11 +275,20 @@ def select(current_user_id, playlistId):
         return jsonify({"success": False, "message": "Playlist not found."})
 
 
-@app.route("/unselect/<current_user_id>/<playlistId>")
-def unselect(current_user_id, playlistId):
+@app.route("/unselect/<playlist_id>")
+def unselect(playlist_id):
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # Get user from database
+    current_user = User.query.get(session["user_id"])
+    if current_user is None:
+        raise Exception("User not found.")
+
     # Get playlist from database
     playlist = Playlist.query.filter_by(
-        user_id=current_user_id, playlist_id=playlistId
+        user_id=current_user.id, playlist_id=playlist_id
     ).first()
 
     # Check if playlist exists
@@ -343,8 +321,20 @@ def leaderboard():
     return jsonify(users[:10])
 
 
-@app.route("/currently_playing/<access_token>")
-def currently_playing(access_token):
+@app.route("/currently_playing")
+def currently_playing():
+    print(session)
+    current_user_id = session.get("user_id")
+    print(current_user_id)
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # Get user from database
+    current_user = User.query.get(session["user_id"])
+    if current_user is None:
+        raise Exception("User not found.")
+
+    access_token = current_user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.get(
         "https://api.spotify.com/v1/me/player/currently-playing", headers=headers
@@ -355,11 +345,21 @@ def currently_playing(access_token):
         return jsonify({"success": False})
 
 
-@app.route("/total_played/<current_user_id>/<access_token>")
-def total_played(current_user_id: str, access_token: str):
-    user = User.query.filter_by(id=current_user_id).first()
-    if user is None or user.oauth.access_token != access_token:
-        return jsonify({"success": False, "message": "Invalid access token."})
+@app.route("/total_played")
+def total_played():
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # Get user from database
+    current_user = User.query.get(session["user_id"])
+    if current_user is None:
+        raise Exception("User not found.")
+
+    user = User.query.get(session["user_id"])
+    if user is None:
+        raise Exception("User not found.")
+
     total_played = user.total_played
     return jsonify(
         {
@@ -370,17 +370,31 @@ def total_played(current_user_id: str, access_token: str):
         }
     )
 
-@app.route("/new_delete_playlists/<current_user_id>/<playlistId>/<access_token>")
-def new_delete_playlists(current_user_id, playlistId, access_token):
-    user = User.query.filter_by(id=current_user_id).first()
-    if user is None or user.oauth.access_token != access_token:
-        return jsonify({"success": False, "message": "Invalid access token."})
-    playlist = Playlist.query.filter_by(
-        user_id=current_user_id, playlist_id=playlistId
-    ).first()
+
+@app.route("/new_delete_playlists/<playlist_id>")
+def new_delete_playlists(playlist_id):
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # Get user from database
+    current_user = User.query.get(session["user_id"])
+    if current_user is None:
+        raise Exception("User not found.")
+
+    user = User.query.get(session["user_id"])
+    if user is None:
+        raise Exception("User not found.")
+
+    access_token = current_user.oauth.access_token
+    playlist = Playlist.query.get(playlist_id)
     if playlist:
-        GET_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
-        CREATE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/users/{user.user_id}/playlists"
+        GET_PLAYLIST_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        )
+        CREATE_PLAYLIST_ENDPOINT = (
+            f"https://api.spotify.com/v1/users/{user.user_id}/playlists"
+        )
 
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(GET_PLAYLIST_ENDPOINT, headers=headers).json()
@@ -388,7 +402,7 @@ def new_delete_playlists(current_user_id, playlistId, access_token):
         track_ids = []
         for track in tracks:
             track_ids.append(track["track"]["uri"])
-        
+
         headers = {"Authorization": f"Bearer {access_token}"}
         playlist_data = {
             "name": f"{playlist.name}'s Sifted Songs",
@@ -398,30 +412,49 @@ def new_delete_playlists(current_user_id, playlistId, access_token):
         response = requests.post(
             CREATE_PLAYLIST_ENDPOINT, headers=headers, data=playlist_data
         ).text
-        playlist_uri = json.loads(response)["id"]   
+        playlist_uri = json.loads(response)["id"]
         headers = {"Authorization": f"Bearer {access_token}"}
         tracks_data = {
             "uris": track_ids,
         }
-        ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
-        response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
+        ADD_ITEMS_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{playlist_uri}/tracks"
+        )
+        response = requests.post(
+            ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data
+        ).text
         playlist.delete_playlist = playlist_uri
         db.session.commit()
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
 
-@app.route("/update_playlist_skip_count/<current_user_id>/<playlistId>/<new_skip_count>/<access_token>")
-def update_playlist_skip_count(current_user_id, playlistId, new_skip_count, access_token):
-    user = User.query.filter_by(id=current_user_id).first()
-    if user is None or user.oauth.access_token != access_token:
-        return jsonify({"success": False, "message": "Invalid access token."})
+
+@app.route("/update_playlist_skip_count/<playlist_id>/<new_skip_count>")
+def update_playlist_skip_count(playlist_id, new_skip_count):
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # Get user from database
+    current_user = User.query.get(session["user_id"])
+    if current_user is None:
+        raise Exception("User not found.")
+
+    user = User.query.get(session["user_id"])
+    if user is None:
+        raise Exception("User not found.")
+
     playlist = Playlist.query.filter_by(
-        user_id=current_user_id, playlist_id=playlistId
+        user_id=current_user.id, playlist_id=playlist_id
     ).first()
+    access_token = current_user.oauth.access_token
+
     if playlist:
         playlist.skip_count = int(new_skip_count)
-        GET_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
+        GET_PLAYLIST_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        )
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(GET_PLAYLIST_ENDPOINT, headers=headers).json()
         tracks = response["items"]
@@ -429,29 +462,40 @@ def update_playlist_skip_count(current_user_id, playlistId, new_skip_count, acce
         for track in tracks:
             track_ids.append(track["track"]["id"])
         for track_id in track_ids:
-            skipped = Skipped.query.filter_by(track_id=track_id, playlist_id=playlist.id).first()
+            skipped = Skipped.query.filter_by(
+                track_id=track_id, playlist_id=playlist.id
+            ).first()
             if skipped:
                 if skipped.skipped_count < playlist.skip_count:
-                    PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks?uris=spotify%3Atrack%3A{track_id}"
+                    PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=spotify%3Atrack%3A{track_id}"
                     response = requests.delete(PLAYLIST_ADD_ENDPOINT, headers=headers)
         db.session.commit()
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
 
-@app.route("/resift_playlist/<current_user_id>/<playlistId>/<access_token>")
-def resift_playlist(current_user_id, playlistId, access_token):
-    user = User.query.filter_by(id=current_user_id).first()
-    if user is None or user.oauth.access_token != access_token:
-        return jsonify({"success": False, "message": "Invalid access token."})
-    playlist = Playlist.query.filter_by(
-        user_id=current_user_id, playlist_id=playlistId
-    ).first()
+
+@app.route("/resift_playlist/<playlist_id>")
+def resift_playlist(playlist_id):
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+
+    # Get user from database
+    current_user = User.query.get(session["user_id"])
+    if current_user is None:
+        raise Exception("User not found.")
+
+    playlist = Playlist.query.get(playlist_id)
+    access_token = current_user.oauth.access_token
+
     if playlist:
         if not playlist.delete_playlist:
             return jsonify({"success": False, "message": "Playlist not sifted."})
         delete_playlist_id = playlist.delete_playlist
-        GET_DELETE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{delete_playlist_id}/tracks"
+        GET_DELETE_PLAYLIST_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{delete_playlist_id}/tracks"
+        )
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(GET_DELETE_PLAYLIST_ENDPOINT, headers=headers).json()
         sifted_tracks = response["items"]
@@ -459,7 +503,9 @@ def resift_playlist(current_user_id, playlistId, access_token):
         for track in sifted_tracks:
             sifted_tracks_id.append(track["track"]["id"])
 
-        GET_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
+        GET_PLAYLIST_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        )
         response = requests.get(GET_PLAYLIST_ENDPOINT, headers=headers).json()
         tracks = response["items"]
         tracks_id = []
@@ -478,17 +524,27 @@ def resift_playlist(current_user_id, playlistId, access_token):
             "uris": add_tracks,
         }
         remove_tracks_data = {
-            "tracks": [{"uri": f"spotify:track:{track_id}"} for track_id in remove_tracks],
+            "tracks": [
+                {"uri": f"spotify:track:{track_id}"} for track_id in remove_tracks
+            ],
         }
-        ADD_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{delete_playlist_id}/tracks"
-        response = requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=add_tracks_data).text
-        DELETE_ITEMS_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlistId}/tracks"
-        response = requests.delete(DELETE_ITEMS_ENDPOINT, headers=headers, data=remove_tracks_data).text
-
+        ADD_ITEMS_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{delete_playlist_id}/tracks"
+        )
+        response = requests.post(
+            ADD_ITEMS_ENDPOINT, headers=headers, data=add_tracks_data
+        ).text
+        DELETE_ITEMS_ENDPOINT = (
+            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        )
+        response = requests.delete(
+            DELETE_ITEMS_ENDPOINT, headers=headers, data=remove_tracks_data
+        ).text
 
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8889, debug=False)

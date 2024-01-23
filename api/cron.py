@@ -58,8 +58,8 @@ def get_response(access_token, endpoint):
     return response.json()
 
 
-def get_currently_playing(user, session):
-    oauth = session.query(OAuth).get(user.id)
+def get_currently_playing(user):
+    oauth = OAuth.query.get(user.id)
     access_token = None
     if oauth:
         access_token = oauth.access_token
@@ -69,9 +69,9 @@ def get_currently_playing(user, session):
     return response
 
 
-def update_currently_playing_playlist(user):
+def update_currently_playing_playlist(user, session):
     selected = True
-    response = get_currently_playing(user, session=db.session)
+    response = get_currently_playing(user)
     if response is None:
         print(user.user_id + " is not playing Spotify")
         return False
@@ -234,7 +234,7 @@ def skip_logic_user(user):
 
     access_token = user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
-    is_playing = update_currently_playing_playlist(user=user)
+    is_playing = update_currently_playing_playlist(user=user, session=db.session)
     if not is_playing:
         return
 

@@ -3,27 +3,29 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
-import psycopg2
 
 convention = {
-    "ix": 'ix_%(column_0_label)s',
+    "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",
     "ck": "ck_%(table_name)s_%(constraint_name)s",
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s"
+    "pk": "pk_%(table_name)s",
 }
 metadata = MetaData(naming_convention=convention)
-db = SQLAlchemy(metadata=metadata) # type: ignore
+db = SQLAlchemy(metadata=metadata)  # type: ignore
 
-# def create_app(): 
+# def create_app():
 
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
+app.secret_key = os.environ["SECRET_KEY"]
+
 if os.environ.get("FLASK_ENV") == "production":
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["POSTGRES_URL"]
 else:
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["POSTGRES_URL"]
-    # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["AWS_DATABASE_URL"]
+
+# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["AWS_DATABASE_URL"]
 
 # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 

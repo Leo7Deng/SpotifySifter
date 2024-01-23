@@ -13,8 +13,8 @@ function PlaylistSelectCheck() {
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
     const accessToken = searchParams.get("access_token");
-    const currentlyPlayingUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/currently_playing/` : `http://localhost:8889/currently_playing/`;
-    const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_playlists/` : `http://localhost:8889/get_playlists/`;
+    const currentlyPlayingUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/currently_playing` : `http://localhost:8889/currently_playing`;
+    const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_playlists` : `http://localhost:8889/get_playlists`;
     const selectUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/select/` : `http://localhost:8889/select/`;
     const unselectUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/unselect/` : `http://localhost:8889/unselect/`;
     const [initialChecked, setInitialChecked] = useState({});
@@ -29,13 +29,13 @@ function PlaylistSelectCheck() {
     }, [selectedPlaylists]);
 
     const fetchCurrentlyPlaying = useCallback(() => {
-        fetch(`${currentlyPlayingUrl}${accessToken}`)
+        fetch(currentlyPlayingUrl)
             .then(response => response.json())
             .then(data => {
                 setCurrentlyPlaying(data);
             })
             .catch(error => console.error('Error fetching currently playing track:', error));
-    }, [accessToken, currentlyPlayingUrl]);
+    }, [currentlyPlayingUrl]);
 
     useEffect(() => {
         fetchCurrentlyPlaying();
@@ -47,7 +47,7 @@ function PlaylistSelectCheck() {
     }, [fetchCurrentlyPlaying]);
 
     useEffect(() => {
-        fetch(`${getPlaylistsUrl}${current_user_id}`)
+        fetch(getPlaylistsUrl)
             .then(response => response.json())
             .then(playlists => {
                 const likedSongsPlaylist = playlists.find(playlist => playlist.name === "Liked Songs");
@@ -64,7 +64,7 @@ function PlaylistSelectCheck() {
                 }
             })
             .catch(error => console.error('Error:', error));
-    }, [current_user_id, getPlaylistsUrl]);
+    }, [getPlaylistsUrl]);
 
 
     function handleCheckboxChange(event, playlistId) {
