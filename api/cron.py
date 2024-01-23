@@ -3,9 +3,8 @@ import base64
 import os
 import requests
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.base import JobLookupError
 import atexit
 import threading
 from config import app, db
@@ -21,12 +20,11 @@ REPEAT_URL = "https://api.spotify.com/v1/me/player/repeat"
 job_lock = threading.Lock()
 
 
-def set_repeat(access_token, headers):
+def set_repeat(headers):
     repeat_data = {"state": "context"}
-    response = requests.put(REPEAT_URL, headers=headers, params=repeat_data)
+    requests.put(REPEAT_URL, headers=headers, params=repeat_data)
 
-
-def create_playlist(access_token, playlist, t, user_id, headers):
+def create_playlist(playlist, t, user_id, headers):
     CREATE_PLAYLIST_ENDPOINT = f"https://api.spotify.com/v1/users/{user_id}/playlists"
     playlist_data = json.dumps(
         {
@@ -75,7 +73,7 @@ def update_currently_playing_playlist(user):
     selected = True
     response = get_currently_playing(user, session=db.session)
     if response is None:
-        print("Not currently playing")
+        print(user.user_id + " is not playing Spotify")
         return False
     is_playing = False
     try:
@@ -92,7 +90,7 @@ def update_currently_playing_playlist(user):
             playlists = Playlist.query.filter_by(user_id=user.id).all()
             for playlist in playlists:
                 playlist.currently_playing = False
-            print("Not currently playing")
+            print(user.user_id + " is not playing Spotify")
         pass
     else:
         currently_playing_playlist = None
@@ -115,20 +113,20 @@ def update_currently_playing_playlist(user):
                 playlist.currently_playing = False
         db.session.commit()
         if selected == False:  # if playlist is not selected
-            print("Playing in an unselected playlist")
+            print(user.user_id + " is not playing a selected playlist")
             return False
         if currently_playing_playlist is None:  # if playlist is not owned by user
-            print("Playing in a playlist not owned by user")
+            print(user.user_id + " is not playing in an owned playlist")
             return False
         if is_playing == True:  # if playlist is currently playing
-            print("Currently playing " + currently_playing_playlist.name)
+            print(user.user_id + " is playing " + currently_playing_playlist.name)
             return is_playing
     return is_playing
 
 
-def get_current_queue_uris(user_id, session):
+def get_current_queue_uris(user):
     # get current queue
-    oauth = session.query(OAuth).get(user_id)
+    oauth = user.oauth
     if oauth is None:
         return []
     access_token = oauth.access_token
@@ -139,8 +137,7 @@ def get_current_queue_uris(user_id, session):
         queue_name = [track["name"] for track in response["queue"]]
         queue_name = [response["currently_playing"]["name"]] + queue_name
         queue_name = queue_name[:-1]
-        print(f"Queue: {queue_name}")
-        # print(f"Queue: {queue}")
+        print(user.user_id + "'s queue: " + str(queue_name))
     else:
         queue = []
     return queue
@@ -174,11 +171,9 @@ def delete_tracks_from_playlist(playlist, change_tracks, headers):
         tracks_data = json.dumps({"tracks": [{"uri": uri} for uri in change_tracks]})
 
     response = requests.delete(DELETE_ITEMS_ENDPOINT, headers=headers, data=tracks_data)
-    print(response.status_code)
 
 
 import requests
-
 
 def refresh_token(user):
     if user.oauth.expires_at < datetime.now().timestamp():
@@ -198,7 +193,6 @@ def refresh_token(user):
         }
 
         response = requests.post(TOKEN_URL, data=req_body, headers=headers)
-        print("Status Code:", response.status_code)
         if response.status_code == 400:
             print("User revoked access, deleting user")
             Skipped.query.filter_by(user_id=user.id).delete()
@@ -209,17 +203,17 @@ def refresh_token(user):
             db.session.commit()
             return
         new_token_info = response.json()
-        print(user.user_id)
-        print("New Token Info:", new_token_info)  # Add this line for debugging
+
         if "access_token" in new_token_info:
             user.oauth.access_token = new_token_info["access_token"]
             user.oauth.expires_at = (
                 datetime.now().timestamp() + new_token_info["expires_in"]
             )
             db.session.commit()
-            print("Refreshed token")
+            print("Refreshed " + user.user_id + "'s token")
+            print("New Token Info:", new_token_info)  # Add this line for debugging
         else:
-            print("Access token not found in response")
+            print("Refresh token not found in response")
 
 
 def skip_logic():
@@ -231,24 +225,24 @@ def skip_logic():
 
 def skip_logic_user(user):
     refresh_token(user)
-    # acquired = job_lock.acquire(blocking=False)
-    # if acquired:
-    #     try:
-    #         print("Executing skip_logic()")
-    #     finally:
-    #         job_lock.release()
+
+    if os.environ.get("FLASK_ENV") != "production":
+        acquired = job_lock.acquire(blocking=False)
+        if acquired:
+            job_lock.release()
+
+
     access_token = user.oauth.access_token
     headers = {"Authorization": f"Bearer {access_token}"}
     is_playing = update_currently_playing_playlist(user=user)
     if not is_playing:
-        # print("Not currently playing")
         return
 
     # wont work if queue is less than 20 songs
-    current_queue_uris = get_current_queue_uris(user_id=user.id, session=db.session)
+    current_queue_uris = get_current_queue_uris(user=user)
     if len(current_queue_uris) < 20:
-        set_repeat(access_token=access_token, headers=headers)
-        current_queue_with_repeat = get_current_queue_uris(user_id=user.id, session=db.session)
+        set_repeat(headers=headers)
+        current_queue_with_repeat = get_current_queue_uris(user=user)
         if len(current_queue_with_repeat) < 20:
             print("Queue has less than 20 songs")
             return
@@ -316,8 +310,7 @@ def skip_logic_user(user):
             db.session.delete(track)
 
     skipped_tracks_history_uris = [track.track_id for track in skipped_tracks_history]
-    # print("Skipped: ", skipped_tracks_60_list)
-    print(len(skipped_tracks_60_uris), " songs skipped")
+    print(user.user_id + "skipped " + str(len(skipped_tracks_60_uris)) + " songs")
 
     # tracks that will be removed from playlist
     change_tracks = []
@@ -356,7 +349,6 @@ def skip_logic_user(user):
             requests.post(ADD_ITEMS_ENDPOINT, headers=headers, data=tracks_data).text
         else:
             create_playlist(
-                access_token=access_token,
                 playlist=current_playlist,
                 t=skipped_track,
                 user_id=user.user_id,

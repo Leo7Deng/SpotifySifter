@@ -5,7 +5,7 @@ import os
 from flask_cors import CORS
 from flask_session import Session
 from datetime import datetime
-from flask import redirect, request, jsonify
+from flask import redirect, request, jsonify, session
 from config import app, db
 from models import Skipped, User, OAuth, Playlist
 from cron import main as cron_run
@@ -73,7 +73,6 @@ def callback():
     token_info = response.json()
     headers = {"Authorization": f'Bearer {token_info["access_token"]}'}
     user_info = requests.get(EMAIL_ENDPOINT, headers=headers)
-    print(user_info.text)
     user_email = user_info.json()["email"]
     current_user = User.query.filter_by(email=user_email).first()
     if not current_user:
@@ -101,6 +100,7 @@ def callback():
 
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
+    session["user_id"] = current_user.id
 
     expires_at = datetime.now().timestamp() + token_info["expires_in"]
     if current_user:
@@ -206,9 +206,8 @@ def get_playlists(current_user_id):
                 {"name": item["name"], "id": item["id"], "selected": selected}
             )
 
-    # Print playlists that are in the database or response
-    for playlist in playlists:
-        print(playlist["name"])
+    # Print only name of playlists
+    print([playlist["name"] for playlist in playlists])
 
     return jsonify(playlists)
 
