@@ -21,6 +21,7 @@ function Home() {
       setFadeOut(true);
       const response = await fetch(loginUrl, {
         method: 'GET',
+        credentials: 'include', 
       });
       if (response.status === 200) {
         const { auth_url } = await response.json();

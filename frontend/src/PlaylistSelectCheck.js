@@ -29,7 +29,9 @@ function PlaylistSelectCheck() {
     }, [selectedPlaylists]);
 
     const fetchCurrentlyPlaying = useCallback(() => {
-        fetch(currentlyPlayingUrl)
+        fetch(currentlyPlayingUrl, {
+            credentials: 'include',
+        })
             .then(response => response.json())
             .then(data => {
                 setCurrentlyPlaying(data);
@@ -47,7 +49,9 @@ function PlaylistSelectCheck() {
     }, [fetchCurrentlyPlaying]);
 
     useEffect(() => {
-        fetch(getPlaylistsUrl)
+        fetch(getPlaylistsUrl, {
+            credentials: 'include',
+        })
             .then(response => response.json())
             .then(playlists => {
                 const likedSongsPlaylist = playlists.find(playlist => playlist.name === "Liked Songs");
@@ -77,13 +81,17 @@ function PlaylistSelectCheck() {
 
         if (isChecked) {
             console.log('Checked Playlist ID:', playlistId);
-            fetch(selectUrl + current_user_id + '/' + playlistId)
+            fetch(selectUrl + current_user_id + '/' + playlistId, {
+                credentials: 'include',
+            })
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));
         } else {
             console.log('Unchecked Playlist ID:', playlistId);
-            fetch(unselectUrl + current_user_id + '/' + playlistId)
+            fetch(unselectUrl + current_user_id + '/' + playlistId, {
+                credentials: 'include',
+            })
                 .then(response => response.json())
                 .then(data => console.log('Manage Playlists Response:', data))
                 .catch(error => console.error('Error:', error));

@@ -9,6 +9,7 @@ from flask import redirect, request, jsonify, session, render_template, url_for
 from config import app, db
 from models import Skipped, User, OAuth, Playlist
 from cron import main as cron_run
+from flask_cors import cross_origin
 
 # app = Flask(__name__)
 
@@ -35,7 +36,6 @@ API_BASE_URL = "https://api.spotify.com/v1/"
 
 EMAIL_ENDPOINT = "https://api.spotify.com/v1/me"
 
-@login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
@@ -56,6 +56,7 @@ def login():
 
 
 @app.route("/callback")
+@cross_origin(supports_credentials=True)
 def callback():
     if "error" in request.args:
         error_message = request.args["error"]
@@ -140,6 +141,7 @@ def callback():
 
 
 @app.route("/get_playlists")
+@cross_origin(supports_credentials=True)
 def get_playlists():
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -223,6 +225,7 @@ def get_playlists():
 
 
 @app.route("/get_delete_playlists")
+@cross_origin(supports_credentials=True)
 def get_delete_playlists():
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -250,6 +253,7 @@ def get_delete_playlists():
 
 
 @app.route("/select/<playlist_id>")
+@cross_origin(supports_credentials=True)
 def select(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -276,6 +280,7 @@ def select(playlist_id):
 
 
 @app.route("/unselect/<playlist_id>")
+@cross_origin(supports_credentials=True)
 def unselect(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -302,6 +307,7 @@ def unselect(playlist_id):
 
 
 @app.route("/leaderboard")
+@cross_origin(supports_credentials=True)
 def leaderboard():
     # Get users from database in descending order of total_played
     users = User.query.order_by(User.total_played.desc()).all()
@@ -322,6 +328,7 @@ def leaderboard():
 
 
 @app.route("/currently_playing")
+@cross_origin(supports_credentials=True)
 def currently_playing():
     print(session)
     current_user_id = session.get("user_id")
@@ -346,6 +353,7 @@ def currently_playing():
 
 
 @app.route("/total_played")
+@cross_origin(supports_credentials=True)
 def total_played():
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -372,6 +380,7 @@ def total_played():
 
 
 @app.route("/new_delete_playlists/<playlist_id>")
+@cross_origin(supports_credentials=True)
 def new_delete_playlists(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -431,6 +440,7 @@ def new_delete_playlists(playlist_id):
 
 
 @app.route("/update_playlist_skip_count/<playlist_id>/<new_skip_count>")
+@cross_origin(supports_credentials=True)
 def update_playlist_skip_count(playlist_id, new_skip_count):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -476,6 +486,7 @@ def update_playlist_skip_count(playlist_id, new_skip_count):
 
 
 @app.route("/resift_playlist/<playlist_id>")
+@cross_origin(supports_credentials=True)
 def resift_playlist(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
