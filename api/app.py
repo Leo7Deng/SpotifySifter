@@ -100,13 +100,11 @@ def callback():
         liked_songs_playlist.skip_count = 2
         db.session.add(liked_songs_playlist)
         db.session.commit()
-        print("Added new user")
+        print("Added new user:" + user_info.json()["id"])
 
     access_token = token_info["access_token"]
     refresh_token = token_info["refresh_token"]
     session["user_id"] = current_user.id
-    print(session["user_id"])
-    print(session)
 
     expires_at = datetime.now().timestamp() + token_info["expires_in"]
     if current_user:
@@ -130,7 +128,6 @@ def callback():
     if os.environ.get("FLASK_ENV") != "production":
         cron_run()
 
-    # return redirect(f'/get_playlists?current_user_id={current_user.id}')
     if os.environ.get("FLASK_ENV") == "production":
         redirect_url = "https://spotifysifter.com"
     else:
@@ -309,6 +306,10 @@ def unselect(playlist_id):
 @app.route("/leaderboard")
 @cross_origin(supports_credentials=True)
 def leaderboard():
+    current_user_id = session.get("user_id")
+    if not current_user_id:
+        return jsonify({"error": "Unauthorized access"})
+    
     # Get users from database in descending order of total_played
     users = User.query.order_by(User.total_played.desc()).all()
 
@@ -330,7 +331,6 @@ def leaderboard():
 @app.route("/currently_playing")
 @cross_origin(supports_credentials=True)
 def currently_playing():
-    print(session)
     current_user_id = session.get("user_id")
     print(current_user_id)
     if not current_user_id:

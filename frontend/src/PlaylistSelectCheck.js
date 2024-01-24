@@ -81,7 +81,7 @@ function PlaylistSelectCheck() {
 
         if (isChecked) {
             console.log('Checked Playlist ID:', playlistId);
-            fetch(selectUrl + current_user_id + '/' + playlistId, {
+            fetch(selectUrl + '/' + playlistId, {
                 credentials: 'include',
             })
                 .then(response => response.json())
@@ -89,7 +89,7 @@ function PlaylistSelectCheck() {
                 .catch(error => console.error('Error:', error));
         } else {
             console.log('Unchecked Playlist ID:', playlistId);
-            fetch(unselectUrl + current_user_id + '/' + playlistId, {
+            fetch(unselectUrl + '/' + playlistId, {
                 credentials: 'include',
             })
                 .then(response => response.json())

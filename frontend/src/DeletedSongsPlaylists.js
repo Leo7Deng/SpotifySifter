@@ -13,14 +13,14 @@ function DeletedSongsPlaylists() {
     const getDeletedSongsPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_delete_playlists/` : `http://localhost:8889/get_delete_playlists/`;
     
     useEffect(() => {
-        fetch(`${getDeletedSongsPlaylistsUrl}${current_user_id}`)
+        fetch(getDeletedSongsPlaylistsUrl)
             .then(response => response.json())
             .then(deleted_songs_playlists_uris => {
                 const playlists = deleted_songs_playlists_uris;
                 setPlaylists(playlists);
             })
             .catch(error => console.error('Error:', error));
-    }, [current_user_id, getDeletedSongsPlaylistsUrl]);
+    }, [getDeletedSongsPlaylistsUrl]);
 
     return (
         <>

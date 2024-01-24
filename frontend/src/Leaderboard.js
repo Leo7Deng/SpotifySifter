@@ -17,11 +17,10 @@ function Leaderboard() {
     const totalPlayedUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/total_played/` : `http://localhost:8889/total_played/`;
 
     useEffect(() => {
-        fetch(`${leaderboardUrl}`)
+        fetch(leaderboardUrl, { credentials: 'include'})
             .then(response => response.json())
             .then(leaderboard => {
                 setLeaderboard(leaderboard);
-                console.log('Current User ID:', current_user_id);
                 console.log('Leaderboard:', leaderboard);
 
                 const foundUser = leaderboard.find(user => user.id === Number(current_user_id));
@@ -32,13 +31,13 @@ function Leaderboard() {
                 }
             })
             .catch(error => console.error('Error:', error));
-    }, [current_user_id, leaderboardUrl]);
+    }, [leaderboardUrl]);
 
     useEffect(() => {
         console.log('Is User In Leaderboard:', isUserInLeaderboard);
         if (!isUserInLeaderboard) {
             console.log('Fetching Total Played');
-            fetch(`${totalPlayedUrl}${current_user_id}/${access_token}`)
+            fetch(totalPlayedUrl, { credentials: 'include' })
                 .then(response => response.json())
                 .then(data => {
                     setTotalPlayed(data.total_played);
@@ -47,7 +46,7 @@ function Leaderboard() {
                 })
                 .catch(error => console.error('Error:', error));
         }
-    }, [isUserInLeaderboard, current_user_id, access_token, totalPlayedUrl]);
+    }, [isUserInLeaderboard, totalPlayedUrl]);
 
     return (
         <>
