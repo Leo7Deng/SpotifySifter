@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import { useState, useCallback } from "react";
 import './PlaylistSelectCheck.css';
 import { Link } from 'react-router-dom';
@@ -7,12 +6,9 @@ import { useMediaQuery } from 'react-responsive';
 
 function PlaylistSelectCheck() {
     const isMobile = useMediaQuery({ maxWidth: 600 });
-    const [searchParams] = useSearchParams();
-    const current_user_id = searchParams.get("current_user_id");
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
-    const accessToken = searchParams.get("access_token");
     const currentlyPlayingUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/currently_playing` : `http://localhost:8889/currently_playing`;
     const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_playlists` : `http://localhost:8889/get_playlists`;
     const selectUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/select/` : `http://localhost:8889/select/`;
@@ -101,13 +97,13 @@ function PlaylistSelectCheck() {
 
     return (
         <>
-            <Link to={`/DeletedSongsPlaylists?current_user_id=${current_user_id}&access_token=${accessToken}`}>
+            <Link to={"/DeletedSongsPlaylist"}>
                 <div className={`right-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
                     <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🗑️</div>
                 </div>
             </Link>
-            <Link to={`/Leaderboard?current_user_id=${current_user_id}&access_token=${accessToken}`}>
+            <Link to={"/Leaderboard"}>
                 <div className={`left-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
                     <img src={require('./images/rightarrow.png')} alt="Left Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🏆</div>

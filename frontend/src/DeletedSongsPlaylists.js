@@ -1,14 +1,9 @@
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { Link } from 'react-router-dom';
 import './DeletedSongsPlaylists.css';
 
 function DeletedSongsPlaylists() {
-
-    const [searchParams] = useSearchParams();
-    const current_user_id = searchParams.get("current_user_id");
-    const access_token = searchParams.get("access_token");
     const [playlists, setPlaylists] = useState([]);
     const getDeletedSongsPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_delete_playlists/` : `http://localhost:8889/get_delete_playlists/`;
     
@@ -24,13 +19,13 @@ function DeletedSongsPlaylists() {
 
     return (
         <>
-            <Link to = {`/Leaderboard?current_user_id=${current_user_id}&access_token=${access_token}`}>
+            <Link to = {"/Leaderboard"}>
                 <div className="right-arrow">
                     <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow"/>
                     <div className="arrow-emoji">🏆</div>
                 </div>
             </Link>
-            <Link to={`/PlaylistSelectCheck?current_user_id=${current_user_id}&access_token=${access_token}`}>
+            <Link to={"/PlaylistSelectCheck"}>
                 <div className="left-arrow">
                     <img src={require('./images/rightarrow.png')} alt="Left Arrow"  width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🎵</div>

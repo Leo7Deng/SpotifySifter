@@ -352,6 +352,7 @@ def currently_playing():
     else:
         return jsonify({"success": False})
 
+
 @app.route("/new_delete_playlists/<playlist_id>")
 @cross_origin(supports_credentials=True)
 def new_delete_playlists(playlist_id):
