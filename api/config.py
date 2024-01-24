@@ -25,6 +25,8 @@ else:
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PERMANENT_SESSION_LIFETIME"] = 24 * 3600
+app.config["SESSION_COOKIE_SECURE"] = True  
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
 
 with app.app_context():
     from models import *
