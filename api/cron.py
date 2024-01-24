@@ -329,7 +329,7 @@ def skip_logic_user(user):
             raise Exception("Skipped track not found")
 
         skipped_track.skipped_count += 1
-        if skipped_track.skipped_count < skipped_track.playlist.skip_count:
+        if skipped_track.skipped_count < current_playlist.skip_count:
             continue
 
         change_tracks.append(skipped_track.track_id)
