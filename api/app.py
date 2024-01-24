@@ -300,24 +300,34 @@ def leaderboard():
     current_user_id = session.get("user_id")
     if not current_user_id:
         return jsonify({"error": "Unauthorized access"})
-    
-    # Get users from database in descending order of total_played
-    users = User.query.order_by(User.total_played.desc()).all()
 
-    # Return list of users
-    users = [
+    leaderboard = User.query.order_by(User.total_played.desc()).limit(10).all()
+
+    users_list = [
         {
             "username": user.user_id,
             "total_played": user.total_played,
             "profile_pic": user.profile_pic,
             "id": user.id,
         }
-        for user in users
+        for user in leaderboard
     ]
 
-    # Return top 10 users
-    return jsonify(users[:10])
+    is_in_leaderboard = any(user["id"] == current_user_id for user in users_list)
+    if not is_in_leaderboard:
+        current_user = User.query.get(current_user_id)
+        if current_user is None:
+            raise Exception("User not found.")
+        users_list.append(
+            {
+                "username": current_user.user_id,
+                "total_played": current_user.total_played,
+                "profile_pic": current_user.profile_pic,
+                "id": current_user.id,
+            }
+        )
 
+    return users_list
 
 @app.route("/currently_playing")
 @cross_origin(supports_credentials=True)
@@ -341,34 +351,6 @@ def currently_playing():
         return jsonify(response.json()["item"]["name"])
     else:
         return jsonify({"success": False})
-
-
-@app.route("/total_played")
-@cross_origin(supports_credentials=True)
-def total_played():
-    current_user_id = session.get("user_id")
-    if not current_user_id:
-        return jsonify({"error": "Unauthorized access"})
-
-    # Get user from database
-    current_user = User.query.get(session["user_id"])
-    if current_user is None:
-        raise Exception("User not found.")
-
-    user = User.query.get(session["user_id"])
-    if user is None:
-        raise Exception("User not found.")
-
-    total_played = user.total_played
-    return jsonify(
-        {
-            "success": True,
-            "total_played": total_played,
-            "profile_pic": user.profile_pic,
-            "username": user.user_id,
-        }
-    )
-
 
 @app.route("/new_delete_playlists/<playlist_id>")
 @cross_origin(supports_credentials=True)
