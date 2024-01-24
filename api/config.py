@@ -12,9 +12,7 @@ convention = {
     "pk": "pk_%(table_name)s",
 }
 metadata = MetaData(naming_convention=convention)
-db = SQLAlchemy(metadata=metadata)  # type: ignore
-
-# def create_app():
+db = SQLAlchemy(metadata=metadata) 
 
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
@@ -25,13 +23,9 @@ if os.environ.get("FLASK_ENV") == "production":
 else:
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["POSTGRES_URL"]
 
-# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["AWS_DATABASE_URL"]
-
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
-
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["PERMANENT_SESSION_LIFETIME"] = 24 * 3600
 
-# Initialize Database Plugin
 with app.app_context():
     from models import *
 db.init_app(app)

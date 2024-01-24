@@ -11,15 +11,6 @@ from models import Skipped, User, OAuth, Playlist
 from cron import main as cron_run
 from flask_cors import cross_origin
 
-# app = Flask(__name__)
-
-# app.app_context().push()
-# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
-
-# app.config["SESSION_TYPE"] = "filesystem"
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
-# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 Session(app)
 CORS(app, supports_credentials=True)
 
