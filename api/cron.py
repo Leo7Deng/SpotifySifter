@@ -310,7 +310,7 @@ def skip_logic_user(user):
             db.session.delete(track)
 
     skipped_tracks_history_uris = [track.track_id for track in skipped_tracks_history]
-    print(user.user_id + "skipped " + str(len(skipped_tracks_60_uris)) + " songs")
+    print(user.user_id + " skipped " + str(len(skipped_tracks_60_uris)) + " songs")
 
     # tracks that will be removed from playlist
     change_tracks = []

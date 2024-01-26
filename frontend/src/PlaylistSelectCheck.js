@@ -97,7 +97,7 @@ function PlaylistSelectCheck() {
 
     return (
         <>
-            <Link to={"/DeletedSongsPlaylist"}>
+            <Link to={"/DeletedSongsPlaylists"}>
                 <div className={`right-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
                     <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🗑️</div>

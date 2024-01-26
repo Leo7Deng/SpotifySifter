@@ -261,7 +261,7 @@ def select(playlist_id):
     if playlist:
         playlist.selected = True
         db.session.commit()
-        print("Selected playlist " + playlist.name)
+        print(current_user.user_id + "selected playlist " + playlist.name)
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
@@ -288,7 +288,7 @@ def unselect(playlist_id):
     if playlist:
         playlist.selected = False
         db.session.commit()
-        print("Unselected playlist " + playlist.name)
+        print(current_user.user_id + "unselected playlist " + playlist.name)
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
@@ -333,7 +333,6 @@ def leaderboard():
 @cross_origin(supports_credentials=True)
 def currently_playing():
     current_user_id = session.get("user_id")
-    print(current_user_id)
     if not current_user_id:
         return jsonify({"error": "Unauthorized access"})
 

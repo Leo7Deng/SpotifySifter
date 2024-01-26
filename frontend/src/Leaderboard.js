@@ -25,7 +25,7 @@ function Leaderboard() {
                     <div className="arrow-emoji">🎵</div>
                 </div>
             </Link>
-            <Link to={"/DeletedSongsPlaylist"}>
+            <Link to={"/DeletedSongsPlaylists"}>
                 <div className="left-arrow">
                     <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🗑️</div>
