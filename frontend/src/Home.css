@@ -121,7 +121,7 @@ button {
     margin-bottom: auto;
   }
 
-  .about {
+  .instructions {
     margin-left: auto;
     margin-right: auto;
     display: grid;
@@ -130,7 +130,7 @@ button {
     background-color: rgb(201, 189, 174);
   }
 
-  .about-title {
+  .instructions-title {
     font-size: 50px;
     font-weight: bold;
     text-align: center;
@@ -138,7 +138,7 @@ button {
     grid-row: 4;
   }
 
-  .about-paragraph {
+  .instructions-paragraph {
     font-size: 20px;
     font-weight: bold;
     text-align: center;

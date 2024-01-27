@@ -50,12 +50,12 @@ function Home() {
         <p className="symbol-trophy">🏆</p>
         <p className="symbol-trophy-paragraph">See the leaderboard of most played songs</p>
       </div>
-      <div className="about">
+      <div className="instructions">
 
-        <h2 className="about-title">About</h2>
-        <p className="about-paragraph">
-          Spotify Sifter is a web app that allows you to delete unwanted songs from your Spotify playlists.
-          Consecutively skipped songs in selected playlists are automatically deleted and stored in a new playlist.
+        <h2 className="instructions-title">Instructions</h2>
+        <p className="instructions-paragraph">
+          After logging in with spotify, select the playlists you want sifted. 
+          After selecting, you're done! Spotify Sifter will listen to your activity and after skipping a song twice in a row, that song will be sifted out of the playlist and will be stored into a newly created playlist.
         </p>
         <h2 className="how-title">How it works</h2>
         <p className="how-paragraph">
