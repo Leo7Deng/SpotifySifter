@@ -6,7 +6,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    margin-top: 40px;
+    margin-top: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,7 +35,7 @@ body {
     padding: 15px;
     font-size: 20px;
     width: 250px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     text-align: center;
 }
@@ -69,131 +69,19 @@ body {
     100% { transform: rotate(360deg); }
   }
 
-  .home {
-    opacity: 1;
-    transition: opacity 1s;
-  }
-  
-  .home.fade-out {
-    opacity: 0;
-  }
-
-  .symbol {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-column-gap: 20px;
+  .home-footer {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-size: 15px;
+    font-weight: 400;
+    color: rgb(0, 0, 0);
     text-align: center;
-    margin-top: 250px;
-    padding-bottom: 70px;
   }
 
-  .symbol-music-paragraph {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 2;
-    grid-row: 2;
-    margin-top: auto;
-    margin-bottom: auto;
+  .footer-text {
+    margin: 13px;
   }
 
-  .symbol-music {
-    grid-column: 2;
-    grid-row: 1;
-    font-size: 50px;
+  .link {
+    text-decoration: none;
   }
-
-  .symbol-trash {
-    grid-column: 3;
-    grid-row: 1;
-    font-size: 50px;
-  }
-
-  .symbol-trash-paragraph {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 3;
-    grid-row: 2;
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-
-  .symbol-trophy {
-    grid-column: 4;
-    grid-row: 1;
-    font-size: 50px;
-  }
-
-  .symbol-trophy-paragraph {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 4;
-    grid-row: 2;
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-
-  .instructions {
-    margin-left: auto;
-    margin-right: auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr 3fr 1fr;
-    grid-template-rows: 0.2fr 1fr 1fr;
-  }
-
-  .instructions-title {
-    font-size: 50px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 2;
-    grid-row: 4;
-  }
-
-  .instructions-paragraph {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 3;
-    grid-row: 4;
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-
-  .how-title {
-    font-size: 50px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 2;
-    grid-row: 5;
-  }
-
-  .how-paragraph {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 3;
-    grid-row: 5;
-    margin-top: auto;
-    margin-bottom: auto;
-  } 
-
-  .more-title {
-    font-size: 50px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 2;
-    grid-row: 6;
-  }
-
-  .more-paragraph {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    grid-column: 3;
-    grid-row: 6;
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-

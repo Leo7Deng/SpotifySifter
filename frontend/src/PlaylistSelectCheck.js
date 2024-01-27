@@ -11,8 +11,8 @@ function PlaylistSelectCheck() {
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
     const currentlyPlayingUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/currently_playing' : 'http://localhost:8889/currently_playing';
     const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/get_playlists' : 'http://localhost:8889/get_playlists';
-    const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select/' : 'http://localhost:8889/select/';
-    const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect/' : 'http://localhost:8889/unselect/';
+    const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select' : 'http://localhost:8889/select';
+    const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect' : 'http://localhost:8889/unselect';
     const [initialChecked, setInitialChecked] = useState({});
 
     useEffect(() => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './Home.css';
 
 function Home() {
@@ -21,7 +22,7 @@ function Home() {
       setFadeOut(true);
       const response = await fetch(loginUrl, {
         method: 'GET',
-        credentials: 'include', 
+        credentials: 'include',
       });
       if (response.status === 200) {
         const { auth_url } = await response.json();
@@ -44,31 +45,14 @@ function Home() {
         </button>
       </div>
       <hr className='bar'></hr>
-      <div className="symbol">
-        <p className="symbol-music">♫</p>
-        <p className="symbol-music-paragraph">Select the playlists you want to be sifted</p>
-        <p className="symbol-trash">🗑️</p>
-        <p className="symbol-trash-paragraph">Look through your sifted songs</p>
-        <p className="symbol-trophy">🏆</p>
-        <p className="symbol-trophy-paragraph">See the leaderboard of most played songs</p>
-      </div>
-      <div className="instructions">
-
-        <h2 className="instructions-title">Instructions</h2>
-        <p className="instructions-paragraph">
-          After logging in with spotify, select the playlists you want sifted. 
-          After selecting, you're done! Spotify Sifter will listen to your activity and after skipping a song twice in a row, that song will be sifted out of the playlist and will be stored into a newly created playlist.
-        </p>
-        <h2 className="how-title">How it works</h2>
-        <p className="how-paragraph">
-          Spotify Sifter uses the Spotify Web API to retrieve your queued songs.
-          Comparing the queued songs to the songs you have played all the way through, Spotify Sifter determines which songs to delete.
-        </p>
-        <h2 className="more-title">More info</h2>
-        <p className="more-paragraph">
-          Spotify Sifter is open source and available on <a href="https://github.com/Leo7Deng/SpotifySifter">GitHub</a>
-        </p>
-        
+      <div className="home-footer">
+        <p className="footer-text">Created by Leo Deng</p>
+        <p className="footer-text">© 2024 - SpotifySifter.com</p>
+        <div className="footer-links">
+          <Link className="link" to="/">Home </Link> |
+          <Link className="link" to="/about"> About </Link> |
+          <Link className="link" to="/contact"> Contact</Link>
+        </div>
       </div>
     </>
   );
