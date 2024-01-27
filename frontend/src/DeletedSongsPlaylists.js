@@ -5,7 +5,7 @@ import './DeletedSongsPlaylists.css';
 
 function DeletedSongsPlaylists() {
     const [playlists, setPlaylists] = useState([]);
-    const getDeletedSongsPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_delete_playlists/` : `http://localhost:8889/get_delete_playlists/`;
+    const getDeletedSongsPlaylistsUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/get_delete_playlists' : 'http://localhost:8889/get_delete_playlists';
     
     useEffect(() => {
         fetch(getDeletedSongsPlaylistsUrl, { credentials: 'include'})
