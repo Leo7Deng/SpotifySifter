@@ -37,11 +37,13 @@ function Home() {
   return (
     <>
       <div className={`home ${fadeOut ? 'fade-out' : ''}`}>
-        <h1>Spotify Sifter</h1>
+        <h1 className="home-title">Spotify Sifter</h1>
+        <p className='subtitle'>Select your playlists to sort out frequently skipped tracks</p>
         <button className="home-button" onClick={handleLoginClick}>
-          Login with Spotify
+          Log in with Spotify
         </button>
       </div>
+      <hr className='bar'></hr>
       <div className="symbol">
         <p className="symbol-music">♫</p>
         <p className="symbol-music-paragraph">Select the playlists you want to be sifted</p>
