@@ -1,0 +1,25 @@
+.about {
+    background-color: hsl(0, 0%, 92%);
+    width: 70%;
+    height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px;
+    padding-top: 10px;
+}
+
+.about-subtitle {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 0px;
+}
+
+.about-text {
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 5px;
+}
+
+li {
+    margin-bottom: 5px;
+}
