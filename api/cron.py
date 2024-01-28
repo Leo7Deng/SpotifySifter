@@ -59,7 +59,7 @@ def get_response(access_token, endpoint):
 
 
 def get_currently_playing(user):
-    oauth = OAuth.query.get(user.id)
+    oauth = user.oauth
     access_token = None
     if oauth:
         access_token = oauth.access_token

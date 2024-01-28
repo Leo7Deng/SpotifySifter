@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import './Home.css';
 
 function Home() {
@@ -29,16 +28,6 @@ function Home() {
         <button className="home-button" onClick={handleLoginClick}>
           Log in with Spotify
         </button>
-      </div>
-      <hr className='bar'></hr>
-      <div className="home-footer">
-        <p className="footer-text">Created by Leo Deng</p>
-        <p className="footer-text">© 2024 - SpotifySifter.com</p>
-        <div className="footer-links">
-          <Link className="link" to="/">Home </Link> |
-          <Link className="link" to="/about"> About </Link> |
-          <Link className="link" to="/contact"> Contact</Link>
-        </div>
       </div>
     </>
   );

@@ -1,0 +1,24 @@
+.bar {
+    border-top: 1px solid rgb(198, 198, 198);
+    height: 1px;
+    width: 30%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.home-footer {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-size: 15px;
+    font-weight: 400;
+    color: rgb(0, 0, 0);
+    text-align: center;
+}
+
+.footer-text {
+    margin: 13px;
+}
+
+.link {
+    text-decoration: none;
+}
