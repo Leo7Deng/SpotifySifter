@@ -1,33 +1,33 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from 'react-router-dom';
-import './DeletedSongsPlaylists.css';
+import './SiftedSongs.css';
 
-function DeletedSongsPlaylists() {
+function SiftedSongs() {
     const [playlists, setPlaylists] = useState([]);
-    const getDeletedSongsPlaylistsUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/get_delete_playlists' : 'http://localhost:8889/get_delete_playlists';
-    
+    const getSiftedSongsUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/get_delete_playlists' : 'http://localhost:8889/get_delete_playlists';
+
     useEffect(() => {
-        fetch(getDeletedSongsPlaylistsUrl, { credentials: 'include'})
+        fetch(getSiftedSongsUrl, { credentials: 'include' })
             .then(response => response.json())
             .then(deleted_songs_playlists_uris => {
                 const playlists = deleted_songs_playlists_uris;
                 setPlaylists(playlists);
             })
             .catch(error => console.error('Error:', error));
-    }, [getDeletedSongsPlaylistsUrl]);
+    }, [getSiftedSongsUrl]);
 
     return (
         <>
-            <Link to = {"/Leaderboard"}>
+            <Link to={"/Leaderboard"}>
                 <div className="right-arrow">
-                    <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow"/>
+                    <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🏆</div>
                 </div>
             </Link>
-            <Link to={"/PlaylistSelectCheck"}>
+            <Link to={"/PlaylistSelect"}>
                 <div className="left-arrow">
-                    <img src={require('./images/rightarrow.png')} alt="Left Arrow"  width="28" className="arrow-left" />
+                    <img src={require('./images/rightarrow.png')} alt="Left Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🎵</div>
                 </div>
             </Link>
@@ -47,4 +47,4 @@ function DeletedSongsPlaylists() {
     )
 }
 
-export default DeletedSongsPlaylists;
+export default SiftedSongs;

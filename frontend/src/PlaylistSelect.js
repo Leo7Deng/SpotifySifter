@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import './PlaylistSelectCheck.css';
+import './PlaylistSelect.css';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 
-function PlaylistSelectCheck() {
+function PlaylistSelect() {
     const isMobile = useMediaQuery({ maxWidth: 600 });
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
@@ -75,7 +75,7 @@ function PlaylistSelectCheck() {
 
     return (
         <>
-            <Link to={"/DeletedSongsPlaylists"}>
+            <Link to={"/SiftedSongs"}>
                 <div className={`right-arrow ${isMobile ? 'mobile-arrow' : ''}`}>
                     <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🗑️</div>
@@ -160,4 +160,4 @@ function PlaylistSelectCheck() {
     )
 }
 
-export default PlaylistSelectCheck;
+export default PlaylistSelect;

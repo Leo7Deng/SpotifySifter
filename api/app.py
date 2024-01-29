@@ -124,7 +124,7 @@ def callback():
     else:
         redirect_url = "http://localhost:3000"
     return redirect(
-        f"{redirect_url}/PlaylistSelectCheck"
+        f"{redirect_url}/PlaylistSelect"
     )
 
 

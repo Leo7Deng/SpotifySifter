@@ -8,7 +8,7 @@ function Leaderboard() {
     const leaderboardUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/leaderboard` : `http://localhost:8889/leaderboard`;
 
     useEffect(() => {
-        fetch(leaderboardUrl, { credentials: 'include'})
+        fetch(leaderboardUrl, { credentials: 'include' })
             .then(response => response.json())
             .then(leaderboard => {
                 setLeaderboard(leaderboard);
@@ -19,13 +19,13 @@ function Leaderboard() {
 
     return (
         <>
-            <Link to={"/PlaylistSelectCheck"}>
+            <Link to={"/PlaylistSelect"}>
                 <div className="right-arrow">
                     <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow" />
                     <div className="arrow-emoji">🎵</div>
                 </div>
             </Link>
-            <Link to={"/DeletedSongsPlaylists"}>
+            <Link to={"/SiftedSongs"}>
                 <div className="left-arrow">
                     <img src={require('./images/rightarrow.png')} alt="Right Arrow" width="28" className="arrow-left" />
                     <div className="arrow-emoji-left">🗑️</div>

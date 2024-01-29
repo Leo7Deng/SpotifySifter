@@ -201,8 +201,11 @@ def refresh_token(user):
             db.session.delete(user)
             db.session.commit()
             return
-        new_token_info = response.json()
-
+        try: 
+            new_token_info = response.json()
+        except:
+            print("Response text:", response.text, "Response status code:", response.status_code, "Response reason:", response.reason, "Response headers:", response.headers, "Response request:", response.request)
+            return
         if "access_token" in new_token_info:
             user.oauth.access_token = new_token_info["access_token"]
             user.oauth.expires_at = (
