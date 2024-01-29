@@ -180,6 +180,7 @@ def get_playlists():
     # For each playlist in the response, add it to the database if it doesn't exist
     for item in response.json()["items"]:
         selected = False
+        skip_count = 2
         if (
             item["owner"]["id"] == current_user.user_id
             and item["id"] not in deleted_songs_playlists
@@ -201,9 +202,10 @@ def get_playlists():
                 for playlist in database_playlists:
                     if playlist.playlist_id == item["id"]:
                         selected = playlist.selected
+                        skip_count = playlist.skip_count
                         break
             playlists.append(
-                {"name": item["name"], "id": item["id"], "selected": selected}
+                {"name": item["name"], "id": item["id"], "selected": selected, "image": item["images"][0]["url"], "skip_count": skip_count}
             )
 
     # Print only name of playlists

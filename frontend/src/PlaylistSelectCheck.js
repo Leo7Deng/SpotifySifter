@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import './PlaylistSelectCheck.css';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
@@ -8,8 +8,6 @@ function PlaylistSelectCheck() {
     const isMobile = useMediaQuery({ maxWidth: 600 });
     const [selectedPlaylists, setSelectedPlaylists] = useState([]);
     const [unselectedPlaylists, setUnselectedPlaylists] = useState([]);
-    const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
-    const currentlyPlayingUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/currently_playing' : 'http://localhost:8889/currently_playing';
     const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/get_playlists' : 'http://localhost:8889/get_playlists';
     const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select' : 'http://localhost:8889/select';
     const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect' : 'http://localhost:8889/unselect';
@@ -23,26 +21,6 @@ function PlaylistSelectCheck() {
 
         setInitialChecked(selectedCheckboxes);
     }, [selectedPlaylists]);
-
-    const fetchCurrentlyPlaying = useCallback(() => {
-        fetch(currentlyPlayingUrl, {
-            credentials: 'include',
-        })
-            .then(response => response.json())
-            .then(data => {
-                setCurrentlyPlaying(data);
-            })
-            .catch(error => console.error('Error fetching currently playing track:', error));
-    }, [currentlyPlayingUrl]);
-
-    useEffect(() => {
-        fetchCurrentlyPlaying();
-        const interval = setInterval(fetchCurrentlyPlaying, 10000);
-
-        return () => {
-            clearInterval(interval);
-        };
-    }, [fetchCurrentlyPlaying]);
 
     useEffect(() => {
         fetch(getPlaylistsUrl, {
@@ -110,16 +88,6 @@ function PlaylistSelectCheck() {
                 </div>
             </Link>
             <h4 className="check-title">Select playlists you want sifted</h4>
-            {currentlyPlaying !== null && typeof currentlyPlaying === 'object' ? (
-                <div className="currently-playing">
-                    <h5>Spotify is not currently playing</h5>
-                </div>
-            ) : (
-                <div className="currently-playing">
-                    <h5>Currently Playing: {currentlyPlaying}</h5>
-                    <img src={require('./images/musicnote.gif')} alt="GIF" width="28" />
-                </div>
-            )}
 
             {(selectedPlaylists.length + unselectedPlaylists.length > 0) ? (
                 <div className={`large-check-container ${selectedPlaylists.length + unselectedPlaylists.length > 12 && !isMobile ? 'large-playlist' : ''}`}>
