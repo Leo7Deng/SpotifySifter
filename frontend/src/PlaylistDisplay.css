@@ -28,8 +28,7 @@
     text-overflow: ellipsis; 
 }
 
-
-.checkbox-wrapper-4 {
+.button-wrapper {
     flex-grow: 1;
     display: flex;
     justify-content: flex-end;
@@ -37,11 +36,50 @@
     padding-right: 10px; 
 }
 
+.gear {
+    cursor: pointer;
+    padding: 5.25px 7px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: inline-block;
+    border: none; 
+    background-color: transparent;
+    outline: none; 
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.gear:hover {
+    background: rgba(0, 119, 255, 0.06);
+}
+
+/* Add this CSS for the spinning gear animation and color change */
+.gear-icon {
+    transition: transform 0.3s ease;
+    transform-origin: center;
+}
+
+.gear.rotate .gear-icon {
+    animation: spin 1s linear forwards;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+.checkbox-wrapper-4 {
+    box-sizing: border-box;
+}
+
 .checkbox-wrapper-4 .cbx {
     -webkit-user-select: none;
     user-select: none;
     cursor: pointer;
-    padding: 6px 8px;
+    padding: 6px 6px;
     border-radius: 6px;
     overflow: hidden;
     transition: all 0.2s ease;
@@ -90,7 +128,7 @@
 }
 
 .checkbox-wrapper-4 .cbx span:last-child {
-    padding-left: 8px;
+    padding-left: 6px;
     line-height: 18px;
 }
 
