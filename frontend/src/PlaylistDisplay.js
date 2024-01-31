@@ -13,16 +13,18 @@ function PlaylistDisplay({ playlist, isChecked }) {
     const handleCheckboxChange = (event) => {
         const isNowChecked = event.target.checked;
         setChecked(isNowChecked);
-
+    
         const url = isNowChecked ? selectUrl : unselectUrl;
+        const action = isNowChecked ? 'selected' : 'unselected'; 
+    
         fetch(`${url}/${playlist.id}`, {
             credentials: 'include',
-            method: 'POST' 
         })
         .then(response => response.json())
-        .then(data => console.log('Response:', data))
+        .then(data => console.log(`Item ${action}:`, data)) 
         .catch(error => console.error('Error:', error));
     };
+    
 
     return (
         <div className="playlist-item">
