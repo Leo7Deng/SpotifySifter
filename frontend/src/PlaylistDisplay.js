@@ -26,12 +26,14 @@ function PlaylistDisplay({ playlist, isChecked }) {
 
     return (
         <div className="playlist-item">
-            <img 
-                className="playlist-image" 
-                src={playlist.image ? playlist.image : require('./images/LikedSongs.png')} 
-                alt="playlist"
-            />
-            <p className="playlist-name">{playlist.name}</p>
+            <div className="info-wrapper">
+                <img 
+                    className="playlist-image" 
+                    src={playlist.image ? playlist.image : require('./images/LikedSongs.png')} 
+                    alt="playlist"
+                />
+                <p className="playlist-name">{playlist.name}</p>
+            </div>
             <div className="checkbox-wrapper-4">
                 <input 
                     className="inp-cbx" 
@@ -46,7 +48,6 @@ function PlaylistDisplay({ playlist, isChecked }) {
                             <use xlinkHref="#check-4"></use>
                         </svg>
                     </span>
-                    <span>{playlist.name}</span>
                 </label>
                 <svg className="inline-svg">
                     <symbol id="check-4" viewBox="0 0 12 10">

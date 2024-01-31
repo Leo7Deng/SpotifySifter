@@ -23,7 +23,7 @@ function PlaylistSelect() {
     }, [getPlaylistsUrl]);
 
     return (
-        <div>
+        <div className="playlist-container">
             {playlists.map(playlist => (
                 <PlaylistDisplay 
                     key={playlist.id} 
