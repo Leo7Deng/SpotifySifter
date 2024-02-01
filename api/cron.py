@@ -1,6 +1,7 @@
 import atexit
 import base64
 import os
+import time
 import requests
 import json
 from datetime import datetime
@@ -172,9 +173,10 @@ def delete_tracks_from_playlist(playlist, change_tracks, headers):
     response = requests.delete(DELETE_ITEMS_ENDPOINT, headers=headers, data=tracks_data)
 
 
-import requests
 
 def refresh_token(user):
+    MAX_RETRIES = 2
+    RETRY_DELAY = 2
     if user.oauth.expires_at < datetime.now().timestamp():
         req_body = {
             "grant_type": "refresh_token",
@@ -191,32 +193,36 @@ def refresh_token(user):
             "Authorization": f"Basic {auth_header}",
         }
 
-        response = requests.post(TOKEN_URL, data=req_body, headers=headers)
-        if response.status_code == 400:
-            print("User revoked access, deleting user")
-            Skipped.query.filter_by(user_id=user.id).delete()
-            Playlist.query.filter_by(user_id=user.id).delete()
-            PrevQueue.query.filter_by(user_id=user.id).delete()
-            OAuth.query.filter_by(user_id=user.id).delete()
-            db.session.delete(user)
-            db.session.commit()
-            return
-        try: 
-            new_token_info = response.json()
-        except:
-            print("Response text:", response.text, "Response status code:", response.status_code, "Response reason:", response.reason, "Response headers:", response.headers, "Response request:", response.request)
-            return
-        if "access_token" in new_token_info:
-            user.oauth.access_token = new_token_info["access_token"]
-            user.oauth.expires_at = (
-                datetime.now().timestamp() + new_token_info["expires_in"]
-            )
-            db.session.commit()
-            print("Refreshed " + user.user_id + "'s token")
-            print("New Token Info:", new_token_info)  # Add this line for debugging
-        else:
-            print("Refresh token not found in response")
-
+        for attempt in range(MAX_RETRIES):
+            response = requests.post(TOKEN_URL, data=req_body, headers=headers)
+            if response.status_code == 400:
+                print("User revoked access, deleting user")
+                Skipped.query.filter_by(user_id=user.id).delete()
+                Playlist.query.filter_by(user_id=user.id).delete()
+                PrevQueue.query.filter_by(user_id=user.id).delete()
+                OAuth.query.filter_by(user_id=user.id).delete()
+                db.session.delete(user)
+                db.session.commit()
+                return
+            try:
+                new_token_info = response.json()
+                if "access_token" in new_token_info:
+                    user.oauth.access_token = new_token_info["access_token"]
+                    user.oauth.expires_at = (
+                        datetime.now().timestamp() + new_token_info["expires_in"]
+                    )
+                    db.session.commit()
+                    print("Refreshed " + user.user_id + "'s token")
+                    print("New Token Info:", new_token_info)
+                    return
+                else:
+                    print("Refresh token not found in response")
+                    return
+            except json.JSONDecodeError:
+                print("Failed to decode JSON. Attempt:", attempt + 1)
+                if attempt < MAX_RETRIES - 1:
+                    time.sleep(RETRY_DELAY)
+        print("All attempts to refresh token failed")
 
 def skip_logic():
     print("Executing skip_logic()")
