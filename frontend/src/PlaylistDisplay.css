@@ -1,12 +1,41 @@
 .playlist-item {
+    max-height: 72px; 
+    margin: 5px;
+    /* padding: 10px; */
     display: flex;
-    align-items: center;
+    flex-direction: column;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 550px;
-    margin: 5px;
-    padding: 10px;
+    overflow: hidden;
+    align-items: flex-start;
+    justify-content: center;
+    transition: max-height 2.5s ease;
 }
+
+.expanded-content {
+    opacity: 0;
+
+}
+
+.expanded-content.expanded {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+
+
+.playlist-item.expanded {
+    max-height: 500px;
+    transition: max-height 0.5s ease;
+}
+
+.playlist-info {
+    display: flex;
+    align-items: center;
+    width: 530px;
+    margin: 10px;
+}
+
 
 .info-wrapper {
     display: flex;
@@ -38,7 +67,7 @@
 
 .gear {
     cursor: pointer;
-    padding: 5.25px 7px;
+    padding: 6px 6px;
     border-radius: 6px;
     transition: all 0.2s ease;
     display: inline-block;
@@ -48,10 +77,13 @@
     color: #ffffff;
     cursor: pointer;
     margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .gear:hover {
-    background: rgba(0, 119, 255, 0.06);
+    background: hsl(141, 73%, 85%);
 }
 
 .gear.rotate .gear-icon {
@@ -67,6 +99,7 @@
 .gear-icon {
     width: 20px;
     height: 20px;
+
 }
 .checkbox-wrapper-35 .switch {
     display: none;
