@@ -16,6 +16,8 @@ function About() {
                 </ol>
                 <p className='about-subtitle'>How does it work?</p>
                 <p className='about-text'>Spotify Sifter listens to a user's activity only when they are listening in a selected playlist. Looking at a user's queued songs periodically, we are able to figure out which songs are skipped. Shuffling and skipping to previous tracks will not disrupt our ability to view skipped tracks.</p>
+                <p className='about-subtitle'>What should I do if I deleted one of my sifted playlists?</p>
+                <p className='about-text'>If you accidentally delete a playlist that contains the sorted songs and you want it back, you can visit <a href="https://www.spotify.com/us/account/recover-playlists/">spotify.com/us/account/recover-playlists/</a> to restore it.</p>
             </div>
         </>
     );
