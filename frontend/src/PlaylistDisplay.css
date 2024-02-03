@@ -1,45 +1,26 @@
 .playlist-item {
     max-height: 72px; 
     margin: 5px;
-    /* padding: 10px; */
+    padding: 10px;
     display: flex;
     flex-direction: column;
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow: hidden;
-    align-items: flex-start;
+    align-items: flex-start; 
     justify-content: center;
     transition: max-height 2.5s ease;
 }
 
-.expanded-content {
-    opacity: 0;
-
-}
-
-.expanded-content.expanded {
-    opacity: 1;
-    transition: opacity 0.5s ease;
-}
-
-
-
 .playlist-item.expanded {
-    max-height: 500px;
-    transition: max-height 0.5s ease;
+    max-height: 300px;
 }
-
-.playlist-info {
-    display: flex;
-    align-items: center;
-    width: 530px;
-    margin: 10px;
-}
-
 
 .info-wrapper {
     display: flex;
     align-items: center;
+    width: 530px;
+    min-height: 52px;
 }
 
 .playlist-image {
@@ -60,9 +41,8 @@
 .button-wrapper {
     flex-grow: 1;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-    padding-right: 10px; 
+    justify-content: flex-end;
 }
 
 .gear {

@@ -5,22 +5,12 @@ import gearIcon from './images/gear.svg';
 function PlaylistDisplay({ playlist, isChecked }) {
     const [checked, setChecked] = useState(isChecked);
     const inputId = `switch-${playlist.id}`;
-    const [isGearChecked, setGearChecked] = useState(false);
     const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select' : 'http://localhost:8889/select';
     const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect' : 'http://localhost:8889/unselect';
-    const [isAnimating, setIsAnimating] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const handleGearClick = () => {
-        if (isAnimating) {
-            return;
-        }
         setIsExpanded(!isExpanded);
-        setGearChecked(!isGearChecked);
-        setIsAnimating(true);
-        setTimeout(() => {
-            setIsAnimating(false);
-        }, 700);
     };
 
     const handleCheckboxChange = () => {
@@ -39,18 +29,16 @@ function PlaylistDisplay({ playlist, isChecked }) {
     };
 
     return (
-        <div className={`playlist-item ${isExpanded ? 'expanded' : 'collapsed'}`}>
-            <div className="playlist-info">
-                <div className="info-wrapper">
-                    <img
-                        className="playlist-image"
-                        src={playlist.image ? playlist.image : require('./images/LikedSongs.png')}
-                        alt="playlist"
-                    />
-                    <p className="playlist-name">{playlist.name}</p>
-                </div>
+        <div className={`playlist-item ${isExpanded ? 'expanded' : ''}`}>
+            <div className="info-wrapper">
+                <img
+                    className="playlist-image"
+                    src={playlist.image ? playlist.image : require('./images/LikedSongs.png')}
+                    alt="playlist"
+                />
+                <p className="playlist-name">{playlist.name}</p>
                 <div className="button-wrapper">
-                    <button className={`gear${isGearChecked ? ' rotate' : ''}`} onClick={handleGearClick}>
+                    <button className={`gear${isExpanded ? ' rotate' : ''}`} onClick={handleGearClick}>
                         <img className="gear-icon" src={gearIcon} alt="gear" />
                     </button>
                     <div className="checkbox-wrapper-35">
@@ -72,11 +60,9 @@ function PlaylistDisplay({ playlist, isChecked }) {
                     </div>
                 </div>
             </div>
-            {isExpanded && (
-                <div className={`expanded-content ${isExpanded ? 'expanded' : 'collapsed'}`}>
-                    <p className="expanded-description">blah blah</p>
-                </div>
-            )}
+            <div className={`expanded-content ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                <p className="expanded-description">blah blah</p>
+            </div>
         </div>
     );
 }
