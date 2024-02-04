@@ -1,42 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './PlaylistDisplay.css';
 import gearIcon from './images/gear.svg';
 
-function PlaylistDisplay({ playlist, isChecked, skipCount }) {
+function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
     const [checked, setChecked] = useState(isChecked);
     const inputId = `switch-${playlist.id}`;
     const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select' : 'http://localhost:8889/select';
     const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect' : 'http://localhost:8889/unselect';
     const [isExpanded, setIsExpanded] = useState(false);
-    const [inputValue, setInputValue] = useState(skipCount);
+    const [skipCount, setSkipCount] = useState(playlistSkipCount);
+    const [savedSkipCount, setSavedSkipCount] = useState(playlistSkipCount);
     const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-    // what type is inputValue?
-    console.log(inputValue);
-    
-    const handleSave = (event) => {
-        const inputValue = event.target.value;
-        if (inputValue !== '') {
-            // Assuming you want to perform some action or send data to update skipCount on the server.
-            // You can implement the logic here to update skipCount externally.
-    
-            // After successfully updating, you can set savedSkipCount to the new value
-            setInputValue(inputValue);
-    
-            // Disable the button after saving
-            setIsButtonEnabled(false);
-        }
-    };
-    
-    
 
-    useEffect(() => {
-        // Check if input value differs from skipCount and update button state
-        setIsButtonEnabled(inputValue !== skipCount);
-    }, [inputValue, skipCount]);
+    const handleSave = () => {
+        setSavedSkipCount(skipCount);
+        setIsButtonEnabled(false);
+    };
 
     const handleChange = (event) => {
-        const newInputValue = event.target.value;
-        setInputValue(newInputValue); // Update input value
+        const { value } = event.target;
+        if (value === '' || (value.length === 1 && /^[1-9]$/.test(value))) {
+            const intValue = parseInt(value);
+            setSkipCount(intValue);
+            const valueChanged = intValue !== savedSkipCount && value !== '';
+            setIsButtonEnabled(valueChanged);
+            console.log(intValue, savedSkipCount);
+            console.log(valueChanged);
+        };
     };
 
     const handleGearClick = () => {
@@ -92,14 +82,15 @@ function PlaylistDisplay({ playlist, isChecked, skipCount }) {
             </div>
             <div className={`expanded-content ${isExpanded ? 'expanded' : 'collapsed'}`}>
                 <p></p>
-                <label>
-                    Times skipped before sifting: 
+                <label className="skip-label">
+                    Times skipped before sifting
                     <input
+                        className="skip-input"
                         type="number"
-                        value={inputValue} 
+                        value={skipCount}
                         onChange={handleChange}
                         min="1"
-                        max="10"
+                        max="9"
                     />
                 </label>
                 <button
@@ -109,13 +100,14 @@ function PlaylistDisplay({ playlist, isChecked, skipCount }) {
                 >
                     ✓
                 </button>
-                {inputValue !== null && (
-                    <p>Skip count saved: {inputValue}</p>
+                {skipCount !== null && (
+                    <p>Skip count saved: {savedSkipCount}</p>
                 )}
             </div>
         </div>
     );
 }
+
 
 
 export default PlaylistDisplay;

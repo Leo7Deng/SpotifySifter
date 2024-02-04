@@ -9,7 +9,7 @@
     overflow: hidden;
     align-items: flex-start; 
     justify-content: center;
-    transition: max-height 1s linear;
+    transition: max-height 0.4s linear;
 }
 
 .playlist-item.expanded {
@@ -36,6 +36,22 @@
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
+}
+
+.skip-label {
+    font-size: 12px;
+    font-weight: 400;
+    /* color: #78768d; */
+    /* margin-right: 10px; */
+}
+
+.skip-input {
+    margin-left: 5px;
+    width: 37px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    font-size: 12px;
 }
 
 .button-wrapper {
