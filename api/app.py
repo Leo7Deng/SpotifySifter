@@ -414,7 +414,6 @@ def new_delete_playlists(playlist_id):
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
 
-
 @app.route("/update_playlist_skip_count/<playlist_id>/<new_skip_count>")
 @cross_origin(supports_credentials=True)
 def update_playlist_skip_count(playlist_id, new_skip_count):
@@ -434,20 +433,48 @@ def update_playlist_skip_count(playlist_id, new_skip_count):
     playlist = Playlist.query.filter_by(
         user_id=current_user.id, playlist_id=playlist_id
     ).first()
-    access_token = current_user.oauth.access_token
 
     if playlist:
-        headers = {"Authorization": f"Bearer {access_token}"}
-        skipped_tracks_db = Skipped.query.filter_by(playlist_id=playlist.id, user_id=user.id).all()
-        for skipped_track in skipped_tracks_db:
-            if skipped_track.skipped_count < int(new_skip_count):
-                PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=spotify%3Atrack%3A{skipped_track.track_id}"
-                response = requests.delete(PLAYLIST_ADD_ENDPOINT, headers=headers)
         playlist.skip_count = int(new_skip_count)
         db.session.commit()
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
+
+# @app.route("/update_playlist_skip_count/<playlist_id>/<new_skip_count>")
+# @cross_origin(supports_credentials=True)
+# def update_playlist_skip_count(playlist_id, new_skip_count):
+#     current_user_id = session.get("user_id")
+#     if not current_user_id:
+#         return jsonify({"error": "Unauthorized access"})
+
+#     # Get user from database
+#     current_user = User.query.get(session["user_id"])
+#     if current_user is None:
+#         raise Exception("User not found.")
+
+#     user = User.query.get(session["user_id"])
+#     if user is None:
+#         raise Exception("User not found.")
+
+#     playlist = Playlist.query.filter_by(
+#         user_id=current_user.id, playlist_id=playlist_id
+#     ).first()
+#     access_token = current_user.oauth.access_token
+
+#     if playlist:
+#         delete_playlist = playlist.delete_playlist
+#         headers = {"Authorization": f"Bearer {access_token}"}
+#         skipped_tracks_db = Skipped.query.filter_by(playlist_id=playlist.id, user_id=user.id).all()
+#         for skipped_track in skipped_tracks_db:
+#             if skipped_track.skipped_count < int(new_skip_count):
+#                 PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=spotify%3Atrack%3A{skipped_track.track_id}"
+#                 response = requests.delete(PLAYLIST_ADD_ENDPOINT, headers=headers)
+#         playlist.skip_count = int(new_skip_count)
+#         db.session.commit()
+#         return jsonify({"success": True})
+#     else:
+#         return jsonify({"success": False, "message": "Playlist not found."})
 
 
 @app.route("/resift_playlist/<playlist_id>")

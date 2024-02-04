@@ -9,23 +9,24 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
     const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect' : 'http://localhost:8889/unselect';
     const [isExpanded, setIsExpanded] = useState(false);
     const [skipCount, setSkipCount] = useState(playlistSkipCount);
-    const [savedSkipCount, setSavedSkipCount] = useState(playlistSkipCount);
-    const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-
-    const handleSave = () => {
-        setSavedSkipCount(skipCount);
-        setIsButtonEnabled(false);
-    };
 
     const handleChange = (event) => {
         const { value } = event.target;
         if (value === '' || (value.length === 1 && /^[1-9]$/.test(value))) {
+            if (value === '') {
+                setSkipCount('');
+                return;
+            }
             const intValue = parseInt(value);
             setSkipCount(intValue);
-            const valueChanged = intValue !== savedSkipCount && value !== '';
-            setIsButtonEnabled(valueChanged);
-            console.log(intValue, savedSkipCount);
-            console.log(valueChanged);
+            if (intValue > 0 && intValue < 10) {
+            fetch(`${process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app' : 'http://localhost:8889'}/update_playlist_skip_count/${playlist.id}/${intValue}`, {
+                    credentials: 'include',
+                })
+                    .then(response => response.json())
+                    .then(data => console.log('Skip count updated:', data))
+                    .catch(error => console.error('Error:', error));
+            }
         };
     };
 
@@ -93,16 +94,6 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
                         max="9"
                     />
                 </label>
-                <button
-                    onClick={handleSave}
-                    className={`checkmark-button ${isButtonEnabled ? '' : 'disabled-button'}`} // Enable/disable the button
-                    disabled={!isButtonEnabled} // Disable based on isButtonEnabled
-                >
-                    ✓
-                </button>
-                {skipCount !== null && (
-                    <p>Skip count saved: {savedSkipCount}</p>
-                )}
             </div>
         </div>
     );
