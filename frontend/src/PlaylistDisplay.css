@@ -9,7 +9,7 @@
     overflow: hidden;
     align-items: flex-start; 
     justify-content: center;
-    transition: max-height 2.5s ease;
+    transition: max-height 1s linear;
 }
 
 .playlist-item.expanded {
@@ -45,6 +45,12 @@
     justify-content: flex-end;
 }
 
+.disabled-button {
+    opacity: 0.5; /* Adjust opacity to make it look less interactive */
+    cursor: not-allowed; /* Change cursor to indicate non-interactivity */
+    /* Add any other styling you want for disabled buttons */
+  }
+
 .gear {
     cursor: pointer;
     padding: 6px 6px;
@@ -67,12 +73,12 @@
 }
 
 .gear.rotate .gear-icon {
-    animation: spin 1s linear forwards;
+    animation: spin 0.4s linear forwards;
 }
 
 @keyframes spin {
     100% {
-        transform: rotate(360deg);
+        transform: rotate(180deg);
     }
 }
 

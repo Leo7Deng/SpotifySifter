@@ -161,6 +161,7 @@ def get_playlists():
             "selected": liked_songs_playlist.selected
             if liked_songs_playlist  # if no existing liked songs, set selected to False
             else False,
+            "skip_count": liked_songs_playlist.skip_count if liked_songs_playlist else 2,
         }
     ]
 

@@ -1,13 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './PlaylistDisplay.css';
 import gearIcon from './images/gear.svg';
 
-function PlaylistDisplay({ playlist, isChecked }) {
+function PlaylistDisplay({ playlist, isChecked, skipCount }) {
     const [checked, setChecked] = useState(isChecked);
     const inputId = `switch-${playlist.id}`;
     const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select' : 'http://localhost:8889/select';
     const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect' : 'http://localhost:8889/unselect';
     const [isExpanded, setIsExpanded] = useState(false);
+    const [inputValue, setInputValue] = useState(skipCount);
+    const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+    // what type is inputValue?
+    console.log(inputValue);
+    
+    const handleSave = (event) => {
+        const inputValue = event.target.value;
+        if (inputValue !== '') {
+            // Assuming you want to perform some action or send data to update skipCount on the server.
+            // You can implement the logic here to update skipCount externally.
+    
+            // After successfully updating, you can set savedSkipCount to the new value
+            setInputValue(inputValue);
+    
+            // Disable the button after saving
+            setIsButtonEnabled(false);
+        }
+    };
+    
+    
+
+    useEffect(() => {
+        // Check if input value differs from skipCount and update button state
+        setIsButtonEnabled(inputValue !== skipCount);
+    }, [inputValue, skipCount]);
+
+    const handleChange = (event) => {
+        const newInputValue = event.target.value;
+        setInputValue(newInputValue); // Update input value
+    };
 
     const handleGearClick = () => {
         setIsExpanded(!isExpanded);
@@ -61,10 +91,31 @@ function PlaylistDisplay({ playlist, isChecked }) {
                 </div>
             </div>
             <div className={`expanded-content ${isExpanded ? 'expanded' : 'collapsed'}`}>
-                <p className="expanded-description">blah blah</p>
+                <p></p>
+                <label>
+                    Times skipped before sifting: 
+                    <input
+                        type="number"
+                        value={inputValue} 
+                        onChange={handleChange}
+                        min="1"
+                        max="10"
+                    />
+                </label>
+                <button
+                    onClick={handleSave}
+                    className={`checkmark-button ${isButtonEnabled ? '' : 'disabled-button'}`} // Enable/disable the button
+                    disabled={!isButtonEnabled} // Disable based on isButtonEnabled
+                >
+                    ✓
+                </button>
+                {inputValue !== null && (
+                    <p>Skip count saved: {inputValue}</p>
+                )}
             </div>
         </div>
     );
 }
+
 
 export default PlaylistDisplay;

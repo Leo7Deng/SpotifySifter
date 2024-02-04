@@ -29,6 +29,7 @@ function PlaylistSelect() {
                         key={playlist.id}
                         playlist={playlist}
                         isChecked={playlist.selected}
+                        skipCount={playlist.skip_count}
                     />
                 ))}
             </div>
