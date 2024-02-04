@@ -437,24 +437,13 @@ def update_playlist_skip_count(playlist_id, new_skip_count):
     access_token = current_user.oauth.access_token
 
     if playlist:
-        playlist.skip_count = int(new_skip_count)
-        GET_PLAYLIST_ENDPOINT = (
-            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-        )
         headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.get(GET_PLAYLIST_ENDPOINT, headers=headers).json()
-        tracks = response["items"]
-        track_ids = []
-        for track in tracks:
-            track_ids.append(track["track"]["id"])
-        for track_id in track_ids:
-            skipped = Skipped.query.filter_by(
-                track_id=track_id, playlist_id=playlist.id
-            ).first()
-            if skipped:
-                if skipped.skipped_count < playlist.skip_count:
-                    PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=spotify%3Atrack%3A{track_id}"
-                    response = requests.delete(PLAYLIST_ADD_ENDPOINT, headers=headers)
+        skipped_tracks_db = Skipped.query.filter_by(playlist_id=playlist.id, user_id=user.id).all()
+        for skipped_track in skipped_tracks_db:
+            if skipped_track.skipped_count < int(new_skip_count):
+                PLAYLIST_ADD_ENDPOINT = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris=spotify%3Atrack%3A{skipped_track.track_id}"
+                response = requests.delete(PLAYLIST_ADD_ENDPOINT, headers=headers)
+        playlist.skip_count = int(new_skip_count)
         db.session.commit()
         return jsonify({"success": True})
     else:
