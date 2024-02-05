@@ -32,7 +32,16 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
 
     const handleGearClick = () => {
         setIsExpanded(!isExpanded);
+        const gearIcon = document.querySelector('.gear-icon');
+        if(gearIcon) {
+            if (!isExpanded) {
+                gearIcon.classList.add('rotated');
+            } else {
+                gearIcon.classList.remove('rotated');
+            }
+        }
     };
+    
 
     const handleCheckboxChange = () => {
         const isNowChecked = !checked;

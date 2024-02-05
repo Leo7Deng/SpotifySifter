@@ -89,15 +89,14 @@
     background: hsl(141, 73%, 85%);
 }
 
-.gear.rotate .gear-icon {
-    animation: spin 0.4s linear forwards;
+.gear-icon {
+    transition: transform 0.3s linear; 
 }
 
-@keyframes spin {
-    100% {
-        transform: rotate(180deg);
-    }
+.gear-icon.rotated {
+    transform: rotate(135deg); 
 }
+
 
 .gear-icon {
     width: 20px;
