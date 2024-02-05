@@ -20,7 +20,7 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
             const intValue = parseInt(value);
             setSkipCount(intValue);
             if (intValue > 0 && intValue < 10) {
-            fetch(`${process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app' : 'http://localhost:8889'}/update_playlist_skip_count/${playlist.id}/${intValue}`, {
+                fetch(`${process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app' : 'http://localhost:8889'}/update_playlist_skip_count/${playlist.id}/${intValue}`, {
                     credentials: 'include',
                 })
                     .then(response => response.json())
@@ -32,16 +32,8 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
 
     const handleGearClick = () => {
         setIsExpanded(!isExpanded);
-        const gearIcon = document.querySelector('.gear-icon');
-        if(gearIcon) {
-            if (!isExpanded) {
-                gearIcon.classList.add('rotated');
-            } else {
-                gearIcon.classList.remove('rotated');
-            }
-        }
     };
-    
+
 
     const handleCheckboxChange = () => {
         const isNowChecked = !checked;
@@ -68,8 +60,8 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
                 />
                 <p className="playlist-name">{playlist.name}</p>
                 <div className="button-wrapper">
-                    <button className={`gear${isExpanded ? ' rotate' : ''}`} onClick={handleGearClick}>
-                        <img className="gear-icon" src={gearIcon} alt="gear" />
+                    <button className="gear" onClick={handleGearClick}>
+                        <img className={`gear-icon${isExpanded ? ' rotated' : ''}`} src={gearIcon} alt="gear" />
                     </button>
                     <div className="checkbox-wrapper-35">
                         <input

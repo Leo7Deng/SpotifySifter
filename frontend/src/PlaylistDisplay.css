@@ -89,19 +89,14 @@
     background: hsl(141, 73%, 85%);
 }
 
-.gear-icon {
-    transition: transform 0.3s linear; 
-}
-
 .gear-icon.rotated {
     transform: rotate(135deg); 
 }
 
-
 .gear-icon {
     width: 20px;
     height: 20px;
-
+    transition: transform 0.3s linear; 
 }
 .checkbox-wrapper-35 .switch {
     display: none;
