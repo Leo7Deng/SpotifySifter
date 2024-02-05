@@ -39,7 +39,7 @@
 }
 
 .skip-label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
     /* color: #78768d; */
     /* margin-right: 10px; */
@@ -51,7 +51,8 @@
     border-radius: 5px;
     border: 1px solid #ccc;
     padding: 5px;
-    font-size: 12px;
+    font-size: 13px;
+    margin-top: 10px;
 }
 
 .button-wrapper {
