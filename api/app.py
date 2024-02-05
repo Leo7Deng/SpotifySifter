@@ -162,6 +162,7 @@ def get_playlists():
             if liked_songs_playlist  # if no existing liked songs, set selected to False
             else False,
             "skip_count": liked_songs_playlist.skip_count if liked_songs_playlist else 2,
+            "sifted_playlist": liked_songs_playlist.delete_playlist if liked_songs_playlist else None,
         }
     ]
 
@@ -182,6 +183,7 @@ def get_playlists():
     for item in response.json()["items"]:
         selected = False
         skip_count = 2
+        sifted_playlist = ""
         if (
             item["owner"]["id"] == current_user.user_id
             and item["id"] not in deleted_songs_playlists
@@ -204,9 +206,10 @@ def get_playlists():
                     if playlist.playlist_id == item["id"]:
                         selected = playlist.selected
                         skip_count = playlist.skip_count
+                        sifted_playlist = playlist.delete_playlist
                         break
             playlists.append(
-                {"name": item["name"], "id": item["id"], "selected": selected, "image": item["images"][0]["url"], "skip_count": skip_count}
+                {"name": item["name"], "id": item["id"], "selected": selected, "image": item["images"][0]["url"], "skip_count": skip_count, "sifted_playlist": sifted_playlist}
             )
 
     # Print only name of playlists

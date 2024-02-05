@@ -30,6 +30,7 @@ function PlaylistSelect() {
                         playlist={playlist}
                         isChecked={playlist.selected}
                         playlistSkipCount={playlist.skip_count}
+                        siftedPlaylist={playlist.sifted_playlist}
                     />
                 ))}
             </div>

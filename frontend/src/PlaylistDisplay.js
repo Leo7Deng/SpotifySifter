@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './PlaylistDisplay.css';
 import gearIcon from './images/gear.svg';
 
-function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
+function PlaylistDisplay({ playlist, isChecked, playlistSkipCount, siftedPlaylist }) {
     const [checked, setChecked] = useState(isChecked);
     const inputId = `switch-${playlist.id}`;
     const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select' : 'http://localhost:8889/select';
@@ -95,6 +95,15 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount }) {
                         max="9"
                     />
                 </label>
+                {siftedPlaylist === null ?
+                    <p className="sifted-playlist">
+                        Sifted playlist: None
+                    </p>
+                    :
+                    <p className="sifted-playlist">
+                        Sifted playlist: <a href={"https://open.spotify.com/playlist/" + siftedPlaylist}>playlist</a>
+                    </p>
+                }
             </div>
         </div>
     );
