@@ -97,11 +97,11 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount, siftedPlaylis
                 </label>
                 {siftedPlaylist === null ?
                     <p className="sifted-playlist">
-                        Sifted playlist: None
+                        No songs sifted yet
                     </p>
                     :
                     <p className="sifted-playlist">
-                        Sifted playlist: <a href={"https://open.spotify.com/playlist/" + siftedPlaylist}>playlist</a>
+                        Visit sifted <a href={"https://open.spotify.com/playlist/" + siftedPlaylist}>playlist</a>
                     </p>
                 }
             </div>

@@ -325,7 +325,11 @@ def skip_logic_user(user):
             delete_track = Skipped.query.filter_by(
                 playlist_id=current_playlist.id, user_id=user.id, track_id=track
             ).first()
-            db.session.delete(delete_track)
+            if delete_track is not None:
+                db.session.delete(delete_track)
+                print("Succesfully deleted " + track + " from skipped history")
+            print(track + " is not found in database")
+            
 
     print(skipped_tracks_history_uris)
     print(recently_played_uris)

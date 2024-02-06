@@ -45,6 +45,11 @@
     /* margin-right: 10px; */
 }
 
+.sifted-playlist {
+    font-size: 13px;
+    font-weight: 400;
+}
+
 .skip-input {
     margin-left: 5px;
     width: 37px;
