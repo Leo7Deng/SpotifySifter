@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom'; 
 import PlaylistDisplay from './PlaylistDisplay';
 import './PlaylistSelect.css';
 
@@ -15,8 +14,9 @@ function PlaylistSelect() {
         })
             .then(response => response.json())
             .then(data => {
+                console.log('Playlists:', data);
                 if (data.error && data.error === "Unauthorized access") {
-                    history.push('/');
+                    window.location.href = '/';
                 } else {
                     setPlaylists(data);
                 }                
@@ -24,7 +24,7 @@ function PlaylistSelect() {
             .catch(error => {
                 console.error('Error fetching playlists:', error);
             });
-    }, [getPlaylistsUrl, history]);
+    }, [getPlaylistsUrl]);
 
     return (
         <>
