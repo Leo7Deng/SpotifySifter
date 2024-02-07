@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom'; 
 import PlaylistDisplay from './PlaylistDisplay';
 import './PlaylistSelect.css';
 
@@ -14,12 +15,16 @@ function PlaylistSelect() {
         })
             .then(response => response.json())
             .then(data => {
-                setPlaylists(data);
+                if (data.error && data.error === "Unauthorized access") {
+                    history.push('/');
+                } else {
+                    setPlaylists(data);
+                }                
             })
             .catch(error => {
                 console.error('Error fetching playlists:', error);
             });
-    }, [getPlaylistsUrl]);
+    }, [getPlaylistsUrl, history]);
 
     return (
         <>

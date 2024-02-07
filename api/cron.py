@@ -176,7 +176,7 @@ def delete_tracks_from_playlist(playlist, change_tracks, headers):
 
 def refresh_token(user):
     MAX_RETRIES = 2
-    RETRY_DELAY = 2
+    RETRY_DELAY = 20
     if user.oauth.expires_at < datetime.now().timestamp():
         req_body = {
             "grant_type": "refresh_token",
