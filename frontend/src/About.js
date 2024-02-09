@@ -23,7 +23,7 @@ function About() {
                 <p className='about-subtitle'>Can I move the sorted songs back into the original playlist?</p>
                 <p className='about-text'>Yes, you can move the sorted songs back into the original playlist. This will not affect the sorting process. If you ever want to resort the playlist, you can click the resort button under a playlist's settings.</p>
                 <p className='about-subtitle'>What should I do if I deleted one of my sifted playlists?</p>
-                <p className='about-text'>If you accidentally delete a playlist that contains the sorted songs and you want it back, you can visit <a href="https://www.spotify.com/us/account/recover-playlists/">spotify.com/us/account/recover-playlists/</a> to restore it.</p>
+                <p className='about-text'>If you accidentally delete a playlist that contains the sorted songs and you want it back, you can visit <a href="https://www.spotify.com/us/account/recover-playlists/">spotify.com/us/account/recover-playlists/</a> to restore it.</p>            
             </div>
         </>
     );

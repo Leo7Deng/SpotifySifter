@@ -299,42 +299,6 @@ def unselect(playlist_id):
     else:
         return jsonify({"success": False, "message": "Playlist not found."})
 
-
-@app.route("/leaderboard")
-@cross_origin(supports_credentials=True)
-def leaderboard():
-    current_user_id = session.get("user_id")
-    if not current_user_id:
-        return jsonify({"error": "Unauthorized access"})
-
-    leaderboard = User.query.order_by(User.total_played.desc()).limit(10).all()
-
-    users_list = [
-        {
-            "username": user.user_id,
-            "total_played": user.total_played,
-            "profile_pic": user.profile_pic,
-            "id": user.id,
-        }
-        for user in leaderboard
-    ]
-
-    is_in_leaderboard = any(user["id"] == current_user_id for user in users_list)
-    if not is_in_leaderboard:
-        current_user = User.query.get(current_user_id)
-        if current_user is None:
-            raise Exception("User not found.")
-        users_list.append(
-            {
-                "username": current_user.user_id,
-                "total_played": current_user.total_played,
-                "profile_pic": current_user.profile_pic,
-                "id": current_user.id,
-            }
-        )
-
-    return users_list
-
 @app.route("/currently_playing")
 @cross_origin(supports_credentials=True)
 def currently_playing():
