@@ -101,7 +101,7 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount, siftedPlaylis
                     </p>
                     :
                     <p className="sifted-playlist">
-                        Visit sifted <a href={"https://open.spotify.com/playlist/" + siftedPlaylist}>playlist</a>
+                        Visit sifted <a href={"https://open.spotify.com/playlist/" + siftedPlaylist} target="_blank" rel="noopener noreferrer">playlist</a>
                     </p>
                 }
             </div>
