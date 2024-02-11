@@ -5,8 +5,8 @@ import gearIcon from './images/gear.svg';
 function PlaylistDisplay({ playlist, isChecked, playlistSkipCount, siftedPlaylist }) {
     const [checked, setChecked] = useState(isChecked);
     const inputId = `switch-${playlist.id}`;
-    const selectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/select' : 'http://localhost:8889/select';
-    const unselectUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/unselect' : 'http://localhost:8889/unselect';
+    const selectUrl = process.env.NODE_ENV === 'production' ? `${process.env.BACKEND_URL}/select` : 'http://localhost:8889/select';
+    const unselectUrl = process.env.NODE_ENV === 'production' ? `${process.env.BACKEND_URL}/unselect` : 'http://localhost:8889/unselect';
     const [isExpanded, setIsExpanded] = useState(false);
     const [skipCount, setSkipCount] = useState(playlistSkipCount);
 
