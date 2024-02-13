@@ -2,7 +2,8 @@ import React from 'react';
 import './Home.css';
 
 function Home() {
-  const loginUrl = process.env.NODE_ENV === 'production' ? `${process.env.BACKEND_URL}/login` : 'http://localhost:8889/login';
+  const loginUrl = process.env.NODE_ENV === 'production' ? `https://api.spotifysifter.com/login` : 'http://localhost:8889/login';
+  // const loginUrl = process.env.NODE_ENV === 'production' ? `http://${process.env.RAILWAY_SERVICE_SPOTIFYSIFTER_BACKEND_URL}/login` : 'http://localhost:8889/login';
 
   const handleLoginClick = async () => {
     try {
