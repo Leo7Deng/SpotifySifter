@@ -1,7 +1,7 @@
 .about {
     background-color: hsl(0, 0%, 92%);
     border-radius: 7px;
-    width: min(55vw, calc(100vw - 100px));
+    width: 55vw;
     margin-top: 30px;
     margin-left: auto;
     margin-right: auto;
@@ -10,6 +10,12 @@
     padding-top: 10px;
     margin-bottom: 60px;
 }
+
+@media (max-width: 600px) {
+    .about {
+      width: calc(100vw - 100px);
+    }
+  }
 
 .about-subtitle {
     font-size: 26px;

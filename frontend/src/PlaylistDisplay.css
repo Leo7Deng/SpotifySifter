@@ -19,9 +19,14 @@
 .info-wrapper {
     display: flex;
     align-items: center;
-    width: min(66vh, calc(100vh - 150px));
-    width: 530px;
+    width: 66vh;
     min-height: 52px;
+}
+
+@media (max-width: 600px) {
+    .info-wrapper {
+        width: calc(100vh - 420px);
+    }
 }
 
 .playlist-image {
@@ -33,18 +38,21 @@
 .playlist-name {
     font-size: 15px;
     font-weight: 600;
-    max-width: 310px; 
-    max-width: min(39vh, calc(100vh - 200px));
+    max-width: 39vh;
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
 }
 
+@media (max-width: 600px) {
+    .playlist-name {
+        max-width: calc(100vh - 630px);
+    }
+}
+
 .skip-label {
     font-size: 13px;
     font-weight: 400;
-    /* color: #78768d; */
-    /* margin-right: 10px; */
 }
 
 .sifted-playlist {
@@ -68,12 +76,6 @@
     align-items: center;
     justify-content: flex-end;
 }
-
-.disabled-button {
-    opacity: 0.5; /* Adjust opacity to make it look less interactive */
-    cursor: not-allowed; /* Change cursor to indicate non-interactivity */
-    /* Add any other styling you want for disabled buttons */
-  }
 
 .gear {
     cursor: pointer;
