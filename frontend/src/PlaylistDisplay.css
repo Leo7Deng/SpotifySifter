@@ -19,6 +19,7 @@
 .info-wrapper {
     display: flex;
     align-items: center;
+    width: min(66vh, calc(100vh - 150px));
     width: 530px;
     min-height: 52px;
 }
@@ -33,6 +34,7 @@
     font-size: 15px;
     font-weight: 600;
     max-width: 310px; 
+    max-width: min(39vh, calc(100vh - 200px));
     white-space: nowrap; 
     overflow: hidden; 
     text-overflow: ellipsis; 
