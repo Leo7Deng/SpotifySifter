@@ -2,13 +2,13 @@ import React from 'react';
 import './Home.css';
 
 function Home() {
-  const loginUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/login` : 'http://localhost:8889/login';
+  const loginUrl = process.env.NODE_ENV === 'production' ? `https://api.spotifysifter.com/login` : 'http://localhost:8889/login';
 
   const handleLoginClick = async () => {
     try {
       const response = await fetch(loginUrl, {
         method: 'GET',
-        // credentials: 'include',
+        credentials: 'include',
       });
       if (response.status === 200) {
         window.location.href = (await response.json()).auth_url;

@@ -17,7 +17,7 @@ CORS(app, supports_credentials=True)
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 if os.environ.get("FLASK_ENV") == "production":
-    REDIRECT_URI = "https://spotifysifter.up.railway.app/callback"
+    REDIRECT_URI = "https://api.spotifysifter.com/callback"
 else:
     REDIRECT_URI = "http://localhost:8889/callback"
 

@@ -4,17 +4,16 @@ import './PlaylistSelect.css';
 
 function PlaylistSelect() {
     const [playlists, setPlaylists] = useState([]);
-    // const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://api.spotifysifter.com/get_playlists` : 'http://localhost:8889/get_playlists';
-    const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://spotifysifter.up.railway.app/get_playlists` : 'http://localhost:8889/get_playlists';
+    const getPlaylistsUrl = process.env.NODE_ENV === 'production' ? `https://api.spotifysifter.com/get_playlists` : 'http://localhost:8889/get_playlists';
     useEffect(() => {
         fetch(getPlaylistsUrl, {
-            // credentials: 'include',
+            credentials: 'include',
         })
             .then(response => response.json())
             .then(data => {
                 console.log('Playlists:', data);
                 if (data.error && data.error === "Unauthorized access") {
-                    // window.location.href = '/';
+                    window.location.href = '/';
                 } else {
                     setPlaylists(data);
                 }
