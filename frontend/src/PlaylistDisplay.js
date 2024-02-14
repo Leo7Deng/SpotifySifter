@@ -21,7 +21,7 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount, siftedPlaylis
             setSkipCount(intValue);
             if (intValue > 0 && intValue < 10) {
                 fetch(`${process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app' : 'http://localhost:8889'}/update_playlist_skip_count/${playlist.id}/${intValue}`, {
-                    credentials: 'include',
+                    // credentials: 'include',
                 })
                     .then(response => response.json())
                     .then(data => console.log('Skip count updated:', data))

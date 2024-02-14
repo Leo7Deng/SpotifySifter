@@ -8,7 +8,7 @@ function PlaylistSelect() {
 
     useEffect(() => {
         fetch(getPlaylistsUrl, {
-            credentials: 'include',
+            // credentials: 'include',
         })
             .then(response => response.json())
             .then(data => {

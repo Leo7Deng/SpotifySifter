@@ -18,11 +18,7 @@ app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
 app.secret_key = os.environ["SECRET_KEY"]
 
-if os.environ.get("FLASK_ENV") == "production":
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["POSTGRES_URL"]
-else:
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["POSTGRES_URL"]
-
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["POSTGRES_URL"]
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PERMANENT_SESSION_LIFETIME"] = 24 * 3600
 app.config["SESSION_COOKIE_SECURE"] = True  

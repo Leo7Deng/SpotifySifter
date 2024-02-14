@@ -8,7 +8,7 @@ function SiftedSongs() {
     const getSiftedSongsUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/get_delete_playlists' : 'http://localhost:8889/get_delete_playlists';
 
     useEffect(() => {
-        fetch(getSiftedSongsUrl, { credentials: 'include' })
+        fetch(getSiftedSongsUrl)
             .then(response => response.json())
             .then(deleted_songs_playlists_uris => {
                 const playlists = deleted_songs_playlists_uris;

@@ -31,6 +31,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route("/login")
+# @cross_origin(supports_credentials=True)
 def login():
     scope = "user-read-recently-played user-read-playback-state user-read-email user-read-private user-library-read playlist-modify-public playlist-modify-private user-modify-playback-state playlist-read-private user-library-modify user-read-currently-playing user-modify-playback-state"
     params = {
@@ -47,7 +48,7 @@ def login():
 
 
 @app.route("/callback")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def callback():
     if "error" in request.args:
         error_message = request.args["error"]
@@ -129,7 +130,7 @@ def callback():
 
 
 @app.route("/get_playlists")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def get_playlists():
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -219,7 +220,7 @@ def get_playlists():
 
 
 @app.route("/get_delete_playlists")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def get_delete_playlists():
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -247,7 +248,7 @@ def get_delete_playlists():
 
 
 @app.route("/select/<playlist_id>")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def select(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -274,7 +275,7 @@ def select(playlist_id):
 
 
 @app.route("/unselect/<playlist_id>")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def unselect(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -300,7 +301,7 @@ def unselect(playlist_id):
         return jsonify({"success": False, "message": "Playlist not found."})
 
 @app.route("/currently_playing")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def currently_playing():
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -323,7 +324,7 @@ def currently_playing():
 
 
 @app.route("/new_delete_playlists/<playlist_id>")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def new_delete_playlists(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -382,7 +383,7 @@ def new_delete_playlists(playlist_id):
         return jsonify({"success": False, "message": "Playlist not found."})
 
 @app.route("/update_playlist_skip_count/<playlist_id>/<new_skip_count>")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def update_playlist_skip_count(playlist_id, new_skip_count):
     current_user_id = session.get("user_id")
     if not current_user_id:
@@ -445,7 +446,7 @@ def update_playlist_skip_count(playlist_id, new_skip_count):
 
 
 @app.route("/resift_playlist/<playlist_id>")
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def resift_playlist(playlist_id):
     current_user_id = session.get("user_id")
     if not current_user_id:
