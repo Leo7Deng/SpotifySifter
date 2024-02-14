@@ -23,7 +23,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PERMANENT_SESSION_LIFETIME"] = 24 * 3600
 app.config["SESSION_COOKIE_SECURE"] = True  
 app.config["SESSION_COOKIE_SAMESITE"] = "None"
-app.config['SESSION_COOKIE_DOMAIN'] = '.spotifysifter.com'
+# app.config['SESSION_COOKIE_DOMAIN'] = '.spotifysifter.com'
 
 with app.app_context():
     from models import *
