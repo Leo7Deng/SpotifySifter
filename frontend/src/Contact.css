@@ -8,6 +8,12 @@
     margin-bottom: 60px;
 }
 
+@media (max-width: 600px) {
+    .contact {
+        width: calc(100vw - 100px);
+    }
+}
+
 .contact-text {
     font-size: 15px;
     font-weight: 400;

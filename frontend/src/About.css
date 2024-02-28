@@ -13,7 +13,7 @@
 
 @media (max-width: 600px) {
     .about {
-      width: calc(100vw - 100px);
+      width: calc(100vw - 40px);
     }
   }
 
