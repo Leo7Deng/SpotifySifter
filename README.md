@@ -1,70 +1,14 @@
-# Getting Started with Create React App
+# Spotify Sifter
+Spotify Sifter is a web application designed to help users filter through extensive playlists by removing songs that are often skipped. Users can select specific playlists for Spotify Sifter to monitor. Upon removal of a song, Spotify Sifter generates a new playlist titled “[Playlist Name]’s Sifted Songs.” While the default configuration removes a song after 2 consecutive skips, users have the flexibility to adjust this threshold to any number they prefer.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Link to project:** https://spotifysifter.com/
 
-## Available Scripts
+## How It's Made:
 
-In the project directory, you can run:
+**Tech used:** React, Flask, HTML, CSS, JavaScript, Python
 
-### `npm start`
+The frontend is developed with React. The backend, built with Flask, resides on a subdomain of spotifysifter.com. It is divided into two segments: one manages user interactions on the website, while the other operates as a scheduled task, executing every 3 minutes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Skipped Songs Algorithm
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Due to Spotify's Web API lacking a direct method for detecting skipped tracks, Spotify Sifter employs a proprietary algorithm to identify skipped songs. Every 3 minutes, a scheduled task (cron) refreshes our database with the user's latest queue of songs via the Spotify Web API. This API allows for tracking of recently played songs, but it only accounts for tracks played in their entirety. By comparing the updated queue with its previous version and integrating the list of recently played tracks, we can deduce which songs were skipped. Additionally, we meticulously account for edge cases, including when songs are added to the queue or when the playlist is shuffled.
