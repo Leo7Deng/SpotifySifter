@@ -74,7 +74,6 @@ def callback():
         current_user = User()
         current_user.email = user_email
         current_user.user_id = user_info.json()["id"]
-        current_user.profile_pic = user_info.json()["images"][1]["url"]
         current_user.total_played = 0
         db.session.add(current_user)
         current_user = User.query.filter_by(email=user_email).first()

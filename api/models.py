@@ -24,7 +24,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120))
     user_id = db.Column(db.String(120))
-    profile_pic = db.Column(db.String(220))
     total_played = db.Column(db.Integer)
 
 class PrevQueue(db.Model):
