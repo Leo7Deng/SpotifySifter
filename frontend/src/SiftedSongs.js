@@ -5,7 +5,7 @@ import './SiftedSongs.css';
 
 function SiftedSongs() {
     const [playlists, setPlaylists] = useState([]);
-    const getSiftedSongsUrl = process.env.NODE_ENV === 'production' ? 'https://spotifysifter.up.railway.app/get_delete_playlists' : 'http://localhost:8889/get_delete_playlists';
+    const getSiftedSongsUrl = process.env.NODE_ENV === 'production' ? 'https://playlistsifter.up.railway.app/get_delete_playlists' : 'http://localhost:8889/get_delete_playlists';
 
     useEffect(() => {
         fetch(getSiftedSongsUrl)

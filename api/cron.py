@@ -30,7 +30,7 @@ def create_playlist(playlist, t, user_id, headers):
     playlist_data = json.dumps(
         {
             "name": f"{playlist.name}'s Sifted Songs",
-            "description": f"Playlist created by Spotify Sifter",
+            "description": f"Playlist created by Playlist Sifter",
             "public": False,
         }
     )

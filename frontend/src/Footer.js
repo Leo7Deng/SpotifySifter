@@ -8,7 +8,7 @@ function Footer() {
             <hr className='bar'></hr>
             <div className="home-footer">
                 <p className="footer-text">Created by Leo Deng</p>
-                <p className="footer-text">© 2024 - SpotifySifter.com</p>
+                <p className="footer-text">© 2024 - playlistsifter.com</p>
                 <div className="footer-links">
                     <Link className="link" to="/">Home </Link> |
                     <Link className="link" to="/about"> About </Link> |

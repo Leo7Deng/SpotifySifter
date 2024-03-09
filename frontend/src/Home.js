@@ -2,7 +2,7 @@ import React from 'react';
 import './Home.css';
 
 function Home() {
-  const loginUrl = process.env.NODE_ENV === 'production' ? `https://api.spotifysifter.com/login` : 'http://localhost:8889/login';
+  const loginUrl = process.env.NODE_ENV === 'production' ? `https://api.playlistsifter.com/login` : 'http://localhost:8889/login';
 
   const handleLoginClick = async () => {
     try {
@@ -23,7 +23,7 @@ function Home() {
   return (
     <>
       <div className="home">
-        <h1 className="home-title">Spotify Sifter</h1>
+        <h1 className="home-title">Playlist Sifter</h1>
         <p className='subtitle'>Select your playlists to sort out frequently skipped tracks</p>
         <button className="home-button" onClick={handleLoginClick}>
           Log in with Spotify

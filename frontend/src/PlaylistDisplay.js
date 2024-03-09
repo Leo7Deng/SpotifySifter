@@ -5,8 +5,8 @@ import gearIcon from './images/gear.svg';
 function PlaylistDisplay({ playlist, isChecked, playlistSkipCount, siftedPlaylist }) {
     const [checked, setChecked] = useState(isChecked);
     const inputId = `switch-${playlist.id}`;
-    const selectUrl = process.env.NODE_ENV === 'production' ? `https://api.spotifysifter.com/select` : 'http://localhost:8889/select';
-    const unselectUrl = process.env.NODE_ENV === 'production' ? `https://api.spotifysifter.com/unselect` : 'http://localhost:8889/unselect';
+    const selectUrl = process.env.NODE_ENV === 'production' ? `https://api.playlistsifter.com/select` : 'http://localhost:8889/select';
+    const unselectUrl = process.env.NODE_ENV === 'production' ? `https://api.playlistsifter.com/unselect` : 'http://localhost:8889/unselect';
     const [isExpanded, setIsExpanded] = useState(false);
     const [skipCount, setSkipCount] = useState(playlistSkipCount);
 
@@ -20,7 +20,7 @@ function PlaylistDisplay({ playlist, isChecked, playlistSkipCount, siftedPlaylis
             const intValue = parseInt(value);
             setSkipCount(intValue);
             if (intValue > 0 && intValue < 10) {
-                fetch(`${process.env.NODE_ENV === 'production' ? 'https://api.spotifysifter.com' : 'http://localhost:8889'}/update_playlist_skip_count/${playlist.id}/${intValue}`, {
+                fetch(`${process.env.NODE_ENV === 'production' ? 'https://api.playlistsifter.com' : 'http://localhost:8889'}/update_playlist_skip_count/${playlist.id}/${intValue}`, {
                     credentials: 'include',
                 })
                     .then(response => response.json())

@@ -17,7 +17,7 @@ CORS(app, supports_credentials=True)
 CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
 CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 if os.environ.get("FLASK_ENV") == "production":
-    REDIRECT_URI = "https://api.spotifysifter.com/callback"
+    REDIRECT_URI = "https://api.playlistsifter.com/callback"
 else:
     REDIRECT_URI = "http://localhost:8889/callback"
 
@@ -120,7 +120,7 @@ def callback():
         cron_run()
 
     if os.environ.get("FLASK_ENV") == "production":
-        redirect_url = "https://spotifysifter.com"
+        redirect_url = "https://playlistsifter.com"
     else:
         redirect_url = "http://localhost:3000"
     return redirect(
@@ -358,7 +358,7 @@ def new_delete_playlists(playlist_id):
         headers = {"Authorization": f"Bearer {access_token}"}
         playlist_data = {
             "name": f"{playlist.name}'s Sifted Songs",
-            "description": f"Playlist created by Spotify Sifter",
+            "description": f"Playlist created by Playlist Sifter",
             "public": False,
         }
         response = requests.post(
