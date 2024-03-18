@@ -345,8 +345,7 @@ def skip_logic_user(user):
             new_skipped.user_id = user.id
             new_skipped.skipped_count = 1
             db.session.add(new_skipped)
-            continue
-
+        
         skipped_track = Skipped.query.filter_by(track_id=skipped_uri).first()
         if skipped_track is None:
             raise Exception("Skipped track not found")
@@ -380,6 +379,7 @@ def skip_logic_user(user):
         delete_tracks_from_playlist(
             playlist=current_playlist, change_tracks=change_tracks, headers=headers
         )
+        print("Created new playlist")
     set_prev_queue(user_id=user.id, current_queue_uris=current_queue_uris)
     db.session.commit()
 
