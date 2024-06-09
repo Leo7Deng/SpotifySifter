@@ -249,11 +249,8 @@ def skip_logic_user(user):
     # wont work if queue is less than 20 songs
     current_queue_uris = get_current_queue_uris(user=user)
     if len(current_queue_uris) < 20:
-        set_repeat(headers=headers)
-        current_queue_with_repeat = get_current_queue_uris(user=user)
-        if len(current_queue_with_repeat) < 20:
-            print("Queue has less than 20 songs")
-            return
+        print("Queue has less than 20 songs")
+        return
 
     current_playlist = Playlist.query.filter_by(
         user_id=user.id, currently_playing=True
