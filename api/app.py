@@ -32,7 +32,7 @@ def load_user(user_id):
 
 @app.route("/login")
 def login():
-    scope = "user-read-private user-read-playback-state user-read-recently-played user-read-email user-library-read playlist-modify-public playlist-modify-private playlist-read-private user-library-modify user-read-currently-playing"
+    scope = "user-read-recently-played user-read-playback-state user-read-email user-library-read playlist-modify-public playlist-modify-private playlist-read-private user-library-modify user-read-currently-playing"
     params = {
         "client_id": CLIENT_ID,
         "response_type": "code",
