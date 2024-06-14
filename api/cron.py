@@ -246,6 +246,12 @@ def skip_logic_user(user):
     if not is_playing:
         return
 
+    # check if user has premium
+    requests.get(EMAIL_ENDPOINT, headers=headers)
+    if not requests.get(EMAIL_ENDPOINT, headers=headers).json()["product"] == "premium":
+        print(user.user_id + " does not have premium")
+        return
+
     # wont work if queue is less than 20 songs
     current_queue_uris = get_current_queue_uris(user=user)
     if len(current_queue_uris) < 20:
