@@ -16,6 +16,8 @@ function About() {
                 </ol>
                 <p className='about-subtitle'>How does it work?</p>
                 <p className='about-text'>Playlist Sifter listens to a user's activity only when they are listening in a selected playlist. Looking at a user's queued songs periodically, we are able to figure out which songs are skipped. Shuffling and skipping to previous tracks will not disrupt our ability to view skipped tracks.</p>
+                <p className='about-subtitle'>What do I need to get started?</p>
+                <p className='about-text'>You will need a Spotify premium account to use Playlist Sifter. Spotify requires a premium account to access the necessary data to sort out the frequently skipped tracks.</p>
                 <p className='about-subtitle'>My playlist still shows no sifted songs, why?</p>
                 <p className='about-text'>Be patient and check back in a week. It takes time for Playlist Sifter to gather enough data to sort out the frequently skipped tracks.</p>
                 <p className='about-subtitle'>What should I do if I accidentally skip a song?</p>
