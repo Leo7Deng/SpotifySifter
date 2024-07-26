@@ -52,9 +52,10 @@ def create_playlist(playlist, t, user_id, headers):
 def get_response(access_token, endpoint):
     headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.get(endpoint, headers=headers)
-    if not response.ok:
-        raise Exception(f"HTTP error! status: {response.status_code}")
     if response.status_code == 204 or response.status_code == 503:
+        return None
+    if not response.ok:
+        print("Error in response")
         return None
     return response.json()
 
@@ -78,9 +79,9 @@ def update_currently_playing_playlist(user):
     is_playing = False
     try:
         if response is None:
-            raise KeyError
+            print("Could not get response for update_currently_playing_playlist")
         if response["context"] is None:
-            raise KeyError
+            print("Could not get context for update_currently_playing_playlist")
         uri = response["context"]["uri"]
         uri = uri.split(":")[-1]
     except KeyError:
