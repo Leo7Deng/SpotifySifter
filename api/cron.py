@@ -82,7 +82,11 @@ def update_currently_playing_playlist(user):
             print("Could not get response for update_currently_playing_playlist")
         if response["context"] is None:
             print("Could not get context for update_currently_playing_playlist")
-        uri = response["context"]["uri"]
+        try:
+            uri = response["context"]["uri"]
+        except KeyError:
+            print("Could not get uri for update_currently_playing_playlist")
+            return False
         uri = uri.split(":")[-1]
     except KeyError:
         if user is None:
