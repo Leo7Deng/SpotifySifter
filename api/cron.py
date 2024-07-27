@@ -80,7 +80,7 @@ def update_currently_playing_playlist(user):
     try:
         if response is None:
             print("Could not get response for update_currently_playing_playlist")
-        if response["context"] is None:
+        if response["context"]["uri"] is None:
             print("Could not get context for update_currently_playing_playlist")
         try:
             uri = response["context"]["uri"]
