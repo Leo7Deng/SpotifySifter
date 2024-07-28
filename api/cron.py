@@ -87,6 +87,9 @@ def update_currently_playing_playlist(user):
         except KeyError:
             print("Could not get uri for update_currently_playing_playlist")
             return False
+        except TypeError:
+            print("Could not get uri for update_currently_playing_playlist")
+            return False
         uri = uri.split(":")[-1]
     except KeyError:
         if user is None:
