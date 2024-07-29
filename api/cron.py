@@ -84,10 +84,7 @@ def update_currently_playing_playlist(user):
             print("Could not get context for update_currently_playing_playlist")
         try:
             uri = response["context"]["uri"]
-        except KeyError:
-            print("Could not get uri for update_currently_playing_playlist")
-            return False
-        except TypeError:
+        except:
             print("Could not get uri for update_currently_playing_playlist")
             return False
         uri = uri.split(":")[-1]
