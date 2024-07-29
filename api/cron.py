@@ -73,31 +73,22 @@ def get_currently_playing(user):
 def update_currently_playing_playlist(user):
     selected = True
     response = get_currently_playing(user)
+    is_playing = False
     if response is None:
         print(user.user_id + " is not playing Spotify")
         return False
-    is_playing = False
-    try:
-        if response is None:
-            print("Could not get response for update_currently_playing_playlist")
-        if response["context"]["uri"] is None:
-            print("Could not get context for update_currently_playing_playlist")
+    else:
         try:
             uri = response["context"]["uri"]
         except:
-            print("Could not get uri for update_currently_playing_playlist")
+            if user is None:
+                print("User not found")
+            else:
+                playlists = Playlist.query.filter_by(user_id=user.id).all()
+                for playlist in playlists:
+                    playlist.currently_playing = False
+                print(user.user_id + " is not playing Spotify")
             return False
-        uri = uri.split(":")[-1]
-    except KeyError:
-        if user is None:
-            print("User not found")
-        else:
-            playlists = Playlist.query.filter_by(user_id=user.id).all()
-            for playlist in playlists:
-                playlist.currently_playing = False
-            print(user.user_id + " is not playing Spotify")
-        pass
-    else:
         currently_playing_playlist = None
         playlists = Playlist.query.filter_by(user_id=user.id).all()
         for playlist in playlists:
